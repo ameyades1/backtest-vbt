@@ -6,3 +6,5 @@ plotly>=5.18
 requests
 ipykernel
 nbformat
+reportlab
+matplotlib
