@@ -61,7 +61,7 @@ For notebooks, open the folder in VS Code (`code .`) with the WSL and Jupyter ex
 - **Source:** Yahoo Finance daily OHLCV, adjusted for splits, bonuses and dividends. `^NSEI` starts in 2007. Most large-cap stocks start around 1996–2002.
 - **Survivorship bias:** the universe is *today's* NIFTY 500. Companies that were delisted or dropped from the index are missing, so results are optimistic.
 - **Cleaning:** removes non-positive prices, fixes inconsistent OHLC, and drops single-day ±40% spikes that reverse the next day.
-- **Costs:** about 0.11% per side for delivery plus 0.1% slippage (`lib/costs.py`). Check these against your broker.
+- **Costs:** Sharekhan standard plan by default: delivery is about 0.47% per side (0.93% round trip) including STT, stamp duty, exchange, SEBI and GST, plus 0.1% slippage. A `discount` broker profile is also included. Run `python -m lib.costs` to see the table.
 - **Per-stock backtests:** each symbol is backtested on its own. This is not a combined portfolio.
 - Data and charts are git-ignored. Run `download.py` to rebuild them.
 
