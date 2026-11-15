@@ -1,0 +1,113 @@
+"""Shared-capital portfolio simulation with fixed-risk position sizing.
+
+Takes per-stock trades (from ema61.simulate with stop_at_low=True) and replays them on one
+capital pool:
+  qty = floor(risk_amount / (entry - stop)),   risk_amount = risk_pct * initial capital
+  capped by available cash (qty reduced if the position costs more than the cash left)
+  at most `max_positions` open trades; extra signals are skipped
+Same-day order: exits first (frees cash/slots), then entries ranked by `rank`
+('tightest' = smallest stop distance first, i.e. the largest positions).
+Costs: fee + slippage per side, as in lib.costs.
+"""
+from dataclasses import dataclass
+import numpy as np
+import pandas as pd
+
+
+@dataclass
+class Fill:
+    symbol: str
+    entry_date: pd.Timestamp
+    exit_date: pd.Timestamp | None
+    qty: int
+    entry: float
+    exit: float | None
+    stop: float
+    cost: float          # cash paid incl. costs
+    proceeds: float      # cash received incl. costs (or MTM at end)
+    capped: bool         # qty reduced by cash
+
+
+def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_positions=4,
+        fee=0.0, slip=0.0, rank="tightest", start=None):
+    risk_amt = capital * risk_pct
+    trades = [t for t in trades if t.stop is not None and t.entry > t.stop
+              and (start is None or t.entry_date >= pd.Timestamp(start))]
+    by_entry: dict = {}
+    for t in trades:
+        by_entry.setdefault(t.entry_date, []).append(t)
+    days = closes.index[closes.index >= (pd.Timestamp(start) if start else closes.index[0])]
+    cash, open_, fills, skipped = capital, {}, [], 0
+    rows = []
+    for day in days:
+        # exits
+        for sym in [s for s, (t, f) in open_.items() if t.exit_date == day]:
+            t, f = open_.pop(sym)
+            f.exit, f.exit_date = t.exit, day
+            f.proceeds = f.qty * t.exit * (1 - slip) * (1 - fee)
+            cash += f.proceeds
+            fills.append(f)
+        # entries
+        cands = by_entry.get(day, [])
+        if rank == "tightest":
+            cands = sorted(cands, key=lambda t: (t.entry - t.stop) / t.entry)
+        for t in cands:
+            if t.symbol in open_:
+                continue
+            if len(open_) >= max_positions:
+                skipped += 1
+                continue
+            px = t.entry * (1 + slip) * (1 + fee)
+            qty = int(risk_amt // (t.entry - t.stop))
+            capped = False
+            if qty * px > cash:
+                qty, capped = int(cash // px), True
+            if qty < 1:
+                skipped += 1
+                continue
+            cost = qty * px
+            cash -= cost
+            f = Fill(t.symbol, day, None, qty, t.entry, None, t.stop, cost, 0.0, capped)
+            open_[t.symbol] = (t, f)
+            if t.exit_date == day:                       # same-day stop/target
+                f.exit, f.exit_date = t.exit, day
+                f.proceeds = qty * t.exit * (1 - slip) * (1 - fee)
+                cash += f.proceeds
+                fills.append(f)
+                del open_[t.symbol]
+        invested = sum(f.qty * closes.at[day, s] for s, (t, f) in open_.items()
+                       if not np.isnan(closes.at[day, s]))
+        rows.append((day, cash, invested, len(open_)))
+    for sym, (t, f) in open_.items():                   # mark open trades to market
+        last = closes[sym].dropna().iloc[-1]
+        f.proceeds = f.qty * last * (1 - slip) * (1 - fee)
+        fills.append(f)
+    curve = pd.DataFrame(rows, columns=["date", "cash", "invested", "positions"]).set_index("date")
+    curve["equity"] = curve["cash"] + curve["invested"]
+    curve["deployed"] = curve["invested"] / curve["equity"]
+    return curve, fills, skipped
+
+
+def summary(curve: pd.DataFrame, fills: list[Fill], skipped: int, capital: float) -> dict:
+    eq = curve["equity"]
+    yrs = (eq.index[-1] - eq.index[0]).days / 365.25
+    pnl = np.array([f.proceeds - f.cost for f in fills])
+    val = np.array([f.cost for f in fills])
+    return {
+        "Final equity (Rs)": eq.iloc[-1],
+        "CAGR %": ((eq.iloc[-1] / capital) ** (1 / yrs) - 1) * 100,
+        "Max DD %": (eq / eq.cummax() - 1).min() * 100,
+        "Trades taken": len(fills),
+        "Signals skipped": skipped,
+        "Win %": (pnl > 0).mean() * 100,
+        "Avg position (Rs)": val.mean(),
+        "Avg deployed %": curve["deployed"].mean() * 100,
+        "Median deployed %": curve["deployed"].median() * 100,
+        "Max deployed %": curve["deployed"].max() * 100,
+        "Days with 0 positions %": (curve["positions"] == 0).mean() * 100,
+        "Days with 4 positions %": (curve["positions"] >= 4).mean() * 100,
+        "Avg open positions": curve["positions"].mean(),
+        "Cash-capped entries %": np.mean([f.capped for f in fills]) * 100,
+        "Worst trade (Rs)": pnl.min(),
+        "Worst trade % of capital": pnl.min() / capital * 100,
+    }
