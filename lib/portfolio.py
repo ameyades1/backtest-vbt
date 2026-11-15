@@ -88,7 +88,8 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
     return curve, fills, skipped
 
 
-def summary(curve: pd.DataFrame, fills: list[Fill], skipped: int, capital: float) -> dict:
+def summary(curve: pd.DataFrame, fills: list[Fill], skipped: int, capital: float,
+            max_positions: int) -> dict:
     eq = curve["equity"]
     yrs = (eq.index[-1] - eq.index[0]).days / 365.25
     pnl = np.array([f.proceeds - f.cost for f in fills])
@@ -105,7 +106,7 @@ def summary(curve: pd.DataFrame, fills: list[Fill], skipped: int, capital: float
         "Median deployed %": curve["deployed"].median() * 100,
         "Max deployed %": curve["deployed"].max() * 100,
         "Days with 0 positions %": (curve["positions"] == 0).mean() * 100,
-        "Days with 4 positions %": (curve["positions"] >= 4).mean() * 100,
+        "Days all slots full %": (curve["positions"] >= max_positions).mean() * 100,
         "Avg open positions": curve["positions"].mean(),
         "Cash-capped entries %": np.mean([f.capped for f in fills]) * 100,
         "Worst trade (Rs)": pnl.min(),

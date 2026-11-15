@@ -24,6 +24,8 @@ closes = d["Close"]
 dailies = {s: pd.DataFrame({f: d[f][s] for f in ["Open", "High", "Low", "Close", "Volume"]}).dropna()
            for s in syms}
 
+out = Path("data") / f"sizing_r{a.risk:g}_p{a.max_pos}"
+out.mkdir(parents=True, exist_ok=True)
 rows, curves = {}, {}
 for tg in [None] + a.targets:
     trades = []
@@ -33,16 +35,17 @@ for tg in [None] + a.targets:
     curve, fills, skipped = portfolio.run(trades, closes, a.capital, a.risk / 100, a.max_pos,
                                           FEES, SLIPPAGE, start=a.start)
     label = "No target (close<EMA61)" if tg is None else f"Target {tg:g}%"
-    rows[label] = portfolio.summary(curve, fills, skipped, a.capital)
+    rows[label] = portfolio.summary(curve, fills, skipped, a.capital, a.max_pos)
     curves[label] = curve
     pd.DataFrame([vars(f) for f in fills]).to_csv(
-        f"data/sizing_fills_{'none' if tg is None else int(tg)}.csv", index=False)
+        out / f"fills_{'none' if tg is None else int(tg)}.csv", index=False)
 
 tab = pd.DataFrame(rows).T
-tab.to_csv("data/sizing_summary.csv")
-pd.concat({k: v["deployed"] for k, v in curves.items()}, axis=1).to_csv("data/sizing_deployed.csv")
-pd.concat({k: v["equity"] for k, v in curves.items()}, axis=1).to_csv("data/sizing_equity.csv")
+tab.to_csv(out / "summary.csv")
+pd.concat({k: v["deployed"] for k, v in curves.items()}, axis=1).to_csv(out / "deployed.csv")
+pd.concat({k: v["equity"] for k, v in curves.items()}, axis=1).to_csv(out / "equity.csv")
 pd.set_option("display.width", 250)
 print(f"Capital Rs {a.capital:,.0f} | risk {a.risk}% = Rs {a.capital * a.risk / 100:,.0f}/trade | "
       f"max {a.max_pos} positions | {len(syms)} stocks | from {a.start}\n")
+print(f"saved -> {out}")
 print(tab.T.to_string(float_format=lambda x: f"{x:,.1f}"))

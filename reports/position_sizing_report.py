@@ -14,15 +14,24 @@ from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, KeepTogether
 
 ROOT = Path(__file__).resolve().parent.parent
-D = ROOT / "data"
-OUT = ROOT / "reports" / "ema61_position_sizing.pdf"
-CAP, RISK, MAXPOS = 100_000, 2_000, 4
+import argparse
+_a = argparse.ArgumentParser()
+_a.add_argument("--risk", type=float, default=2.0)
+_a.add_argument("--max-pos", type=int, default=4)
+_a = _a.parse_args()
+if (_a.risk, _a.max_pos) != (2.0, 4):
+    raise SystemExit("The report text is written for the 2% risk / 4 position study; "
+                     "use examples/position_sizing_study.py output for other settings.")
+D = ROOT / "data" / f"sizing_r{_a.risk:g}_p{_a.max_pos}"
+OUT = ROOT / "reports" / ("ema61_position_sizing.pdf" if (_a.risk, _a.max_pos) == (2.0, 4)
+                          else f"ema61_position_sizing_r{_a.risk:g}_p{_a.max_pos}.pdf")
+CAP, RISK, MAXPOS = 100_000, 100_000 * _a.risk / 100, _a.max_pos
 BLUE, GREY, DARK, LIGHT = "#2563eb", "#64748b", "#0f172a", "#cbd5e1"
 
-summ = pd.read_csv(D / "sizing_summary.csv", index_col=0)
-dep = pd.read_csv(D / "sizing_deployed.csv", index_col=0, parse_dates=True)
-fills = pd.read_csv(D / "sizing_fills_none.csv")
-alls = pd.concat([pd.read_csv(D / f"sizing_fills_{k}.csv") for k in ["none", "8", "15", "20", "30"]])
+summ = pd.read_csv(D / "summary.csv", index_col=0)
+dep = pd.read_csv(D / "deployed.csv", index_col=0, parse_dates=True)
+fills = pd.read_csv(D / "fills_none.csv")
+alls = pd.concat([pd.read_csv(D / f"fills_{k}.csv") for k in ["none", "8", "15", "20", "30"]])
 sd = (alls.entry - alls.stop) / alls.entry * 100
 med_sd = sd.median()
 full_pos = RISK / (med_sd / 100)
@@ -140,7 +149,7 @@ story = [
 ]
 cols = [("Final equity (Rs)", "{:,.0f}"), ("CAGR %", "{:.1f}"), ("Max DD %", "{:.1f}"),
         ("Trades taken", "{:,.0f}"), ("Signals skipped", "{:,.0f}"), ("Win %", "{:.1f}"),
-        ("Avg position (Rs)", "{:,.0f}"), ("Avg deployed %", "{:.1f}"), ("Days with 4 positions %", "{:.1f}"),
+        ("Avg position (Rs)", "{:,.0f}"), ("Avg deployed %", "{:.1f}"), ("Days all slots full %", "{:.1f}"),
         ("Worst trade % of capital", "{:.1f}")]
 hdr = ["Exit", "Final equity", "CAGR %", "Max DD %", "Trades", "Skipped", "Win %", "Avg pos.",
        "Deployed %", "All 4 full %", "Worst %"]
