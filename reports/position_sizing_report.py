@@ -2,6 +2,9 @@
 examples/position_sizing_study.py.
 """
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import duration_section
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -201,6 +204,9 @@ story += [Paragraph("How to reproduce", H2),
                     "--risk 2 --max-pos 4<br/>python reports/position_sizing_report.py</font>", P),
           Paragraph("Code: lib/portfolio.py (shared-capital simulator), lib/ema61.py (signals and exits). "
                     "For research and education only; not investment advice.", SM)]
+
+_i = next(i for i, f in enumerate(story) if isinstance(f, Paragraph) and f.text == "What else the study shows")
+story[_i:_i] = duration_section.flowables("Candle low", H2, P, SM, table, mm)
 
 
 def footer(c, d):

@@ -53,10 +53,12 @@ def signals(daily: pd.DataFrame, tf: str = "M", span: int = 61):
 
 def simulate(daily: pd.DataFrame, symbol: str, tf: str = "M", span: int = 61,
              trail_pct: float | None = 0.10, valid_bars: int = 1,
-             stop_at_low: bool = False, target_pct: float | None = None) -> list[Trade]:
+             stop_at_low: bool = False, target_pct: float | None = None,
+             max_days: int | None = None) -> list[Trade]:
     """stop_at_low / target_pct: fixed stop at the breakout candle's Low and/or a fixed
     target at entry*(1+target_pct). Used instead of the trailing stop (trail_pct ignored).
-    With stop_at_low and no target, the exit falls back to close<EMA61 (plus the stop)."""
+    With stop_at_low and no target, the exit falls back to close<EMA61 (plus the stop).
+    max_days: time exit - sell at the open of the first day >= max_days calendar days after entry."""
     bars, ema, brk = signals(daily, tf, span)
     d = daily[["Open", "High", "Low", "Close"]].to_numpy()
     days = daily.index
@@ -91,6 +93,8 @@ def simulate(daily: pd.DataFrame, symbol: str, tf: str = "M", span: int = 61,
             else:
                 for j in range(k + 1, len(days)):
                     o, h, l = d[j, 0], d[j, 1], d[j, 2]
+                    if max_days is not None and (days[j] - days[k]).days >= max_days:
+                        exit_px, exit_day, reason = o, j, "time"; break
                     if o <= stop:
                         exit_px, exit_day, reason = o, j, "stop-gap"; break
                     if o >= tgt:

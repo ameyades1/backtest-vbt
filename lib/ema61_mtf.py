@@ -8,7 +8,8 @@ Entry    during the next month, on the first day where
 Stop     Low of the last completed week before entry.
            stop_mode='fixed' : never moves
            stop_mode='trail' : after each completed week, raised to that week's Low (never lowered)
-Exit     fixed target_pct, or (target_pct=None) next open after a monthly close below EMA61.
+Exit     fixed target_pct, or (target_pct=None) next open after a monthly close below EMA61;
+         optional max_days time exit at the open of the first day >= max_days after entry.
 Daily-bar fill rules as in lib/ema61.py: gaps fill at Open, stop before target on the same day,
 entry day checks only the Close.
 """
@@ -20,7 +21,8 @@ SPAN = 61
 
 
 def simulate(daily: pd.DataFrame, symbol: str, target_pct: float | None = None,
-             stop_mode: str = "fixed", filters: bool = True) -> list[Trade]:
+             stop_mode: str = "fixed", filters: bool = True,
+             max_days: int | None = None) -> list[Trade]:
     m = resample(daily, "M")
     w = resample(daily, "W")
     if len(m) <= SPAN:
@@ -83,6 +85,8 @@ def simulate(daily: pd.DataFrame, symbol: str, target_pct: float | None = None,
                     if lw > last_w[k]:
                         stop = max(stop, w_low[lw])
                 o, h, l = d[j, 0], d[j, 1], d[j, 2]
+                if max_days is not None and (days[j] - days[k]).days >= max_days:
+                    exit_px, exit_day, reason = o, j, "time"; break
                 if o <= stop:
                     exit_px, exit_day, reason = o, j, "stop-gap"; break
                 if o >= tgt:

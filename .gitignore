@@ -7,3 +7,5 @@ __pycache__/
 *.log
 data/sizing_*/
 data/mtf_*/
+data/trade_duration/
+data/time_exit/

@@ -4,6 +4,9 @@
     python reports/ema61_targets_report.py
 """
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import duration_section
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -174,6 +177,9 @@ story += [
     Paragraph("Code: lib/ema61.py (engine), examples/ema61_breakout.py (runner), lib/costs.py "
               "(Sharekhan cost model). For research and education only; not investment advice.", SM),
 ]
+
+_i = next(i for i, f in enumerate(story) if isinstance(f, Paragraph) and f.text == "Interpretation and caveats")
+story[_i:_i] = duration_section.flowables("Candle low", H2, P, SM, lambda r, w, n: table(r, w, num_cols=range(n, len(r[0]))), mm)
 
 
 def footer(c, d):

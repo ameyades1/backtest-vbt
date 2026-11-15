@@ -2,6 +2,9 @@
 (examples/mtf_weekly_stop_study.py) and the candle-low sizing runs in data/sizing_r2_p4, data/sizing_r1_p8.
 """
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import duration_section
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -184,6 +187,9 @@ story += [Paragraph("Correction to the earlier sizing study", H2),
                     "python examples/mtf_weekly_stop_study.py<br/>python reports/mtf_weekly_stop_report.py</font>", P),
           Paragraph("Code: lib/ema61_mtf.py (signals, filters, weekly stop), lib/portfolio.py (shared capital). "
                     "For research and education only; not investment advice.", SM)]
+
+_i = next(i for i, f in enumerate(story) if isinstance(f, Paragraph) and f.text == "Why the weekly stop does not add return")
+story[_i:_i] = duration_section.flowables("Week low fixed", H2, P, SM, lambda r, w, n: table(r, w, num_from=n), mm)
 
 
 def footer(c, d):
