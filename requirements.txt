@@ -1,0 +1,8 @@
+vectorbt>=0.26
+yfinance>=0.2.40
+pandas>=2.0
+pyarrow>=14
+plotly>=5.18
+requests
+ipykernel
+nbformat
