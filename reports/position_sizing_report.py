@@ -163,8 +163,8 @@ pts = [
     f"all 4 slots were taken.",
     f"<b>No-target trades block the slots for years.</b> It took only {int(nt['Trades taken'])} trades in "
     f"27 years; ITC was held from May 2003 to Jan 2020. Its {nt['CAGR %']:.1f}% CAGR came with a "
-    f"{nt['Max DD %']:.0f}% drawdown (Jan 2008 to Sep 2012), as large open gains in ONGC, Tata Chemicals "
-    f"and IOC were given back in the 2008 crash.",
+    f"{nt['Max DD %']:.0f}% drawdown (Jan to Oct 2008), as large open gains in ONGC, Tata Chemicals "
+    f"and IOC were given back in the crash.",
     f"<b>Losses can exceed 2%.</b> Gap-downs below the stop plus costs made the worst trade lose "
     f"{-s['Worst trade % of capital'].min():.1f}% of capital (Rs {-s['Worst trade (Rs)'].min():,.0f}).",
     "<b>Risk does not grow with the account.</b> Risk stays Rs 2,000 even after equity rises, so "

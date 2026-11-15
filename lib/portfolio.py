@@ -31,6 +31,9 @@ class Fill:
 def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_positions=4,
         fee=0.0, slip=0.0, rank="tightest", start=None):
     risk_amt = capital * risk_pct
+    # value open positions at the last known close: the combined table has dates on which
+    # some stocks have no row (holidays/suspensions/data gaps); NaN must not count as 0
+    closes = closes.ffill()
     trades = [t for t in trades if t.stop is not None and t.entry > t.stop
               and (start is None or t.entry_date >= pd.Timestamp(start))]
     by_entry: dict = {}
