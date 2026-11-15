@@ -1,6 +1,6 @@
 # backtest-vbt
 
-Backtesting NIFTY 500 stocks with [vectorbt](https://github.com/polakowo/vectorbt) on maximum available daily history from Yahoo Finance, with interactive candlestick charts.
+Backtesting NIFTY index constituents (NIFTY 500, broad, sectoral and thematic indices) and the index series themselves with [vectorbt](https://github.com/polakowo/vectorbt) on maximum available daily history from Yahoo Finance, with interactive candlestick charts.
 
 The project combines both approaches: reusable code lives in `lib/` as plain Python, and `notebooks/` is for exploring and charting.
 
@@ -8,7 +8,7 @@ The project combines both approaches: reusable code lives in `lib/` as plain Pyt
 
 ```
 lib/
-  universe.py    NIFTY 500 constituents (NSE CSV, cached)
+  indices.py     registry of 31 NIFTY indices: NSE constituent list + Yahoo index ticker
   data.py        yfinance download → clean → data/ohlcv.parquet; load() → wide frames for vectorbt
   costs.py       Indian delivery costs (STT, exchange, SEBI, GST, stamp) + slippage
   strategies.py  sma_cross, donchian_breakout
@@ -30,10 +30,26 @@ python -m ipykernel install --user --name backtest --display-name "backtest (.ve
 ## Usage
 
 ```bash
-python download.py                                  # all NIFTY 500 + ^NSEI, max history (~5–10 min)
-python download.py --symbols RELIANCE.NS TCS.NS     # just a few symbols
-python run.py --strategy sma --fast 50 --slow 200 --plot RELIANCE.NS
-python run.py --strategy donchian --start 2005-01-01
+python download.py --list                           # available indices and their Yahoo tickers
+python download.py                                  # all NIFTY 500 stocks + index, max history (~10 min)
+python download.py --index BANK IT AUTO             # specific indices
+python download.py --index sectoral --skip-cached   # groups: broad | sectoral | thematic | all
+python download.py --symbols RELIANCE.NS TCS.NS     # arbitrary Yahoo symbols
+
+# backtest the constituents of one or more indices
+python run.py --index NIFTY500 --strategy sma --fast 50 --slow 200 --plot RELIANCE.NS
+python run.py --index BANK IT --strategy donchian --start 2010-01-01
+# backtest the index series themselves
+python run.py --on-index sectoral --plot BANK
+```
+
+Downloads merge into one cache (`data/ohlcv.parquet`), so you can add indices over time. Constituent lists are cached in `data/constituents/`; use `--refresh-list` to update them.
+
+### Index series availability
+
+Yahoo has no usable history for some index series: Next 50, Smallcap 100, Private Bank, Fin Services 25/50, Healthcare, Media, Consumer Durables, Oil & Gas, CPSE and Commodities. You can still backtest their *constituents*, but `--on-index` skips these indices. Most of the index series that are available start between 2005 and 2011. Run `python download.py --list` for the details.
+
+```bash
 ```
 
 `run.py` writes `data/summary.csv` and `charts/<SYMBOL>_<strategy>.html`, and opens the chart in the Windows browser (via `wslview` or `explorer.exe`).

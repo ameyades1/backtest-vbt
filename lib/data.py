@@ -45,8 +45,18 @@ def clean(df: pd.DataFrame, max_jump: float = 0.4) -> pd.DataFrame:
 
 
 def save(df: pd.DataFrame) -> None:
+    """Merge into the cache: symbols in df replace their old rows, others are kept."""
     DATA_DIR.mkdir(exist_ok=True)
+    if OHLCV_PATH.exists():
+        old = pd.read_parquet(OHLCV_PATH)
+        df = pd.concat([old[~old["Symbol"].isin(df["Symbol"].unique())], df])
     df.to_parquet(OHLCV_PATH)
+
+
+def cached_symbols() -> set[str]:
+    if not OHLCV_PATH.exists():
+        return set()
+    return set(pd.read_parquet(OHLCV_PATH, columns=["Symbol"])["Symbol"].unique())
 
 
 def load(symbols: list[str] | None = None, start: str | None = None) -> dict[str, pd.DataFrame]:
@@ -63,3 +73,14 @@ def ohlcv_for(symbol: str, start: str | None = None) -> pd.DataFrame:
     df = pd.read_parquet(OHLCV_PATH)
     df = df[df["Symbol"] == symbol].drop(columns="Symbol").sort_index()
     return df[df.index >= start] if start else df
+
+
+def index_close(key: str) -> pd.Series:
+    """Yahoo close series for an index key (only indices Yahoo provides)."""
+    from .indices import INDICES
+    y = INDICES[key]["yahoo"]
+    if not y:
+        raise ValueError(f"{key}: no index series available on Yahoo")
+    if y not in cached_symbols():
+        raise ValueError(f"{key}: {y} not cached; run: python download.py --index {key}")
+    return ohlcv_for(y)["Close"].rename(key)

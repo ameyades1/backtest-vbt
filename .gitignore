@@ -4,3 +4,4 @@ data/*.csv
 charts/
 __pycache__/
 .ipynb_checkpoints/
+*.log
