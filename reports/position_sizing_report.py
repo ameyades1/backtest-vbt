@@ -155,7 +155,20 @@ hdr = ["Exit", "Final equity", "CAGR %", "Max DD %", "Trades", "Skipped", "Win %
        "Deployed %", "All 4 full %", "Worst %"]
 rows = [hdr] + [[i.replace(" (close<EMA61)", "")] + [f.format(r[c]) for c, f in cols] for i, r in s.iterrows()]
 story += [table(rows, [22 * mm, 18 * mm, 13 * mm, 15 * mm, 12 * mm, 14 * mm, 12 * mm, 15 * mm, 17 * mm, 19 * mm, 15 * mm]),
-          Paragraph("Deployed % = market value of open positions / equity, averaged over all trading days.", SM),
+          Paragraph("Deployed % = market value of open positions / equity, averaged over all trading days.", SM)]
+dur = [["Exit", "Trades", "Avg hold (days)", "Median hold (days)", "Avg hold (months)", "Avg trade %",
+        "Median trade %"]]
+for i, r in s.iterrows():
+    dur.append([i.replace(" (close<EMA61)", ""), f"{int(r['Trades taken']):,}", f"{r['Avg hold days']:.0f}",
+                f"{r['Median hold days']:.0f}", f"{r['Avg hold days'] / 30.44:.1f}",
+                f"{r['Avg trade %']:.1f}", f"{r['Median trade %']:.1f}"])
+story += [KeepTogether([Paragraph("Trade duration and gain", H2),
+          Paragraph(f"Fixed-target trades last weeks to months; no-target trades run for years. The no-target "
+                    f"average gain of {nt['Avg trade %']:.0f}% comes from a handful of multi-year winners: its "
+                    f"median trade loses {-nt['Median trade %']:.1f}%.", P),
+          table(dur, [32 * mm, 16 * mm, 24 * mm, 26 * mm, 26 * mm, 22 * mm, 26 * mm]),
+          Paragraph("Trades taken by the portfolio only. Trade % = net return per trade after costs. Hold = "
+                    "calendar days from entry to exit; open trades counted to 13 Nov 2026.", SM)]),
           Paragraph("What else the study shows", H2)]
 pts = [
     f"<b>Slots are the binding limit, not cash.</b> No entry was ever reduced for lack of cash, while "

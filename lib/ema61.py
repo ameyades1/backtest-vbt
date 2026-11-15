@@ -180,7 +180,7 @@ def _holding(trades, last, stock_days):
     if not trades:
         return {}
     held = np.array([((t.exit_date or last) - t.entry_date).days for t in trades])
-    out = {"Avg hold days": held.mean()}
+    out = {"Avg hold days": held.mean(), "Median hold days": float(np.median(held))}
     if stock_days:
         out["Exposure %"] = held.sum() / stock_days * 100
     return out

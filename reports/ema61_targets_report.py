@@ -62,6 +62,8 @@ P = ParagraphStyle("P", parent=ss["Normal"], fontSize=9.5, leading=13.5, spaceAf
 B = ParagraphStyle("B", parent=P, leftIndent=10, bulletIndent=0, spaceAfter=2)
 SM = ParagraphStyle("SM", parent=P, fontSize=8, leading=10.5, textColor=colors.HexColor(GREY))
 CELL = ParagraphStyle("CELL", parent=P, fontSize=8, leading=10, spaceAfter=0)
+HDR = ParagraphStyle("HDR", parent=CELL, textColor=colors.white, alignment=2, fontSize=7.5, leading=9)
+HDRL = ParagraphStyle("HDRL", parent=HDR, alignment=0)
 
 
 def table(rows, widths, num_cols=()):
@@ -130,15 +132,19 @@ story = [
                             "= avg loss / (avg win + avg loss). Grey label: margin in points.", SM)]),
     Spacer(1, 6),
 ]
-rows = [["Exit", "Trades", "Win %", "Avg win %", "Avg loss %", "Avg trade %", "Median %",
-         "Hold (days)", "Stopped %"]]
+rows = [["Exit", "Trades", "Win %", "Avg win %", "Avg loss %", "Avg trade %", "Median trade %",
+         "Avg hold (days)", "Median hold (days)", "Stopped %"]]
 for name, r in list(tg.iterrows()) + [("No target (close < EMA61)", base)]:
     rows.append([name, f"{int(r['Trades']):,}", f1(r["Win %"]), f2(r["Avg win %"]),
                  f2(r["Avg loss %"]), f2(r["Avg trade %"]), f2(r["Median trade %"]),
-                 f"{r['Avg hold days']:.0f}", f1(r["Stopped %"])])
+                 f"{r['Avg hold days']:.0f}", f"{r['Median hold days']:.0f}", f1(r["Stopped %"])])
 story += [
-    table(rows, [38 * mm, 15 * mm, 14 * mm, 17 * mm, 18 * mm, 19 * mm, 17 * mm, 18 * mm, 17 * mm],
-          num_cols=range(1, 9)),
+    table([[Paragraph(f"<b>{h}</b>", HDR if i else HDRL) for i, h in enumerate(rows[0])]] + rows[1:],
+          [33 * mm, 13 * mm, 12 * mm, 15 * mm, 15 * mm, 16 * mm, 17 * mm, 17 * mm, 18 * mm, 15 * mm],
+          num_cols=range(1, 10)),
+    Paragraph("Trade % = net return of each trade after costs, winners and losers together. Hold = calendar "
+              "days from entry to exit (open trades counted to 13 Nov 2026). A long average with a short "
+              "median means most trades end quickly while a few run for years.", SM),
     Paragraph(f"Average stop distance is {tg['Avg stop dist %'].min():.1f}–"
               f"{tg['Avg stop dist %'].max():.1f}% below entry for every row. Book-level CAGR is "
               f"{tg['CAGR %'].min():.1f}–{tg['CAGR %'].max():.1f}% for the fixed targets, since capital "

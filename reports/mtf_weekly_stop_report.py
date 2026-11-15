@@ -147,6 +147,16 @@ story += [table(rows, [24 * mm, 18 * mm, 12 * mm, 13 * mm, 15 * mm, 13 * mm, 12 
                        17 * mm, 13 * mm], num_from=3, bold_rows=bold),
           Paragraph("Win % is of trades actually taken by the portfolio. Worst % = worst single trade as % of "
                     "starting capital. Bold = best CAGR.", SM),
+          Paragraph("Trade duration and gain", H2),
+          Paragraph("The weekly stop shortens trades: at the same exit, fixed weekly-stop trades are held for "
+                    "a shorter median time than candle-low trades, and trailing ones shorter still.", P)]
+dur = [["Stop", "Exit", "Sizing", "Avg hold (days)", "Median hold (days)", "Avg trade %", "Median trade %"]]
+for _, r in srt.iterrows():
+    dur.append([names[r.Stop], r.Exit, r.Sizing, f"{r['Avg hold days']:.0f}", f"{r['Median hold days']:.0f}",
+                f"{r['Avg trade %']:.1f}", f"{r['Median trade %']:.1f}"])
+story += [table(dur, [28 * mm, 22 * mm, 16 * mm, 26 * mm, 28 * mm, 24 * mm, 26 * mm], num_from=3),
+          Paragraph("Trades taken by the portfolio only. Trade % = net return per trade after costs. Hold = "
+                    "calendar days from entry to exit; open trades counted to 13 Nov 2026.", SM),
           Paragraph("Why the weekly stop does not add return", H2)]
 w8f = get("fixed", "Target 8%", "2%/4", "Win %"); w8c = get("candle-low", "Target 8%", "2%/4", "Win %")
 pts = [

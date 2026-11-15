@@ -96,6 +96,9 @@ def summary(curve: pd.DataFrame, fills: list[Fill], skipped: int, capital: float
     eq = curve["equity"]
     yrs = (eq.index[-1] - eq.index[0]).days / 365.25
     pnl = np.array([f.proceeds - f.cost for f in fills])
+    ret = np.array([f.proceeds / f.cost - 1 for f in fills]) * 100
+    last = curve.index[-1]
+    held = np.array([((f.exit_date or last) - f.entry_date).days for f in fills])
     val = np.array([f.cost for f in fills])
     return {
         "Final equity (Rs)": eq.iloc[-1],
@@ -104,6 +107,10 @@ def summary(curve: pd.DataFrame, fills: list[Fill], skipped: int, capital: float
         "Trades taken": len(fills),
         "Signals skipped": skipped,
         "Win %": (pnl > 0).mean() * 100,
+        "Avg trade %": ret.mean(),
+        "Median trade %": float(np.median(ret)),
+        "Avg hold days": held.mean(),
+        "Median hold days": float(np.median(held)),
         "Avg position (Rs)": val.mean(),
         "Avg deployed %": curve["deployed"].mean() * 100,
         "Median deployed %": curve["deployed"].median() * 100,
