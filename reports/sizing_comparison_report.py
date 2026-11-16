@@ -66,7 +66,7 @@ for k in CFG:
     ax.plot(dd.index, dd * 100, color=COL[k], lw=1.4, label=k)
 ax.yaxis.set_major_formatter(lambda v, _: f"{v:.0f}%")
 ax.legend(frameon=False, fontsize=8, loc="lower left")
-ax.set_title("Drawdowns are almost identical: more positions did not help in 2008",
+ax.set_title("Drawdowns are similar: more positions did not help in 2008",
              loc="left", fontsize=10.5, fontweight="bold", color=DARK)
 ax.set_ylabel("Drawdown from peak", color=GREY, fontsize=8)
 style(ax); fig.tight_layout(); p = ROOT / "reports" / "_s2.png"; fig.savefig(p); plt.close(fig); charts.append(p)
@@ -117,7 +117,8 @@ fmt = lambda d: d.strftime("%b %Y")
 story = [
     Paragraph("EMA61 Breakout: 1% Risk / 8 Positions vs 2% Risk / 4 Positions", H1),
     Paragraph("Rs 1,00,000 capital · NIFTY 500 · monthly signals · Jan 2000 – Nov 2026 · "
-              "prepared 16 Nov 2026", SUB),
+              "prepared 17 Nov 2026", SUB),
+    Paragraph("Data: actual traded prices (adjusted for splits and bonuses, not for dividends; dividend income is not counted). Junk pre-listing quotes removed. Re-run on 17 Nov 2026.", SM),
     Spacer(1, 8),
     Paragraph("Answer", H2),
     Paragraph(f"Halving the risk per trade and doubling the slots gave <b>about the same return and no "
@@ -166,7 +167,7 @@ t15 = S[A].loc["Target 15%"]
 pts = [
     f"<b>The no-target exit is the only version that pays.</b> Win rate {na['Win %']:.0f}% and a median "
     f"trade of {na['Median trade %']:.1f}%, but a few multi-year winners lift the average trade to "
-    f"{na['Avg trade %']:.0f}%. Every fixed target (1–3.4% CAGR) cuts those winners short.",
+    f"{na['Avg trade %']:.0f}%. Every fixed target ({min(S[k].drop(index=NT)['CAGR %'].min() for k in CFG):.1f}–{max(S[k].drop(index=NT)['CAGR %'].max() for k in CFG):.1f}% CAGR) cuts those winners short.",
     f"<b>Fixed-target versions do slightly worse at 1% / 8.</b> Each position is only about "
     f"Rs {S[A]['Avg position (Rs)'].mean():,.0f}, so on average just "
     f"{S[A].drop(index=NT)['Avg deployed %'].min():.0f}–{S[A].drop(index=NT)['Avg deployed %'].max():.0f}% "

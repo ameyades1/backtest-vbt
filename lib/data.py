@@ -1,5 +1,6 @@
 """Download, clean and cache OHLCV for the universe as one long-format parquet."""
 from pathlib import Path
+import numpy as np
 import pandas as pd
 import yfinance as yf
 
@@ -10,12 +11,13 @@ FIELDS = ["Open", "High", "Low", "Close", "Volume"]
 
 def download(symbols: list[str], start: str = "1990-01-01", chunk: int = 50) -> pd.DataFrame:
     """Return long df: index=Date, columns=[Symbol, Open, High, Low, Close, Volume].
-    Prices are split/bonus/dividend adjusted (auto_adjust=True)."""
+    Prices are split/bonus adjusted but NOT dividend adjusted (auto_adjust=False, Yahoo 'Close'),
+    i.e. the prices actually traded, as shown on NSE charts."""
     frames = []
     for i in range(0, len(symbols), chunk):
         batch = symbols[i : i + chunk]
         print(f"Downloading {i + 1}-{i + len(batch)} of {len(symbols)} ...")
-        raw = yf.download(batch, start=start, auto_adjust=True, group_by="ticker",
+        raw = yf.download(batch, start=start, auto_adjust=False, group_by="ticker",
                           progress=False, threads=True)
         for sym in batch:
             if sym not in raw.columns.get_level_values(0):
@@ -42,6 +44,35 @@ def clean(df: pd.DataFrame, max_jump: float = 0.4) -> pd.DataFrame:
     nxt = r.groupby(df["Symbol"]).shift(-1)
     bad = (r.abs() > max_jump) & (nxt.abs() > max_jump) & (r * nxt < 0)
     return df[~bad.fillna(False)]
+
+
+def drop_prelisting(df: pd.DataFrame, min_run: int = 20) -> tuple[pd.DataFrame, dict]:
+    """Yahoo pads some symbols with junk before real trading starts (e.g. TCS from 2002, listed
+    Aug 2004): long runs of an identical close. Per symbol, drop all rows up to the end of the last
+    run of >= min_run identical closes, then leading rows whose volume is < 10% of the median volume
+    of the following year (thin pre-listing quotes), until 10 normal days in a row. Returns (df, {symbol: (rows dropped, new first date)})."""
+    keep, dropped = [], {}
+    for sym, g in df.groupby("Symbol", sort=False):
+        g = g.sort_index()
+        run_id = (g["Close"].diff() != 0).cumsum()
+        size = run_id.map(run_id.value_counts())
+        long_ = np.flatnonzero((size >= min_run).to_numpy())
+        if len(long_):
+            cut = long_[-1] + 1
+            dropped[sym] = (cut, g.index[cut].date() if cut < len(g) else None)
+            g = g.iloc[cut:]
+        if not sym.startswith("^") and len(g) > 250:               # thin pre-listing rows
+            v = g["Volume"].to_numpy()
+            ahead = pd.Series(v[::-1]).rolling(250, min_periods=50).median().to_numpy()[::-1]
+            good = pd.Series(v[:510] >= 0.1 * ahead[:510]).astype(int)
+            ok = np.flatnonzero(good[::-1].rolling(10).sum()[::-1].to_numpy()[:500] == 10)
+            cut2 = ok[0] if len(ok) else 0                               # first of 10 normal days
+            if cut2:
+                n0 = dropped.get(sym, (0, None))[0]
+                dropped[sym] = (n0 + cut2, g.index[cut2].date())
+                g = g.iloc[cut2:]
+        keep.append(g)
+    return pd.concat(keep), dropped
 
 
 def save(df: pd.DataFrame) -> None:

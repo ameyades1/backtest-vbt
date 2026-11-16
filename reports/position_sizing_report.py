@@ -70,7 +70,7 @@ ax.yaxis.set_major_formatter(lambda v, _: f"Rs {v / 1000:.0f}k")
 ax.xaxis.set_major_formatter(lambda v, _: f"{v:.0f}%")
 ax.set_xlabel("Stop distance below entry (grey bars: how often each distance occurred)", color=GREY, fontsize=8)
 ax.set_ylabel("Position size for Rs 2,000 risk", color=GREY, fontsize=8)
-ax.set_title("Wide candle-low stops shrink each position to about Rs 11k",
+ax.set_title(f"Wide candle-low stops shrink each position to about Rs {full_pos / 1000:.0f}k",
              loc="left", fontsize=10.5, fontweight="bold", color=DARK)
 style(ax); fig.tight_layout(); p = ROOT / "reports" / "_c1.png"; fig.savefig(p); plt.close(fig); charts.append(p)
 
@@ -85,7 +85,7 @@ ax.text(yr.index[0], 102, "100% = all capital invested", fontsize=7.5, color=GRE
 ax.set_ylim(0, 110)
 ax.yaxis.set_major_formatter(lambda v, _: f"{v:.0f}%")
 ax.legend(frameon=False, fontsize=7.5, loc="upper right", ncol=3, bbox_to_anchor=(1, 0.95))
-ax.set_title("Fixed-target versions keep about 80% of capital idle",
+ax.set_title(f"Fixed-target versions keep about {100 - summ.drop(index='No target (close<EMA61)')['Avg deployed %'].mean():.0f}% of capital idle",
              loc="left", fontsize=10.5, fontweight="bold", color=DARK)
 ax.set_ylabel("Capital deployed (yearly avg)", color=GREY, fontsize=8)
 style(ax); fig.tight_layout(); p = ROOT / "reports" / "_c2.png"; fig.savefig(p); plt.close(fig); charts.append(p)
@@ -115,11 +115,18 @@ def table(rows, widths, num_from=1):
 
 s = summ
 nt, t30 = s.loc["No target (close<EMA61)"], s.loc["Target 30%"]
+_eq = pd.read_csv(D / "equity.csv", index_col=0, parse_dates=True)["No target (close<EMA61)"]
+_tr = (_eq / _eq.cummax() - 1).idxmin(); _pk = _eq[:_tr].idxmax()
+_f = pd.read_csv(D / "fills_none.csv", parse_dates=["entry_date", "exit_date"])
+_f["days"] = (_f.exit_date.fillna(_eq.index[-1]) - _f.entry_date).dt.days
+_lg = _f.loc[_f.days.idxmax()]
+_open = [x.replace(".NS", "") for x in _f[(_f.entry_date <= _pk) & (_f.exit_date.isna() | (_f.exit_date >= _pk))].symbol]
 tg = s.drop(index="No target (close<EMA61)")
 story = [
     Paragraph("EMA61 Breakout: Does 2% Risk Sizing Deploy the Capital?", H1),
     Paragraph("Rs 1,00,000 capital · Rs 2,000 risk per trade · max 4 open trades · NIFTY 500 · "
-              "monthly signals · Jan 2000 – Nov 2026 · prepared 16 Nov 2026", SUB),
+              "monthly signals · Jan 2000 – Nov 2026 · prepared 17 Nov 2026", SUB),
+    Paragraph("Data: actual traded prices (adjusted for splits and bonuses, not for dividends; dividend income is not counted). Junk pre-listing quotes removed. Re-run on 17 Nov 2026.", SM),
     Spacer(1, 8),
     Paragraph("Answer", H2),
     Paragraph(f"<b>No.</b> With the stop at the breakout candle's low, the strategy never comes close to "
@@ -178,9 +185,9 @@ pts = [
     f"{int(tg['Signals skipped'].min()):,}–{int(nt['Signals skipped']):,} signals were skipped because "
     f"all 4 slots were taken.",
     f"<b>No-target trades block the slots for years.</b> It took only {int(nt['Trades taken'])} trades in "
-    f"27 years; ITC was held from May 2003 to Jan 2020. Its {nt['CAGR %']:.1f}% CAGR came with a "
-    f"{nt['Max DD %']:.0f}% drawdown (Jan to Oct 2008), as large open gains in ONGC, Tata Chemicals "
-    f"and IOC were given back in the crash.",
+    f"27 years; {_lg.symbol.replace('.NS', '')} was held from {_lg.entry_date:%b %Y} to {_lg.exit_date:%b %Y}. Its {nt['CAGR %']:.1f}% CAGR came with a "
+    f"{nt['Max DD %']:.0f}% drawdown ({_pk:%b %Y} to {_tr:%b %Y}), as large open gains in {', '.join(_open)} "
+    f"were given back in the crash.",
     f"<b>Losses can exceed 2%.</b> Gap-downs below the stop plus costs made the worst trade lose "
     f"{-s['Worst trade % of capital'].min():.1f}% of capital (Rs {-s['Worst trade (Rs)'].min():,.0f}).",
     "<b>Risk does not grow with the account.</b> Risk stays Rs 2,000 even after equity rises, so "

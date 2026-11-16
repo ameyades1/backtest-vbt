@@ -93,7 +93,8 @@ w4, w30 = tg.iloc[0], tg.iloc[-1]
 story = [
     Paragraph("EMA61 Breakout: Fixed Targets with Candle-Low Stop", H1),
     Paragraph("NIFTY 500 stocks · monthly signals · Jan 2000 – Nov 2026 · "
-              "after Sharekhan costs · prepared 16 Nov 2026", SUB),
+              "after Sharekhan costs · prepared 17 Nov 2026", SUB),
+    Paragraph("Data: actual traded prices (adjusted for splits and bonuses, not for dividends; dividend income is not counted). Junk pre-listing quotes removed. Re-run on 17 Nov 2026.", SM),
     Spacer(1, 8),
     Paragraph("Summary", H2),
     Paragraph(f"Win rate ranges from <b>{w4['Win %']:.1f}%</b> with a 4% target to "
@@ -158,7 +159,7 @@ story += [
 caveats = [
     "<b>Survivorship bias:</b> the universe is today's NIFTY 500, so stocks that collapsed and were "
     "dropped since 2000 are missing. Real win rates and returns would be lower.",
-    "<b>Wide stop, small targets:</b> a ~22.5% average stop against a 4–15% target is a poor "
+    f"<b>Wide stop, small targets:</b> a ~{tg['Avg stop dist %'].mean():.1f}% average stop against a 4–15% target is a poor "
     "reward-to-risk ratio. A tighter stop (e.g. a weekly candle low) is worth testing separately.",
     "<b>Fill assumptions:</b> every stop and target is assumed to fill, at the level or at the open "
     "on a gap. Sharekhan bracket legs are stop-limit orders, so a deep gap-down may not fill.",
@@ -166,8 +167,7 @@ caveats = [
     "counted, which makes results slightly pessimistic.",
     f"<b>Few signals per stock:</b> about {base['Trades'] / 499:.1f} trades per stock in 27 years. "
     "Stocks listed after about 2020 cannot signal, because EMA61 needs 61 months of data.",
-    "<b>Open trades:</b> 0.3% (4% target) to 2.0% (30% target) of trades were still open at the end "
-    "and are marked to market on 13 Nov 2026.",
+    "<b>Open trades:</b> trades still open at the end are marked to market on 13 Nov 2026.",
 ]
 story += [Paragraph(c, B, bulletText="•") for c in caveats]
 story += [

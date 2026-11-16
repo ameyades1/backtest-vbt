@@ -88,7 +88,8 @@ nt = ("Candle low", "No target")
 story = [
     Paragraph("EMA61 Breakout: Do Time Exits Improve CAGR?", H1),
     Paragraph("Rs 1,00,000 shared capital · NIFTY 500 · monthly breakouts · time exits at 90 / 180 / 365 days · "
-              "Jan 2000 – Nov 2026 · Sharekhan costs · prepared 16 Nov 2026", SUB),
+              "Jan 2000 – Nov 2026 · Sharekhan costs · prepared 17 Nov 2026", SUB),
+    Paragraph("Data: actual traded prices (adjusted for splits and bonuses, not for dividends; dividend income is not counted). Junk pre-listing quotes removed. Re-run on 17 Nov 2026.", SM),
     Spacer(1, 8),
     Paragraph("Answer", H2),
     Paragraph(f"<b>No.</b> Recycling slots with a time exit raised CAGR by more than 0.05 points in only "
@@ -114,16 +115,24 @@ story = [
     KeepTogether([Paragraph("Max drawdown", H2), Image(str(charts[1]), width=172 * mm, height=81 * mm)]),
     Paragraph("Why recycling does not help", H2),
 ]
+_c = pd.read_csv(ROOT / "data" / "trade_duration" / "conditional.csv")
+_c = _c[_c["After days"].between(90, 365)]["Win % if still open"]
+_w = t[t["Time exit"] == "None"]["Win %"]
+_n = lambda stop, exit_, tm, col: val(stop, exit_, tm, "2%/4", col)
+_tgt = [val(s, e, "90 days", z, "Trades taken") / val(s, e, "None", z, "Trades taken")
+        for s in ["Candle low", "Week low fixed"] for e in ["Target 15%", "Target 30%"] for z in ["2%/4", "1%/8"]]
 pts = [
-    "<b>Old trades are better than new ones.</b> Trades still open after 90–365 days eventually win 55–83% of "
-    "the time (see the duration tables in the other reports). A time exit swaps them for fresh signals, which "
-    "win only 21–66% of the time.",
+    f"<b>Old trades are better than new ones.</b> Trades still open after 90–365 days eventually win "
+    f"{_c.min():.0f}–{_c.max():.0f}% of the time (see the duration tables in the other reports). A time exit "
+    f"swaps them for fresh signals, which win only {_w.min():.0f}–{_w.max():.0f}% of the time.",
     "<b>The big winners get cut.</b> With no target, nearly all profit comes from a few trades held for years. "
-    "A 90-day exit caps them: the average trade falls from about +93% to +5%.",
-    "<b>More trades, more costs.</b> For the no-target versions a 90-day exit multiplies the trade count about "
-    "six-fold (60 to 369 for candle low at 2% / 4 slots); for the target versions by 1.3 to 1.8 times. Each "
-    "trade pays about 1.13% round trip.",
-    "<b>Deployment falls, not rises.</b> Capital deployed drops (e.g. 50% to 18% for candle-low no target), "
+    f"A 90-day exit caps them: the average trade falls from about {_n(*nt, 'None', 'Avg trade %'):+.0f}% to "
+    f"{_n(*nt, '90 days', 'Avg trade %'):+.0f}% (candle low, 2% / 4 slots).",
+    f"<b>More trades, more costs.</b> For the no-target versions a 90-day exit multiplies the trade count "
+    f"({_n(*nt, 'None', 'Trades taken'):.0f} to {_n(*nt, '90 days', 'Trades taken'):.0f} for candle low at 2% / 4 "
+    f"slots); for the target versions by {min(_tgt):.1f} to {max(_tgt):.1f} times. Each trade pays about 1.13% round trip.",
+    f"<b>Deployment falls, not rises.</b> Capital deployed drops (e.g. {_n(*nt, 'None', 'Avg deployed %'):.0f}% to "
+    f"{_n(*nt, '90 days', 'Avg deployed %'):.0f}% for candle-low no target with a 90-day exit), "
     "because the long winners were what kept capital invested.",
 ]
 story += [Paragraph(x, B, bulletText="•") for x in pts]

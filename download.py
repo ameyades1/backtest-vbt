@@ -39,7 +39,9 @@ if a.skip_cached:
 if not symbols:
     print("Nothing to download."); raise SystemExit
 
-df = data.clean(data.download(symbols, start=a.start))
+df, dropped = data.drop_prelisting(data.clean(data.download(symbols, start=a.start)))
+for sym, (n, first) in sorted(dropped.items()):
+    print(f"  dropped {n:5} pre-listing/flat rows from {sym:16} -> starts {first}")
 data.save(df)
 firsts = df.reset_index().groupby("Symbol")["Date"].min()
 print(f"\nSaved {len(df):,} rows for {df['Symbol'].nunique()} symbols -> {data.OHLCV_PATH}")

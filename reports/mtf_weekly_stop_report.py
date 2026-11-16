@@ -45,10 +45,14 @@ def style(ax):
     ax.grid(axis="y", color="#e2e8f0", zorder=0)
 
 
+_tg = lambda stop: allr[(allr.Stop == stop) & (allr.Exit != "No target")]["Avg deployed %"].mean()
+dep_cl, dep_fx = _tg("candle-low"), _tg("fixed")
+_alls = pd.concat([pd.read_csv(ROOT / "data" / "sizing_r2_p4" / f"fills_{k}.csv") for k in ["none", "8", "15", "20", "30"]])
+med_cl = ((_alls.entry - _alls.stop) / _alls.entry * 100).median()
 charts = []
 for col, title, fname, fmt in [
-    ("CAGR %", "The fixed weekly stop matches, but does not beat, the candle-low stop", "_c1.png", "{:.1f}"),
-    ("Avg deployed %", "The weekly stop raises capital deployed from about 20% to about 33%", "_c2.png", "{:.0f}")]:
+    ("CAGR %", "The fixed weekly stop does not reliably beat the candle-low stop; trailing loses money", "_c1.png", "{:.1f}"),
+    ("Avg deployed %", f"The weekly stop raises capital deployed from about {dep_cl:.0f}% to about {dep_fx:.0f}%", "_c2.png", "{:.0f}")]:
     fig, ax = plt.subplots(figsize=(7.2, 3.3), dpi=200)
     x = np.arange(len(EXITS)); w = 0.26
     for i, (stop, c, a) in enumerate([("candle-low", GREY, 0.55), ("fixed", BLUE, 1.0), ("trail", DARK, 0.85)]):
@@ -96,19 +100,21 @@ def table(rows, widths, num_from=1, bold_rows=()):
 
 fx = mtf[mtf.Stop == "fixed"]; tr = mtf[mtf.Stop == "trail"]
 best = allr.loc[allr["CAGR %"].idxmax()]
-sig_cl = 1405
+sig_cl = int(pd.read_csv(ROOT / "data" / "ema61_NIFTY500_M_targets.csv", index_col=0)["Trades"].iloc[0])
 sig_m = int(fx[(fx.Exit == "No target") & (fx.Sizing == "2%/4")]["Signals"].iloc[0])
 med_stop = float(fx["Median stop %"].median())
 story = [
     Paragraph("EMA61 Breakout: Triple Timeframe with a Weekly Stop", H1),
     Paragraph("Rs 1,00,000 capital · NIFTY 500 · monthly breakout, weekly + daily EMA61 filters · "
-              "Jan 2000 – Nov 2026 · Sharekhan costs · prepared 16 Nov 2026", SUB),
+              "Jan 2000 – Nov 2026 · Sharekhan costs · prepared 17 Nov 2026", SUB),
+    Paragraph("Data: actual traded prices (adjusted for splits and bonuses, not for dividends; dividend income is not counted). Junk pre-listing quotes removed. Re-run on 17 Nov 2026.", SM),
     Spacer(1, 8),
     Paragraph("Answer", H2),
     Paragraph(f"The idea works as intended on capital use but not on returns. The previous week's low "
-              f"gives a median stop of <b>{med_stop:.1f}%</b> instead of 18.3%, so each trade is about twice "
-              f"the size and average capital deployed rises from about 20% to about 33%. CAGR does not rise "
-              f"with it: the tighter stop is hit more often and costs take a bigger share of each move.", P),
+              f"gives a median stop of <b>{med_stop:.1f}%</b> instead of {med_cl:.1f}%, so each trade is about twice "
+              f"the size and average capital deployed (fixed-target versions) rises from about {dep_cl:.0f}% to about {dep_fx:.0f}%. "
+              f"CAGR does not rise consistently with it: the tighter stop is hit more often and costs take a bigger "
+              f"share of each move.", P),
     Paragraph(f"<b>Use the weekly stop fixed, with no target or a 30% target.</b> The best result in either "
               f"study is the fixed weekly stop with no target at {best['Sizing'].replace('%/', '% risk / ')} slots: "
               f"<b>{best['CAGR %']:.1f}% CAGR</b>, {best['Max DD %']:.0f}% max drawdown. Trailing the stop to each "
@@ -180,7 +186,7 @@ story += [Paragraph(x, B, bulletText="•") for x in pts]
 story += [Paragraph("Correction to the earlier sizing study", H2),
           Paragraph("A simulator bug valued open positions at zero on dates with no price row, which inflated "
                     "drawdowns. It is fixed, and both this study and the position-sizing PDF use corrected "
-                    "figures (for example the no-target drawdown at 2% / 4 slots is −56%, not −66%).", P),
+                    "figures.", P),
           Paragraph("How to reproduce", H2),
           Paragraph("<font face='Courier' size='8'>python examples/position_sizing_study.py --risk 2 --max-pos 4<br/>"
                     "python examples/position_sizing_study.py --risk 1 --max-pos 8<br/>"
