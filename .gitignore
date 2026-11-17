@@ -13,3 +13,4 @@ data/stochrsi_*/
 data/nifty50_stochrsi_*/
 results/**/fills_*.csv
 results/**/equity.csv
+results/**/equity_*.csv

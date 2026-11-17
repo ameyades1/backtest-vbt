@@ -29,7 +29,15 @@ class Fill:
 
 
 def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_positions=4,
-        fee=0.0, slip=0.0, rank="tightest", start=None):
+        fee=0.0, slip=0.0, rank="tightest", start=None, score: pd.DataFrame | None = None,
+        seed: int | None = None, sector_of: dict | None = None, sector_cap: int | None = None):
+    """rank: order of same-day signals when slots are scarce.
+         'tightest' smallest stop % first (default) | 'widest' largest stop % first
+         'random'   shuffled with `seed`
+         'score'    highest value of score.at[entry day, symbol] first (NaN last); the score table
+                    must only use data known before the entry day (shift it by one day)
+       sector_cap: at most this many open positions per sector (sector_of: symbol -> sector);
+                   signals over the cap count as skipped."""
     risk_amt = capital * risk_pct
     # value open positions at the last known close: the combined table has dates on which
     # some stocks have no row (holidays/suspensions/data gaps); NaN must not count as 0
@@ -40,6 +48,7 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
     for t in trades:
         by_entry.setdefault(t.entry_date, []).append(t)
     days = closes.index[closes.index >= (pd.Timestamp(start) if start else closes.index[0])]
+    rng = np.random.default_rng(seed)
     cash, open_, fills, skipped = capital, {}, [], 0
     rows = []
     for day in days:
@@ -54,12 +63,26 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
         cands = by_entry.get(day, [])
         if rank == "tightest":
             cands = sorted(cands, key=lambda t: (t.entry - t.stop) / t.entry)
+        elif rank == "widest":
+            cands = sorted(cands, key=lambda t: -(t.entry - t.stop) / t.entry)
+        elif rank == "random" and cands:
+            cands = [cands[i] for i in rng.permutation(len(cands))]
+        elif rank == "score":
+            def _k(t):
+                v = score.at[day, t.symbol] if t.symbol in score.columns and day in score.index else np.nan
+                return np.inf if np.isnan(v) else -v
+            cands = sorted(cands, key=_k)
         for t in cands:
             if t.symbol in open_:
                 continue
             if len(open_) >= max_positions:
                 skipped += 1
                 continue
+            if sector_cap is not None:
+                sec = sector_of.get(t.symbol)
+                if sec is not None and sum(sector_of.get(s) == sec for s in open_) >= sector_cap:
+                    skipped += 1
+                    continue
             px = t.entry * (1 + slip) * (1 + fee)
             qty = int(risk_amt // (t.entry - t.stop))
             capped = False

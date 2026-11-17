@@ -82,6 +82,7 @@ run_strategy.py                       python run_strategy.py strategies/stochrsi
 report.py                             python report.py results/<family>/<variant>/<universe>
 compare.py                            python compare.py  -> results/comparison.csv (all runs, one table)
 site.py                               python site.py  -> docs/index.html (scoreboard of all 1%/8 runs, GitHub Pages)
+studies/                              one-off studies (e.g. slot_ranking.py) -> results/studies/<name>/report.pdf
 results/<family>/<variant>/<universe>/ config.json, summary.csv, report.pdf (committed); equity/fills (ignored)
 tests/test_engine_parity.py           checks engine.py against the original engines (lib/legacy/)
 reports/notes/                        one-off write-ups (trader profile)
