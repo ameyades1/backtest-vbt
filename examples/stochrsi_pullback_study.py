@@ -17,6 +17,9 @@ p.add_argument("--risk", type=float, default=1.0)
 p.add_argument("--max-pos", type=int, default=8)
 p.add_argument("--oversold", type=float, default=30.0)
 p.add_argument("--stop", default="candle", choices=["candle", "prev_week"])
+p.add_argument("--tf", default="M", choices=["M", "W"])
+p.add_argument("--targets", default="8,15,20,30")
+p.add_argument("--skip-none", action="store_true")
 p.add_argument("--start", default="2000-01-01")
 a = p.parse_args()
 
@@ -25,23 +28,26 @@ d = data.load(syms)
 closes = d["Close"]
 dailies = {s: pd.DataFrame({f: d[f][s] for f in ["Open", "High", "Low", "Close", "Volume"]}).dropna()
            for s in syms}
-out = Path("data") / (("" if a.index == "NIFTY500" else f"{a.index.lower()}_") + f"stochrsi_r{a.risk:g}_p{a.max_pos}" + ("" if a.stop == "candle" else f"_{a.stop}"))
+out = Path("data") / (("" if a.index == "NIFTY500" else f"{a.index.lower()}_") + f"stochrsi_r{a.risk:g}_p{a.max_pos}" + ("" if a.stop == "candle" else f"_{a.stop}") + ("" if a.tf == "M" else "_weekly"))
 out.mkdir(parents=True, exist_ok=True)
 
 rows, curves = {}, {}
-for tg in [None, 8, 15, 20, 30]:
+TG = [float(x) for x in a.targets.split(",")]
+for tg in ([] if a.skip_none else [None]) + TG:
     trades = []
     for s, df in dailies.items():
-        trades += stochrsi_mtf.simulate(df, s, None if tg is None else tg / 100, a.oversold, a.stop)
+        tp = None if tg is None else tg / 100
+        trades += (stochrsi_mtf.simulate(df, s, tp, a.oversold, a.stop) if a.tf == "M"
+                   else stochrsi_mtf.simulate_weekly(df, s, tp, a.oversold))
     trades = [t for t in trades if t.entry_date >= pd.Timestamp(a.start)]
-    label = "No target (close<EMA61)" if tg is None else f"Target {tg}%"
+    label = "No target (close<EMA61)" if tg is None else f"Target {tg:g}%"
     sd = np.array([(t.entry - t.stop) / t.entry * 100 for t in trades])
     curve, fills, skipped = portfolio.run(trades, closes, a.capital, a.risk / 100, a.max_pos,
                                           FEES, SLIPPAGE, start=a.start)
     rows[label] = {"Signals filled": len(trades), "Median stop %": np.median(sd) if len(sd) else np.nan,
                    **portfolio.summary(curve, fills, skipped, a.capital, a.max_pos)}
     curves[label] = curve["equity"] if "equity" in curve else curve.iloc[:, 0]
-    pd.DataFrame([vars(f) for f in fills]).to_csv(out / f"fills_{'none' if tg is None else tg}.csv", index=False)
+    pd.DataFrame([vars(f) for f in fills]).to_csv(out / f"fills_{'none' if tg is None else f'{tg:g}'}.csv", index=False)
 tab = pd.DataFrame(rows).T
 tab.to_csv(out / "summary.csv")
 pd.DataFrame(curves).to_csv(out / "equity.csv")

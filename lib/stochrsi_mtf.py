@@ -112,3 +112,72 @@ def simulate(daily: pd.DataFrame, symbol: str, target_pct: float | None = None,
                             exit_px, reason, sl))
         free = (exit_day + 1) if exit_day is not None else len(days)
     return trades
+
+
+def simulate_weekly(daily: pd.DataFrame, symbol: str, target_pct: float | None = None,
+                    oversold: float = 30.0, rsi_min: float = 50.0) -> list[Trade]:
+    """Same setup on weekly candles. Signal at week close b:
+        last *completed* month Close > monthly EMA61, weekly Close > weekly EMA61,
+        week's last daily Close > daily EMA61, weekly RSI > 50,
+        weekly StochRSI K crosses above D with D < oversold.
+    Entry buy-stop above signal week High during the next week; stop = signal week Low.
+    No target: exit next open after a weekly close below weekly EMA61."""
+    w, m = resample(daily, "W"), resample(daily, "M")
+    if len(w) <= SPAN:
+        return []
+    days = daily.index
+    ema_w = w["Close"].ewm(span=SPAN, adjust=False, min_periods=SPAN).mean()
+    ema_m = m["Close"].ewm(span=SPAN, adjust=False, min_periods=SPAN).mean()
+    ema_d = daily["Close"].ewm(span=SPAN, adjust=False, min_periods=SPAN).mean()
+    w_last = np.searchsorted(days, w.index, side="right") - 1        # last daily bar of each week
+    m_last = np.searchsorted(days, m.index, side="right") - 1        # last daily bar of each month
+    mi = np.searchsorted(m_last, w_last, side="right") - 1            # last month completed by then
+    m_ok = np.where(mi >= 0, (m["Close"] > ema_m).to_numpy()[np.clip(mi, 0, None)], False)
+    d_ok = (daily["Close"] > ema_d).to_numpy()[w_last]
+    r, K, D = stoch_rsi(w["Close"])
+    cross = (K > D) & (K.shift() <= D.shift()) & (D < oversold)
+    sig = (w["Close"] > ema_w).to_numpy() & m_ok & d_ok & (r > rsi_min).to_numpy() & cross.to_numpy()
+
+    d = daily[["Open", "High", "Low", "Close"]].to_numpy()
+    w_end = w_last + 1
+    ema_exit_days = {w_end[i] for i in np.flatnonzero((w["Close"] < ema_w).to_numpy())}
+    trades, free = [], 0
+    for b in np.flatnonzero(sig):
+        start = w_end[b]
+        if start < free or start >= len(days):
+            continue
+        end = w_end[b + 1] if b + 1 < len(w) else len(days)
+        level, sl = w["High"].iat[b], w["Low"].iat[b]
+        hit = np.flatnonzero(d[start:end, 1] > level)
+        if not len(hit):
+            continue
+        k = start + hit[0]
+        entry = max(level, d[k, 0])
+        if sl >= entry:
+            continue
+        tgt = entry * (1 + target_pct) if target_pct is not None else np.inf
+        exit_px = exit_day = None
+        reason = "open"
+        c = d[k, 3]
+        if c <= sl:
+            exit_px, exit_day, reason = c, k, "stop-entry-day"
+        elif c >= tgt:
+            exit_px, exit_day, reason = tgt, k, "target-entry-day"
+        else:
+            for j in range(k + 1, len(days)):
+                o, h, l = d[j, 0], d[j, 1], d[j, 2]
+                if o <= sl:
+                    exit_px, exit_day, reason = o, j, "stop-gap"; break
+                if o >= tgt:
+                    exit_px, exit_day, reason = o, j, "target-gap"; break
+                if target_pct is None and j in ema_exit_days:
+                    exit_px, exit_day, reason = o, j, "close<ema"; break
+                if l <= sl:
+                    exit_px, exit_day, reason = sl, j, "stop"; break
+                if h >= tgt:
+                    exit_px, exit_day, reason = tgt, j, "target"; break
+        trades.append(Trade(symbol, w.index[b], days[k], entry,
+                            days[exit_day] if exit_day is not None else None,
+                            exit_px, reason, sl))
+        free = (exit_day + 1) if exit_day is not None else len(days)
+    return trades
