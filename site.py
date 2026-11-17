@@ -89,6 +89,39 @@ COLS = [  # key, header, format, tooltip
 ]
 
 
+GLOSSARY = {
+    "Strategy": "The setup tested (family) and the variant of its rules. Hover over a name for the full rules.",
+    "Universe": "The stocks the strategy could trade: today's NIFTY 500 or NIFTY 50 members.",
+    "Exit": "How winners are closed. 'Target X%' sells when price rises X% above entry. 'No target' holds until the "
+            "trend exit (a close below EMA61 on the signal timeframe) or the stop. Every trade also has a stop loss.",
+    "Win %": "Share of closed trades that made money after fees and slippage. A high win rate alone means little: "
+             "read it together with Avg win %, Avg loss % and Payoff.",
+    "Avg trade %": "Average net return per closed trade, on the money put into that trade.",
+    "Avg trade ₹": "Average net profit or loss per closed trade in rupees. Unlike the %, it reflects position size.",
+    "Avg win %": "Average net return of the winning trades only.",
+    "Avg loss %": "Average net return of the losing trades only. Usually close to the stop distance plus costs.",
+    "Payoff": "Average win divided by average loss. A payoff of 3 means the typical winner is three times the "
+              "typical loser. Low win rates need high payoffs to make money.",
+    "Expectancy R": "Average net profit per rupee risked. 1R is the planned loss if the stop is hit (about ₹1,000 here). "
+                    "+0.5R means each trade earns half of what it risks on average; below 0 the strategy loses money.",
+    "CAGR %": "Compound annual growth rate: the steady yearly return that would turn ₹1 lakh into the final equity.",
+    "Max DD %": "Maximum drawdown: the largest fall from an equity peak to a later low. The pain you must sit through.",
+    "CAGR / DD": "CAGR divided by the size of the max drawdown. Return per unit of pain; higher is better. "
+                 "Useful for ranking strategies with different risk.",
+    "Trades": "Number of closed trades. Fewer than about 100 means the result rests on a small sample.",
+    "Trades / yr": "Closed trades per year: how busy the strategy keeps you, and how often you pay costs.",
+    "Max losing streak": "Most losing trades in a row (ordered by exit date). Expect a streak at least this long again.",
+    "Median days": "Median holding period in calendar days. Under 365 days, gains are taxed as short-term (20%); "
+                   "over 365 days as long-term (12.5%). Tax is not deducted in these results.",
+    "Deployed %": "Average share of the account held in open positions. The rest sits idle as cash.",
+    "Skipped": "Signals not taken because all 8 slots were full or cash ran out. Many skips mean the result depends "
+               "on which signals got the slots (here: tightest stop first).",
+    "Costs % of gross": "Fees and slippage as a share of profit before costs. Above 100% (or '>100') means the "
+                        "strategy would make money before costs but loses after them.",
+    "Report": "Link to the full PDF report: rules, equity and drawdown charts, and all results for that strategy.",
+}
+
+
 def cell(r, k, fmt):
     v = r.get(k)
     if k == "strategy":
@@ -121,6 +154,8 @@ families = sorted({r["family"] for r in rows})
 head = "".join(f'<th title="{html.escape(t)}" data-num="{0 if f is None else 1}">{h}</th>' for _, h, f, t in COLS)
 opts = "".join(f'<option value="{f}">{f}</option>' for f in families)
 
+gloss = "".join(f"<dt>{h}</dt><dd>{html.escape(GLOSSARY[h])}</dd>" for _, h, _, _ in COLS)
+
 page = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Strategy Scoreboard</title>
@@ -140,6 +175,10 @@ th:nth-child(-n+3){{text-align:left}} th.s::after{{content:" ▾"}} th.s.asc::af
 td{{padding:6px 8px;border-top:1px solid var(--line)}} td.n{{text-align:right;font-variant-numeric:tabular-nums}}
 tr:nth-child(even) td{{background:var(--alt)}} .v{{color:var(--mut);font-size:11.5px}}
 .bad{{color:var(--bad)}} .good{{color:var(--good);font-weight:600}}
+h2{{font-size:17px;margin:24px 0 8px}}
+.gloss{{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;font-size:13px;margin:0}}
+.gloss dt{{font-weight:600}} .gloss dd{{margin:0;color:var(--mut)}}
+@media (max-width:600px){{.gloss{{grid-template-columns:1fr}} .gloss dd{{margin-bottom:6px}}}}
 .notes{{margin-top:16px;font-size:12.5px;color:var(--mut)}} .notes li{{margin:2px 0}}
 </style></head><body><main>
 <h1>Strategy scoreboard</h1>
@@ -154,7 +193,10 @@ tr:nth-child(even) td{{background:var(--alt)}} .v{{color:var(--mut);font-size:11
 <li>Gaps fill at the open; stop is checked before target on the same day. Tax is not deducted.</li>
 <li>Red: negative return, drawdown worse than 40%, or costs over half the gross profit. Green: CAGR ≥ 8% or CAGR/DD ≥ 0.2.</li>
 <li>Research and education only, not investment advice. Generated {date.today():%d %b %Y} by <code>site.py</code>.</li>
-</ul></main>
+</ul>
+<h2>Glossary</h2>
+<dl class="gloss">{gloss}</dl>
+</main>
 <script>
 const t=document.getElementById('t'),tb=t.tBodies[0],fam=document.getElementById('fam'),cnt=document.getElementById('count');
 function count(){{const n=[...tb.rows].filter(r=>r.style.display!=='none').length;cnt.textContent=n+' rows';}}

@@ -17,6 +17,10 @@ th:nth-child(-n+3){text-align:left} th.s::after{content:" ▾"} th.s.asc::after{
 td{padding:6px 8px;border-top:1px solid var(--line)} td.n{text-align:right;font-variant-numeric:tabular-nums}
 tr:nth-child(even) td{background:var(--alt)} .v{color:var(--mut);font-size:11.5px}
 .bad{color:var(--bad)} .good{color:var(--good);font-weight:600}
+h2{font-size:17px;margin:24px 0 8px}
+.gloss{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;font-size:13px;margin:0}
+.gloss dt{font-weight:600} .gloss dd{margin:0;color:var(--mut)}
+@media (max-width:600px){.gloss{grid-template-columns:1fr} .gloss dd{margin-bottom:6px}}
 .notes{margin-top:16px;font-size:12.5px;color:var(--mut)} .notes li{margin:2px 0}
 </style></head><body><main>
 <h1>Strategy scoreboard</h1>
@@ -31,7 +35,10 @@ tr:nth-child(even) td{background:var(--alt)} .v{color:var(--mut);font-size:11.5p
 <li>Gaps fill at the open; stop is checked before target on the same day. Tax is not deducted.</li>
 <li>Red: negative return, drawdown worse than 40%, or costs over half the gross profit. Green: CAGR ≥ 8% or CAGR/DD ≥ 0.2.</li>
 <li>Research and education only, not investment advice. Generated 17 Nov 2026 by <code>site.py</code>.</li>
-</ul></main>
+</ul>
+<h2>Glossary</h2>
+<dl class="gloss"><dt>Strategy</dt><dd>The setup tested (family) and the variant of its rules. Hover over a name for the full rules.</dd><dt>Universe</dt><dd>The stocks the strategy could trade: today&#x27;s NIFTY 500 or NIFTY 50 members.</dd><dt>Exit</dt><dd>How winners are closed. &#x27;Target X%&#x27; sells when price rises X% above entry. &#x27;No target&#x27; holds until the trend exit (a close below EMA61 on the signal timeframe) or the stop. Every trade also has a stop loss.</dd><dt>Win %</dt><dd>Share of closed trades that made money after fees and slippage. A high win rate alone means little: read it together with Avg win %, Avg loss % and Payoff.</dd><dt>Avg trade %</dt><dd>Average net return per closed trade, on the money put into that trade.</dd><dt>Avg trade ₹</dt><dd>Average net profit or loss per closed trade in rupees. Unlike the %, it reflects position size.</dd><dt>Avg win %</dt><dd>Average net return of the winning trades only.</dd><dt>Avg loss %</dt><dd>Average net return of the losing trades only. Usually close to the stop distance plus costs.</dd><dt>Payoff</dt><dd>Average win divided by average loss. A payoff of 3 means the typical winner is three times the typical loser. Low win rates need high payoffs to make money.</dd><dt>Expectancy R</dt><dd>Average net profit per rupee risked. 1R is the planned loss if the stop is hit (about ₹1,000 here). +0.5R means each trade earns half of what it risks on average; below 0 the strategy loses money.</dd><dt>CAGR %</dt><dd>Compound annual growth rate: the steady yearly return that would turn ₹1 lakh into the final equity.</dd><dt>Max DD %</dt><dd>Maximum drawdown: the largest fall from an equity peak to a later low. The pain you must sit through.</dd><dt>CAGR / DD</dt><dd>CAGR divided by the size of the max drawdown. Return per unit of pain; higher is better. Useful for ranking strategies with different risk.</dd><dt>Trades</dt><dd>Number of closed trades. Fewer than about 100 means the result rests on a small sample.</dd><dt>Trades / yr</dt><dd>Closed trades per year: how busy the strategy keeps you, and how often you pay costs.</dd><dt>Max losing streak</dt><dd>Most losing trades in a row (ordered by exit date). Expect a streak at least this long again.</dd><dt>Median days</dt><dd>Median holding period in calendar days. Under 365 days, gains are taxed as short-term (20%); over 365 days as long-term (12.5%). Tax is not deducted in these results.</dd><dt>Deployed %</dt><dd>Average share of the account held in open positions. The rest sits idle as cash.</dd><dt>Skipped</dt><dd>Signals not taken because all 8 slots were full or cash ran out. Many skips mean the result depends on which signals got the slots (here: tightest stop first).</dd><dt>Costs % of gross</dt><dd>Fees and slippage as a share of profit before costs. Above 100% (or &#x27;&gt;100&#x27;) means the strategy would make money before costs but loses after them.</dd><dt>Report</dt><dd>Link to the full PDF report: rules, equity and drawdown charts, and all results for that strategy.</dd></dl>
+</main>
 <script>
 const t=document.getElementById('t'),tb=t.tBodies[0],fam=document.getElementById('fam'),cnt=document.getElementById('count');
 function count(){const n=[...tb.rows].filter(r=>r.style.display!=='none').length;cnt.textContent=n+' rows';}
