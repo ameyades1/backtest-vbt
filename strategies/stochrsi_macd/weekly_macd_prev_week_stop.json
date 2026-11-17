@@ -1,0 +1,69 @@
+{
+  "name": "stochrsi_macd/weekly_macd_prev_week_stop",
+  "description": "Monthly StochRSI cross from oversold sets up; a weekly MACD cross above its signal line below zero within 13 weeks triggers (buy-stop above that week's high). Monthly RSI > 50, EMA61 on M/W/D; stop at the previous week's low; no-target exit on a monthly close below EMA61.",
+  "universe": "NIFTY500",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "W",
+  "setup": {
+    "type": "stochrsi_wmacd",
+    "rsi": 14,
+    "stoch": 14,
+    "k": 3,
+    "d": 3,
+    "oversold": 30,
+    "macd": [
+      12,
+      26,
+      9
+    ],
+    "window_weeks": 13
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M",
+        "W",
+        "D"
+      ]
+    },
+    "rsi_min": {
+      "period": 14,
+      "value": 50,
+      "timeframe": "M"
+    }
+  },
+  "entry": {
+    "valid_bars": 1
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null,
+      8,
+      15,
+      20,
+      30
+    ],
+    "ema_close_when_no_target": {
+      "span": 61,
+      "timeframe": "M"
+    },
+    "max_days": null
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

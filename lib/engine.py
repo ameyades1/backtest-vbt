@@ -10,10 +10,15 @@ Config (a dict, normally loaded from JSON):
                                                                MACD < 0, on the StochRSI-cross candle or
                                                                within `window` candles after it; signal
                                                                is the MACD-cross candle
+              {"type": "stochrsi_wmacd", ...stochrsi keys..., "macd": [12, 26, 9], "window_weeks": 13}
+                                                               timeframe "W": monthly StochRSI cross (completed
+                                                               month), then weekly MACD crosses above signal
+                                                               below zero within N weeks of that month's end
   filters     (checked at the signal candle's close, all optional)
               {"trend_ema": {"span": 61, "timeframes": ["M", "W", "D"]},   close > EMA on each,
                                                                            using the last completed bar
-               "rsi_min": {"period": 14, "value": 50}}                     signal-timeframe RSI
+               "rsi_min": {"period": 14, "value": 50, "timeframe": "M"}}   RSI on the signal timeframe
+                                                                           (or the last completed `timeframe` bar)
   entry       {"valid_bars": 1,                 buy-stop above the signal High for the next N bars
                "day_filters": {"weekly_ema": 61, "daily_ema": 61, "market_sma": 200}}
                                                 optional, checked on the fill day:
@@ -25,7 +30,9 @@ Config (a dict, normally loaded from JSON):
                "trail": "weekly_low"}           trail_pct: Sharekhan trail fixed in rupees;
                                                 trail weekly_low: raise to each completed week's Low
   exits       {"target_pct": 0.15 | null,
-               "ema_close": {"span": 61} | null,   next open after a signal-timeframe close below EMA
+               "ema_close": {"span": 61, "timeframe": "M"} | null,
+                                                   next open after a close below EMA (signal timeframe
+                                                   unless `timeframe` is given)
                "max_days": 180 | null}             open of the first day >= N calendar days after entry
 Fill rules: gaps fill at Open; each day checks time, gap-stop, gap-target, EMA exit, stop, target
 in that order; the entry day checks only the Close. One open trade per stock.
@@ -48,6 +55,17 @@ class Trade:
     stop: float | None = None
 
 
+def _on_candles(daily, ftf, values, last_day):
+    """Value of a per-candle array of timeframe `ftf` at the last completed `ftf` candle, for each signal
+    candle whose last daily bar is `last_day`. Weekly: week label (Friday) on/before that day; monthly:
+    the month's last trading day."""
+    days = daily.index
+    fb = resample(daily, ftf)
+    ref = fb.index if ftf == "W" else days[np.searchsorted(days, fb.index, side="right") - 1]
+    idx = np.searchsorted(ref, days[last_day], side="right") - 1
+    return np.where(idx >= 0, values[np.clip(idx, 0, None)], False), idx
+
+
 def _signal_mask(daily, bars, tf, cfg):
     days = daily.index
     setup = cfg["setup"]
@@ -66,6 +84,21 @@ def _signal_mask(daily, bars, tf, cfg):
         mx = (m > ms) & (m.shift() <= ms.shift()) & (m < 0)
         recent = st.astype(int).rolling(setup.get("window", 3) + 1, min_periods=1).max() > 0
         sig = (mx & recent).to_numpy()
+    elif setup["type"] == "stochrsi_wmacd":
+        # monthly StochRSI cross sets up; weekly MACD cross below zero within `window_weeks` triggers
+        mb = resample(daily, "M")
+        _, K, D = stoch_rsi(mb["Close"], setup.get("rsi", 14), setup.get("stoch", 14),
+                            setup.get("k", 3), setup.get("d", 3))
+        mcross = ((K > D) & (K.shift() <= D.shift()) & (D < setup.get("oversold", 30))).to_numpy()
+        m_last = days[np.searchsorted(days, mb.index, side="right") - 1]     # month's last trading day
+        cross_days = m_last[mcross]
+        ld = days[np.searchsorted(days, bars.index, side="right") - 1]
+        k = np.searchsorted(cross_days, ld, side="right") - 1                # latest completed cross
+        since = (np.where(k >= 0, (ld - cross_days[np.clip(k, 0, None)]).days, 10 ** 6) if len(cross_days)
+                 else np.full(len(ld), 10 ** 6))
+        m, ms, _ = macd(bars["Close"], *setup.get("macd", [12, 26, 9]))
+        mx = ((m > ms) & (m.shift() <= ms.shift()) & (m < 0)).to_numpy()
+        sig = mx & (since <= 7 * setup.get("window_weeks", 13))
     else:
         raise ValueError(f"unknown setup {setup['type']}")
     sig = sig.copy()
@@ -81,13 +114,12 @@ def _signal_mask(daily, bars, tf, cfg):
             else:
                 fb = resample(daily, ftf)
                 ok = (fb["Close"] > ema(fb["Close"], span)).to_numpy()
-                # last completed bar of the filter timeframe at the signal candle's close.
-                # weekly: week label (Friday) on/before that day; monthly: month's last trading day
-                ref = fb.index if ftf == "W" else days[np.searchsorted(days, fb.index, side="right") - 1]
-                idx = np.searchsorted(ref, days[last_day], side="right") - 1
-                sig &= np.where(idx >= 0, ok[np.clip(idx, 0, None)], False)
+                sig &= _on_candles(daily, ftf, ok, last_day)[0]
     if "rsi_min" in f:
-        sig &= (rsi(bars["Close"], f["rsi_min"].get("period", 14)) > f["rsi_min"]["value"]).to_numpy()
+        rtf = f["rsi_min"].get("timeframe", tf)
+        rb = bars if rtf == tf else resample(daily, rtf)
+        ok = (rsi(rb["Close"], f["rsi_min"].get("period", 14)) > f["rsi_min"]["value"]).to_numpy()
+        sig &= ok if rtf == tf else _on_candles(daily, rtf, ok, last_day)[0]
     return sig
 
 
@@ -121,8 +153,11 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
     max_days = ex.get("max_days")
     ema_exit = set()
     if ex.get("ema_close"):
-        below = (bars["Close"] < ema(bars["Close"], ex["ema_close"].get("span", 61))).to_numpy()
-        ema_exit = {bar_end[i] for i in np.flatnonzero(below)}
+        etf = ex["ema_close"].get("timeframe", tf)
+        eb = bars if etf == tf else resample(daily, etf)
+        e_end = bar_end if etf == tf else np.searchsorted(days, eb.index, side="right")
+        below = (eb["Close"] < ema(eb["Close"], ex["ema_close"].get("span", 61))).to_numpy()
+        ema_exit = {e_end[i] for i in np.flatnonzero(below)}
 
     trades, free = [], 0
     for b in np.flatnonzero(sig):

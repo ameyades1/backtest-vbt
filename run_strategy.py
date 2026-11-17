@@ -10,7 +10,7 @@ import argparse, copy, json, sys
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from lib import data, indices, engine, portfolio, market
+from lib import data, indices, engine, portfolio, market, scores
 from lib.costs import fee_per_side
 
 ROOT = Path(__file__).resolve().parent
@@ -45,6 +45,7 @@ def run(cfg, closes, dailies, out):
     for f in out.glob("fills_*.csv"):
         f.unlink()
     rows, curves = {}, {}
+    score = scores.table(siz["score"], dailies) if "score" in siz else None
     for tg in cfg["exits"]["targets_pct"]:
         ec = engine_cfg(cfg, tg)
         mk = market.regime(ec["entry"]["day_filters"]["market_sma"]) \
@@ -54,7 +55,8 @@ def run(cfg, closes, dailies, out):
         label = "No target" if tg is None else f"Target {tg:g}%"
         sd = np.array([(t.entry - t.stop) / t.entry * 100 for t in trades if t.stop is not None])
         curve, fills, skipped = portfolio.run(trades, closes, siz["capital"], siz["risk_pct"] / 100,
-                                              siz["max_positions"], fee, slip, siz.get("rank", "tightest"), start)
+                                              siz["max_positions"], fee, slip, siz.get("rank", "tightest"), start,
+                                              score=score)
         rows[label] = {"Signals filled": len(trades), "Median stop %": np.median(sd) if len(sd) else np.nan,
                        **portfolio.summary(curve, fills, skipped, siz["capital"], siz["max_positions"])}
         curves[label] = curve["equity"]

@@ -1,4 +1,4 @@
-"""StochRSI + monthly MACD confirmation vs the plain StochRSI pullback.
+"""MACD with the StochRSI pullback: monthly MACD gate, weekly MACD gate, MACD ranking.
 
     python run_strategy.py strategies/stochrsi_macd/*.json
     python studies/stochrsi_macd_funnel.py
@@ -27,9 +27,14 @@ RUNS = {"Plain StochRSI": "stochrsi_pullback/monthly_prev_week_stop",
         "+ MACD": "stochrsi_macd/monthly_prev_week_stop",
         "+ MACD, no RSI filter": "stochrsi_macd/monthly_prev_week_stop_no_rsi",
         "+ MACD, 200-DMA filter": "stochrsi_macd/monthly_prev_week_stop_nifty200",
-        "Plain, 200-DMA filter": "stochrsi_pullback/monthly_prev_week_stop_nifty200"}
+        "Plain, 200-DMA filter": "stochrsi_pullback/monthly_prev_week_stop_nifty200",
+        "Weekly MACD": "stochrsi_macd/weekly_macd_prev_week_stop",
+        "Weekly MACD, 200-DMA filter": "stochrsi_macd/weekly_macd_prev_week_stop_nifty200",
+        "MACD ranking": "stochrsi_pullback/monthly_prev_week_stop_macd_rank",
+        "MACD ranking, 200-DMA filter": "stochrsi_pullback/monthly_prev_week_stop_macd_rank_nifty200"}
 COL = {"Plain StochRSI": "#94a3b8", "+ MACD": BLUE, "+ MACD, no RSI filter": AMBER,
-       "+ MACD, 200-DMA filter": GREEN, "Plain, 200-DMA filter": "#475569"}
+       "+ MACD, 200-DMA filter": GREEN, "Plain, 200-DMA filter": "#475569", "Weekly MACD": "#9333ea",
+       "Weekly MACD, 200-DMA filter": "#db2777", "MACD ranking": "#0891b2", "MACD ranking, 200-DMA filter": "#155e75"}
 EXITS = ["No target", "Target 8%", "Target 15%", "Target 20%", "Target 30%"]
 fid = lambda ex: "none" if ex == "No target" else ex.split()[1].rstrip("%")
 folder = lambda k: ROOT / "results" / RUNS[k] / "nifty500"
@@ -108,7 +113,7 @@ def save(fig, name):
 
 
 fig, axs = plt.subplots(2, 1, figsize=(7.2, 5.6), dpi=200, sharex=True, gridspec_kw={"height_ratios": [3, 2]})
-for k in ["Plain StochRSI", "+ MACD", "+ MACD, no RSI filter", "+ MACD, 200-DMA filter"]:
+for k in ["Plain StochRSI", "+ MACD", "Weekly MACD", "Weekly MACD, 200-DMA filter", "MACD ranking"]:
     e = eq[k]["No target"].dropna()
     axs[0].plot(e.index, e / 1e5, color=COL[k], lw=1.3, label=k)
     axs[1].plot(e.index, (e / e.cummax() - 1) * 100, color=COL[k], lw=1)
@@ -162,6 +167,11 @@ def table(rows, widths, num_from=1, fs=7.5):
 
 
 P0, M0, MN = "Plain StochRSI", "+ MACD", "+ MACD, no RSI filter"
+WK, WF, RK, RF = "Weekly MACD", "Weekly MACD, 200-DMA filter", "MACD ranking", "MACD ranking, 200-DMA filter"
+_a, _b = fills(P0, "No target"), fills(RK, "No target")
+_w = fills(WF, "No target")
+top5 = _w.pnl.nlargest(5).sum() / _w.pnl.sum() * 100
+same = len(set(zip(_a.symbol, _a.entry_date)) & set(zip(_b.symbol, _b.entry_date)))
 nt = lambda k, c: g(k, "No target", c)
 FIND = [
     f"<b>The MACD confirmation finds very few trades.</b> Across 499 stocks and 26 years it gives "
@@ -195,14 +205,36 @@ FIND = [
     f"{nt(M0, 'Max DD %'):.0f}% to {nt('+ MACD, 200-DMA filter', 'CAGR %'):.1f}% / "
     f"{nt('+ MACD, 200-DMA filter', 'Max DD %'):.0f}%): the MACD condition already avoids most entries in weak markets.",
 ]
+FIND2 = [
+    f"<b>MACD ranking changes almost nothing.</b> It keeps the same signals and only reorders them when slots are "
+    f"short. {same} of the {int(nt(P0, 'Trades'))} no-target trades are identical. CAGR {nt(RK, 'CAGR %'):.1f}% "
+    f"against {nt(P0, 'CAGR %'):.1f}%, drawdown {nt(RK, 'Max DD %'):.0f}% against {nt(P0, 'Max DD %'):.0f}%; with "
+    f"fixed targets it is better in some, worse in others. That is noise, the same as the slot-ranking study found for "
+    f"every rule except 12-month return and trend strength.",
+    f"<b>Weekly MACD confirmation is the most interesting result, but it rests on few trades.</b> No target: "
+    f"{nt(WK, 'CAGR %'):.1f}% / {nt(WK, 'Max DD %'):.0f}% alone, and {nt(WF, 'CAGR %'):.1f}% / "
+    f"{nt(WF, 'Max DD %'):.0f}% with the 200-day market filter, from only {int(nt(WF, 'Trades'))} trades. The filtered "
+    f"version has the best CAGR-to-drawdown of anything tested so far (plain strategy {nt(P0, 'CAGR %'):.1f}% / "
+    f"{nt(P0, 'Max DD %'):.0f}%). Win rate is low ({nt(WF, 'Win %'):.0f}%): a few long trends pay for many small stops.",
+    f"<b>Why the market filter matters so much here:</b> weekly MACD crosses below zero fire often during bear-market "
+    f"rallies. Without the filter the drawdown is {nt(WK, 'Max DD %'):.0f}%; with it {nt(WF, 'Max DD %'):.0f}%. With "
+    f"fixed targets the weekly version loses money (about 0% to −1.5% CAGR) and should be ignored.",
+    f"<b>Periods:</b> weekly MACD with the filter made {nt(WF, 'CAGR 2000-12'):.1f}% in 2000–12 and "
+    f"{nt(WF, 'CAGR 2013-26'):.1f}% in 2013–26 (plain: {nt(P0, 'CAGR 2000-12'):.1f}% and {nt(P0, 'CAGR 2013-26'):.1f}%). "
+    f"<b>It is not steady.</b> Almost all of the return comes after 2013; before that it was close to flat. The plain "
+    f"strategy is the mirror image. Top 5 trades: {top5:.0f}% of the weekly version's net profit. A strategy that "
+    f"depends on one period and a handful of winners is fragile.",
+]
 REC = [
+    f"<b>Weekly MACD with the 200-day filter is worth a closer look, not live money.</b> {int(nt(WF, 'Trades'))} "
+    f"trades in 26 years is too few. Next: run it on other universes (NIFTY 50, Midcap 150) and check how many of its "
+    f"why it did nothing before 2013. If it holds, a paper-trading log is the next step.",
+    "<b>Drop MACD ranking.</b> If slot ranking is pursued, use 12-month return (slot-ranking study).",
     "<b>Do not replace the current strategy with this one.</b> The edge per trade is real but there are not enough "
     "trades to use the capital, and 59–78 trades are too few to trust.",
     "<b>Possible use: as a ranking or sizing signal, not a gate.</b> When several plain StochRSI signals compete for a "
     "slot, prefer the ones where the monthly MACD is turning up below zero, or give them a larger risk (for example "
     "1.25% instead of 1%). That keeps the trade count and uses the better win rate.",
-    "<b>A weekly MACD version</b> (StochRSI monthly, MACD confirmation on the weekly chart) would trigger far more "
-    "often and enter earlier. That is the variant worth testing if we keep MACD in the picture.",
     "Do not loosen the conditions (window length, MACD settings) until it 'works'; with this few trades any tuning "
     "would just fit the past.",
 ]
@@ -213,7 +245,7 @@ def mrow(k, ex):
             f"{r['Avg R']:.2f}", f"{r['Loss streak']}", f"{r['Underwater yrs']:.1f}", f"{r['Avg open (of 8)']:.1f}"]
 
 HDR = ["Version", "Exit", "CAGR %", "Max DD %", "Trades", "Win %", "Avg R", "Loss streak", "Underwater yrs", "Avg open"]
-W = [42 * mm, 15 * mm, 13 * mm, 15 * mm, 13 * mm, 12 * mm, 13 * mm, 15 * mm, 19 * mm, 14 * mm]
+W = [46 * mm, 15 * mm, 13 * mm, 15 * mm, 13 * mm, 12 * mm, 13 * mm, 15 * mm, 19 * mm, 14 * mm]
 head_rows = [HDR] + [mrow(k, "No target") for k in RUNS]
 all_rows = [HDR] + [mrow(k, ex) for ex in EXITS for k in RUNS if ex != "No target"]
 fun_rows = [["Condition (monthly candles, 2000 onwards, 499 stocks)", "Candles"]] + \
@@ -221,7 +253,7 @@ fun_rows = [["Condition (monthly candles, 2000 onwards, 499 stocks)", "Candles"]
 per_rows = [["Version", "Exit", "CAGR 2000–12", "Trades", "CAGR 2013–26", "Trades"]] + \
            [[k, ex.replace("Target ", ""), f"{g(k, ex, 'CAGR 2000-12'):.1f}%", f"{g(k, ex, 'Trades 2000-12')}",
              f"{g(k, ex, 'CAGR 2013-26'):.1f}%", f"{g(k, ex, 'Trades 2013-26')}"]
-            for k in [P0, M0, MN] for ex in ["No target", "Target 30%"]]
+            for k in [P0, M0, MN, "Weekly MACD", "Weekly MACD, 200-DMA filter", "MACD ranking"] for ex in ["No target", "Target 30%"]]
 tf = fills(M0, "No target").sort_values("entry_date")
 trade_rows = [["Stock", "Entry", "Exit", "Entry Rs", "Exit Rs", "Stop %", "R"]] + \
              [[r.symbol.replace(".NS", ""), f"{r.entry_date:%d %b %Y}",
@@ -229,7 +261,7 @@ trade_rows = [["Stock", "Entry", "Exit", "Entry Rs", "Exit Rs", "Stop %", "R"]] 
                f"{(r.entry - r.stop) / r.entry * 100:.1f}", f"{r.R:+.1f}"] for r in tf.itertuples()]
 
 story = [
-    Paragraph("StochRSI Pullback + Monthly MACD Confirmation", H1),
+    Paragraph("MACD with the StochRSI Pullback", H1),
     Paragraph("NIFTY 500 · 2000 to 2026 · 1% risk per trade · 8 slots · Sharekhan delivery costs + 0.1% slippage per side", SUB),
     Paragraph("Data: actual traded prices (split/bonus adjusted, not dividend adjusted). Today's index members only, so "
               "results carry survivorship bias. Research, not financial advice.", SM),
@@ -242,8 +274,15 @@ story = [
     "<b>Entry</b>: buy-stop above the signal month's high, valid the next month. <b>Stop</b>: previous week's low. "
     "<b>Exits</b>: no target (monthly close below EMA61) or targets of 8, 15, 20, 30%.",
     "The monthly-MACD-above-zero condition from the first proposal was dropped: it contradicts a cross below zero on the "
-    "same chart."]) + [
-    Paragraph("Answer", H2)] + bl(FIND[:5]) + [
+    "same chart.",
+    "<b>Weekly MACD version</b>: the monthly StochRSI cross (completed month) sets up; the trigger is a <b>weekly</b> MACD "
+    "cross above its signal line below zero within 13 weeks of that month's end. Buy-stop above that week's high for one "
+    "week. Monthly RSI &gt; 50, EMA61 on monthly/weekly/daily, previous-week-low stop, no-target exit on a monthly "
+    "close below EMA61: all the same as the current strategy.",
+    "<b>MACD ranking version</b>: the current strategy's signals unchanged. When more signals arrive than free slots, "
+    "take first those whose monthly MACD histogram is rising while MACD is below zero, then those rising above zero, "
+    "then the rest; ties by tightest stop (the current rule)."]) + [
+    Paragraph("Answer", H2)] + bl([FIND2[1], FIND2[0], FIND[0], FIND[4]]) + [
     Paragraph("Headline: no-target exit", H2),
     table(head_rows, W, num_from=1, fs=7),
     Paragraph("Avg R = average trade result as a multiple of the money risked (net of costs). Loss streak = most losing "
@@ -261,13 +300,14 @@ story = [
     KeepTogether([Paragraph("Two periods", H2), table(per_rows, [42 * mm, 18 * mm, 24 * mm, 16 * mm, 24 * mm, 16 * mm]),
                   Paragraph("Each period on its own, using the same equity curve. With 20–40 trades per period, "
                             "differences are mostly luck.", SM)]),
-    Paragraph("What the study shows", H2)] + bl(FIND) + [
+    Paragraph("What the study shows", H2), Paragraph("Monthly MACD gate", P)] + bl(FIND) + [
+    Paragraph("Weekly MACD gate and MACD ranking", P)] + bl(FIND2) + [
     Paragraph("Recommendation", H2)] + bl(REC) + [
     PageBreak(), Paragraph("Appendix: every trade, StochRSI + MACD, no-target exit", H2),
     table(trade_rows, [32 * mm, 24 * mm, 24 * mm, 22 * mm, 22 * mm, 16 * mm, 14 * mm], num_from=3, fs=7)]
 
 SimpleDocTemplate(str(OUT / "report.pdf"), pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm, topMargin=16 * mm,
-                  bottomMargin=16 * mm, title="StochRSI + MACD study").build(story)
+                  bottomMargin=16 * mm, title="MACD with the StochRSI pullback").build(story)
 for p in charts:
     p.unlink()
 print(OUT / "report.pdf")

@@ -34,6 +34,7 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
     """rank: order of same-day signals when slots are scarce.
          'tightest' smallest stop % first (default) | 'widest' largest stop % first
          'random'   shuffled with `seed`
+         'score_tightest' highest score first, ties by smallest stop %
          'score'    highest value of score.at[entry day, symbol] first (NaN last); the score table
                     must only use data known before the entry day (shift it by one day)
        sector_cap: at most this many open positions per sector (sector_of: symbol -> sector);
@@ -72,6 +73,11 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                 v = score.at[day, t.symbol] if t.symbol in score.columns and day in score.index else np.nan
                 return np.inf if np.isnan(v) else -v
             cands = sorted(cands, key=_k)
+        elif rank == "score_tightest":
+            def _k2(t):
+                v = score.at[day, t.symbol] if t.symbol in score.columns and day in score.index else np.nan
+                return (np.inf if np.isnan(v) else -v, (t.entry - t.stop) / t.entry)
+            cands = sorted(cands, key=_k2)
         for t in cands:
             if t.symbol in open_:
                 continue

@@ -51,19 +51,25 @@ def rules(c):
     if s["type"] == "ema_breakout":
         setup = f"{tf.capitalize()} candle opens below and closes above EMA{s['span']}"
     else:
-        setup = (f"{tf.capitalize()} Stochastic RSI ({s['rsi']},{s['stoch']},{s['k']},{s['d']}): %K crosses above %D "
+        stf = "monthly" if s["type"] == "stochrsi_wmacd" else tf
+        setup = (f"{stf.capitalize()} Stochastic RSI ({s['rsi']},{s['stoch']},{s['k']},{s['d']}): %K crosses above %D "
                  f"with %D below {s['oversold']}")
         if s["type"] == "stochrsi_macd":
             a, b, c9 = s.get("macd", [12, 26, 9])
             setup += (f"; then MACD ({a},{b},{c9}) crosses above its signal line while below zero, in the same "
                       f"{tf[:-2]} or within {s.get('window', 3)} {tf[:-2]}s. Signal candle = the MACD-cross candle")
+        if s["type"] == "stochrsi_wmacd":
+            a, b, c9 = s.get("macd", [12, 26, 9])
+            setup += (f" (completed month); then weekly MACD ({a},{b},{c9}) crosses above its signal line while "
+                      f"below zero within {s.get('window_weeks', 13)} weeks of that month's end. Signal candle = "
+                      f"the MACD-cross week")
     rows = [["Rule", "Value"], ["Setup", setup]]
     f = c.get("filters", {})
     if "trend_ema" in f:
         rows.append(["Trend", f"Close above EMA{f['trend_ema']['span']} on "
                      + ", ".join(TF[x] for x in f["trend_ema"]["timeframes"]) + " (last completed bars)"])
     if "rsi_min" in f:
-        rows.append(["Momentum", f"{tf.capitalize()} RSI({f['rsi_min']['period']}) > {f['rsi_min']['value']}"])
+        rows.append(["Momentum", f"{TF[f['rsi_min'].get('timeframe', c['timeframe'])].capitalize()} RSI({f['rsi_min']['period']}) > {f['rsi_min']['value']}"])
     e = c.get("entry", {})
     ent = f"Buy above the signal candle's high during the next {e.get('valid_bars', 1)} {tf} candle(s)"
     df = e.get("day_filters", {})
@@ -86,14 +92,16 @@ def rules(c):
     if tg:
         xs.append("targets " + ", ".join(f"{t:g}%" for t in tg))
     if None in ex["targets_pct"]:
-        xs.append(f"no target (exit on {tf} close below EMA{ex['ema_close_when_no_target']['span']})"
+        xs.append(f"no target (exit on {TF[ex['ema_close_when_no_target'].get('timeframe', c['timeframe'])]} close below EMA{ex['ema_close_when_no_target']['span']})"
                   if ex.get("ema_close_when_no_target") else "no target (stop only)")
     if ex.get("max_days"):
         xs.append(f"time exit after {ex['max_days']} days")
     rows.append(["Exits", "; ".join(xs)])
     z = c["sizing"]
     rows.append(["Sizing", f"{z['risk_pct']:g}% of starting capital at risk per trade; max {z['max_positions']} "
-                 f"open trades; tightest stop filled first"])
+                 f"open trades; " + ("competing signals ranked by monthly MACD (histogram turning up below "
+                 "zero first, then turning up above zero), ties by tightest stop" if z.get("score") else
+                 "tightest stop filled first")])
     k = c["costs"]
     rows.append(["Costs", f"{k['broker'].capitalize()} {k['product']} fees + {k['slippage_pct']:g}% slippage per side"])
     return [[a, Paragraph(b, SM)] for a, b in rows[1:]], rows[0]

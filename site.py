@@ -162,7 +162,7 @@ opts = "".join(f'<option value="{f}">{f}</option>' for f in families)
 
 STUDY_TITLES = {"slot_ranking": "Slot ranking: which signals should fill the 8 slots",
                 "market_filter": "NIFTY 200-day market filter on every strategy",
-                "stochrsi_macd": "StochRSI + monthly MACD confirmation (below-zero cross)"}
+                "stochrsi_macd": "MACD with the StochRSI pullback: monthly gate, weekly gate, ranking"}
 studies = "".join(f'<li><a href="{REPO}{p.relative_to(ROOT).as_posix()}">'
                   f'{STUDY_TITLES.get(p.parent.name, p.parent.name)}</a></li>'
                   for p in sorted(ROOT.glob("results/studies/*/report.pdf")))
