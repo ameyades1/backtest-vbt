@@ -66,7 +66,9 @@ def rules(c):
     if df:
         ent += "; only on days when " + " and ".join(
             {"weekly_ema": f"last week's close >= weekly EMA{df.get('weekly_ema')}",
-             "daily_ema": f"yesterday's close >= daily EMA{df.get('daily_ema')}"}[k] for k in df)
+             "daily_ema": f"yesterday's close >= daily EMA{df.get('daily_ema')}",
+             "market_sma": f"NIFTY 50 closed above its {df.get('market_sma')}-day average yesterday "
+                           f"(Sensex before mid-2008)"}[k] for k in df)
     rows.append(["Entry", ent])
     st = c["stop"]
     stop = {"signal_low": "Signal candle's low", "prev_week_low": "Low of the previous completed week",

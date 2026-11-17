@@ -1,0 +1,44 @@
+{
+  "name": "ema61_breakout/monthly_candle_stop_time365_nifty200",
+  "description": "Monthly candle opens below and closes above EMA61; buy above its high next month; stop at its low. Plus a time exit after 365 calendar days. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
+  "universe": "NIFTY500",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "ema_breakout",
+    "span": 61
+  },
+  "entry": {
+    "valid_bars": 1,
+    "day_filters": {
+      "market_sma": 200
+    }
+  },
+  "stop": {
+    "type": "signal_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null,
+      15,
+      30
+    ],
+    "ema_close_when_no_target": {
+      "span": 61
+    },
+    "max_days": 365
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

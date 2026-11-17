@@ -10,9 +10,12 @@ Config (a dict, normally loaded from JSON):
                                                                            using the last completed bar
                "rsi_min": {"period": 14, "value": 50}}                     signal-timeframe RSI
   entry       {"valid_bars": 1,                 buy-stop above the signal High for the next N bars
-               "day_filters": {"weekly_ema": 61, "daily_ema": 61}}   optional, checked on the fill day:
-                                                last completed week's Close >= weekly EMA and
-                                                previous day's Close >= daily EMA
+               "day_filters": {"weekly_ema": 61, "daily_ema": 61, "market_sma": 200}}
+                                                optional, checked on the fill day:
+                                                last completed week's Close >= weekly EMA,
+                                                previous day's Close >= daily EMA,
+                                                market (lib/market.py) above its N-day SMA at the
+                                                previous close; pass the regime as `market`
   stop        {"type": "none" | "signal_low" | "prev_week_low" | "trail_pct", "pct": 0.10,
                "trail": "weekly_low"}           trail_pct: Sharekhan trail fixed in rupees;
                                                 trail weekly_low: raise to each completed week's Low
@@ -75,7 +78,7 @@ def _signal_mask(daily, bars, tf, cfg):
     return sig
 
 
-def simulate(daily: pd.DataFrame, symbol: str, cfg: dict) -> list[Trade]:
+def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | None = None) -> list[Trade]:
     tf = cfg["timeframe"]
     bars = resample(daily, tf)
     days = daily.index
@@ -97,6 +100,10 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict) -> list[Trade]:
             w_close, w_ema = w["Close"].to_numpy(), ema(w["Close"], dayf["weekly_ema"]).to_numpy()
     if "daily_ema" in dayf:
         d_ema = ema(daily["Close"], dayf["daily_ema"]).to_numpy()
+    if "market_sma" in dayf:
+        if market is None:
+            raise ValueError("market_sma filter needs the market regime (lib.market.regime)")
+        mkt_ok = market.astype(float).shift(1).reindex(days, method="ffill").fillna(0).to_numpy() > 0
     target = ex.get("target_pct")
     max_days = ex.get("max_days")
     ema_exit = set()
@@ -121,6 +128,8 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict) -> list[Trade]:
                 lw = last_w[j]
                 if np.isnan(w_ema[lw]) or w_close[lw] < w_ema[lw]:
                     continue
+            if "market_sma" in dayf and not mkt_ok[j]:
+                continue
             if "daily_ema" in dayf:
                 if j == 0 or np.isnan(d_ema[j - 1]) or d[j - 1, 3] < d_ema[j - 1]:
                     continue

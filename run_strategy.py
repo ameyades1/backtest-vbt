@@ -10,7 +10,7 @@ import argparse, copy, json, sys
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from lib import data, indices, engine, portfolio
+from lib import data, indices, engine, portfolio, market
 from lib.costs import fee_per_side
 
 ROOT = Path(__file__).resolve().parent
@@ -47,7 +47,9 @@ def run(cfg, closes, dailies, out):
     rows, curves = {}, {}
     for tg in cfg["exits"]["targets_pct"]:
         ec = engine_cfg(cfg, tg)
-        trades = [t for s, df in dailies.items() for t in engine.simulate(df, s, ec)]
+        mk = market.regime(ec["entry"]["day_filters"]["market_sma"]) \
+            if "market_sma" in ec.get("entry", {}).get("day_filters", {}) else None
+        trades = [t for s, df in dailies.items() for t in engine.simulate(df, s, ec, mk)]
         trades = [t for t in trades if t.entry_date >= pd.Timestamp(start)]
         label = "No target" if tg is None else f"Target {tg:g}%"
         sd = np.array([(t.entry - t.stop) / t.entry * 100 for t in trades if t.stop is not None])

@@ -49,6 +49,8 @@ for cfgp in sorted(ROOT.glob("results/*/*/*/config.json")):
         yrs = (pd.Timestamp(f.exit_date.max()) - pd.Timestamp(c["period"]["start"])).days / 365.25
         rows.append({
             "family": run.parts[-3], "variant": run.parts[-2], "universe": run.parts[-1].upper(), "exit": ex,
+            "mkt": f"NIFTY > {c['entry']['day_filters']['market_sma']}-DMA"
+                   if "market_sma" in c.get("entry", {}).get("day_filters", {}) else "none",
             "win": (ret > 0).mean() * 100,
             "avg_ret": ret.mean(), "avg_rs": pnl.mean(),
             "avg_win": win.mean() if len(win) else np.nan, "avg_loss": loss.mean() if len(loss) else np.nan,
@@ -68,6 +70,7 @@ COLS = [  # key, header, format, tooltip
     ("strategy", "Strategy", None, "Strategy family / variant"),
     ("universe", "Universe", None, "Stocks traded (today's index members)"),
     ("exit", "Exit", None, "Fixed target, or no target (trend exit)"),
+    ("mkt", "Market filter", None, "New entries only when NIFTY 50 is above its 200-day average"),
     ("win", "Win %", "{:.0f}", "Share of closed trades that made money after costs"),
     ("avg_ret", "Avg trade %", "{:+.1f}", "Average net return per trade"),
     ("avg_rs", "Avg trade ₹", "{:+,.0f}", "Average net rupee profit per trade"),
@@ -94,6 +97,9 @@ GLOSSARY = {
     "Universe": "The stocks the strategy could trade: today's NIFTY 500 or NIFTY 50 members.",
     "Exit": "How winners are closed. 'Target X%' sells when price rises X% above entry. 'No target' holds until the "
             "trend exit (a close below EMA61 on the signal timeframe) or the stop. Every trade also has a stop loss.",
+    "Market filter": "'NIFTY > 200-DMA' means no new trades are opened while NIFTY 50 closed below its 200-day "
+                     "simple moving average the day before (BSE Sensex is used before mid-2008, when NIFTY data "
+                     "starts). Open trades are not sold by the filter. 'none' means no market filter.",
     "Win %": "Share of closed trades that made money after fees and slippage. A high win rate alone means little: "
              "read it together with Avg win %, Avg loss % and Payoff.",
     "Avg trade %": "Average net return per closed trade, on the money put into that trade.",
@@ -149,11 +155,16 @@ for r in sorted(rows, key=lambda r: -r["cagr"]):
     for k, _, fmt, _ in COLS:
         td, _ = cell(r, k, fmt)
         tds.append(td)
-    body.append(f'<tr data-family="{r["family"]}">' + "".join(tds) + "</tr>")
+    body.append(f'<tr data-family="{r["family"]}" data-mkt="{html.escape(r["mkt"])}">' + "".join(tds) + "</tr>")
 families = sorted({r["family"] for r in rows})
 head = "".join(f'<th title="{html.escape(t)}" data-num="{0 if f is None else 1}">{h}</th>' for _, h, f, t in COLS)
 opts = "".join(f'<option value="{f}">{f}</option>' for f in families)
 
+STUDY_TITLES = {"slot_ranking": "Slot ranking: which signals should fill the 8 slots",
+                "market_filter": "NIFTY 200-day market filter on every strategy"}
+studies = "".join(f'<li><a href="{REPO}{p.relative_to(ROOT).as_posix()}">'
+                  f'{STUDY_TITLES.get(p.parent.name, p.parent.name)}</a></li>'
+                  for p in sorted(ROOT.glob("results/studies/*/report.pdf")))
 gloss = "".join(f"<dt>{h}</dt><dd>{html.escape(GLOSSARY[h])}</dd>" for _, h, _, _ in COLS)
 
 page = f"""<!doctype html>
@@ -184,6 +195,7 @@ h2{{font-size:17px;margin:24px 0 8px}}
 <h1>Strategy scoreboard</h1>
 <p>Every backtest at <b>1% risk per trade, 8 slots</b>, ₹1,00,000 starting capital, from 2000. Click a header to sort; hover a header for its meaning.</p>
 <div class="bar"><label>Strategy <select id="fam"><option value="">All</option>{opts}</select></label>
+<label>Market filter <select id="mkt"><option value="">All</option><option>none</option><option>NIFTY &gt; 200-DMA</option></select></label>
 <span id="count" class="v"></span></div>
 <div class="wrap"><table id="t"><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>
 <ul class="notes">
@@ -194,13 +206,17 @@ h2{{font-size:17px;margin:24px 0 8px}}
 <li>Red: negative return, drawdown worse than 40%, or costs over half the gross profit. Green: CAGR ≥ 8% or CAGR/DD ≥ 0.2.</li>
 <li>Research and education only, not investment advice. Generated {date.today():%d %b %Y} by <code>site.py</code>.</li>
 </ul>
+<h2>Studies</h2>
+<ul class="notes">{studies}</ul>
 <h2>Glossary</h2>
 <dl class="gloss">{gloss}</dl>
 </main>
 <script>
 const t=document.getElementById('t'),tb=t.tBodies[0],fam=document.getElementById('fam'),cnt=document.getElementById('count');
 function count(){{const n=[...tb.rows].filter(r=>r.style.display!=='none').length;cnt.textContent=n+' rows';}}
-fam.onchange=()=>{{[...tb.rows].forEach(r=>r.style.display=!fam.value||r.dataset.family===fam.value?'':'none');count();}};
+const mkt=document.getElementById('mkt');
+function filt(){{[...tb.rows].forEach(r=>r.style.display=(!fam.value||r.dataset.family===fam.value)&&(!mkt.value||r.dataset.mkt===mkt.value)?'':'none');count();}}
+fam.onchange=filt;mkt.onchange=filt;
 [...t.tHead.rows[0].cells].forEach((th,i)=>th.onclick=()=>{{
   const num=th.dataset.num==='1',asc=th.classList.contains('s')&&!th.classList.contains('asc');
   [...t.tHead.rows[0].cells].forEach(h=>h.classList.remove('s','asc'));th.classList.add('s');if(asc)th.classList.add('asc');
