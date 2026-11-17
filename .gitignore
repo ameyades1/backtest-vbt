@@ -11,3 +11,5 @@ data/trade_duration/
 data/time_exit/
 data/stochrsi_*/
 data/nifty50_stochrsi_*/
+results/**/fills_*.csv
+results/**/equity.csv

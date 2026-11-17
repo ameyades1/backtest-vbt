@@ -68,3 +68,22 @@ For notebooks, open the folder in VS Code (`code .`) with the WSL and Jupyter ex
 ## Disclaimer
 
 This is for research and education only. It is not investment advice.
+
+## Strategy framework
+
+Every strategy variant is a JSON file; one engine runs them all.
+
+```
+strategies/<family>/<variant>.json    rules: timeframe, setup, filters, entry, stop, exits, sizing, costs
+lib/engine.py                         the trade engine (one open trade per stock, daily-bar fills)
+lib/indicators.py                     resample, EMA, RSI, Stochastic RSI
+lib/portfolio.py                      shared capital, fixed-risk sizing, max positions
+run_strategy.py                       python run_strategy.py strategies/stochrsi_pullback/monthly_candle_stop.json [--universe NIFTY50]
+report.py                             python report.py results/<family>/<variant>/<universe>
+compare.py                            python compare.py  -> results/comparison.csv (all runs, one table)
+results/<family>/<variant>/<universe>/ config.json, summary.csv, report.pdf (committed); equity/fills (ignored)
+tests/test_engine_parity.py           checks engine.py against the original per-strategy engines
+```
+
+A new variant is a copy of a JSON file with the changed rule. Options are documented at the top of
+`lib/engine.py`.
