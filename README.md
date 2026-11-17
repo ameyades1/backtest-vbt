@@ -81,6 +81,7 @@ lib/portfolio.py                      shared capital, fixed-risk sizing, max pos
 run_strategy.py                       python run_strategy.py strategies/stochrsi_pullback/monthly_candle_stop.json [--universe NIFTY50]
 report.py                             python report.py results/<family>/<variant>/<universe>
 compare.py                            python compare.py  -> results/comparison.csv (all runs, one table)
+site.py                               python site.py  -> docs/index.html (scoreboard of all 1%/8 runs, GitHub Pages)
 results/<family>/<variant>/<universe>/ config.json, summary.csv, report.pdf (committed); equity/fills (ignored)
 tests/test_engine_parity.py           checks engine.py against the original engines (lib/legacy/)
 reports/notes/                        one-off write-ups (trader profile)
