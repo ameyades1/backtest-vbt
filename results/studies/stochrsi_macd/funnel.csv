@@ -1,0 +1,10 @@
+,Monthly candles
+Monthly candles (2000+),91884
+StochRSI cross from oversold,5470
+MACD crosses up (any level),2815
+MACD crosses up below zero,1042
+MACD below-zero cross within 3 months of a StochRSI cross,361
++ monthly close above EMA61,118
++ weekly and daily close above EMA61,117
++ monthly RSI > 50,113
+Plain StochRSI pullback signals (current strategy),1681

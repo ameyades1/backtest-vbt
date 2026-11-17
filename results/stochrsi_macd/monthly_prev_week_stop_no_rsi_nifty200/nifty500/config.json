@@ -1,0 +1,66 @@
+{
+  "name": "stochrsi_macd/monthly_prev_week_stop_no_rsi_nifty200",
+  "description": "Monthly StochRSI cross from oversold, confirmed by a monthly MACD cross above its signal line below zero (same month or within 3 months) (no RSI > 50 filter); stop at the previous week's low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
+  "universe": "NIFTY500",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "stochrsi_macd",
+    "rsi": 14,
+    "stoch": 14,
+    "k": 3,
+    "d": 3,
+    "oversold": 30,
+    "macd": [
+      12,
+      26,
+      9
+    ],
+    "window": 3
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M",
+        "W",
+        "D"
+      ]
+    }
+  },
+  "entry": {
+    "valid_bars": 1,
+    "day_filters": {
+      "market_sma": 200
+    }
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null,
+      8,
+      15,
+      20,
+      30
+    ],
+    "ema_close_when_no_target": {
+      "span": 61
+    },
+    "max_days": null
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

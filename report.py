@@ -53,6 +53,10 @@ def rules(c):
     else:
         setup = (f"{tf.capitalize()} Stochastic RSI ({s['rsi']},{s['stoch']},{s['k']},{s['d']}): %K crosses above %D "
                  f"with %D below {s['oversold']}")
+        if s["type"] == "stochrsi_macd":
+            a, b, c9 = s.get("macd", [12, 26, 9])
+            setup += (f"; then MACD ({a},{b},{c9}) crosses above its signal line while below zero, in the same "
+                      f"{tf[:-2]} or within {s.get('window', 3)} {tf[:-2]}s. Signal candle = the MACD-cross candle")
     rows = [["Rule", "Value"], ["Setup", setup]]
     f = c.get("filters", {})
     if "trend_ema" in f:

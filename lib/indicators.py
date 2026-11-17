@@ -30,3 +30,10 @@ def stoch_rsi(close: pd.Series, n_rsi=14, n_stoch=14, k=3, d=3):
     lo, hi = r.rolling(n_stoch).min(), r.rolling(n_stoch).max()
     K = ((r - lo) / (hi - lo) * 100).rolling(k).mean()
     return r, K, K.rolling(d).mean()
+
+
+def macd(close: pd.Series, fast=12, slow=26, signal=9):
+    """Returns (macd line, signal line, histogram)."""
+    line = ema(close, fast) - ema(close, slow)
+    sig = line.ewm(span=signal, adjust=False, min_periods=signal).mean()
+    return line, sig, line - sig

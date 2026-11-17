@@ -5,6 +5,11 @@ Config (a dict, normally loaded from JSON):
   setup       {"type": "ema_breakout", "span": 61}             Open < EMA < Close
               {"type": "stochrsi_cross", "rsi": 14, "stoch": 14, "k": 3, "d": 3, "oversold": 30}
                                                                %K crosses above %D with %D < oversold
+              {"type": "stochrsi_macd", ...stochrsi keys..., "macd": [12, 26, 9], "window": 3}
+                                                               MACD crosses above its signal line with
+                                                               MACD < 0, on the StochRSI-cross candle or
+                                                               within `window` candles after it; signal
+                                                               is the MACD-cross candle
   filters     (checked at the signal candle's close, all optional)
               {"trend_ema": {"span": 61, "timeframes": ["M", "W", "D"]},   close > EMA on each,
                                                                            using the last completed bar
@@ -28,7 +33,7 @@ in that order; the entry day checks only the Close. One open trade per stock.
 from dataclasses import dataclass
 import numpy as np
 import pandas as pd
-from .indicators import resample, ema, rsi, stoch_rsi
+from .indicators import resample, ema, rsi, stoch_rsi, macd
 
 
 @dataclass
@@ -53,6 +58,14 @@ def _signal_mask(daily, bars, tf, cfg):
         _, K, D = stoch_rsi(bars["Close"], setup.get("rsi", 14), setup.get("stoch", 14),
                             setup.get("k", 3), setup.get("d", 3))
         sig = ((K > D) & (K.shift() <= D.shift()) & (D < setup.get("oversold", 30))).to_numpy()
+    elif setup["type"] == "stochrsi_macd":
+        _, K, D = stoch_rsi(bars["Close"], setup.get("rsi", 14), setup.get("stoch", 14),
+                            setup.get("k", 3), setup.get("d", 3))
+        st = (K > D) & (K.shift() <= D.shift()) & (D < setup.get("oversold", 30))
+        m, ms, _ = macd(bars["Close"], *setup.get("macd", [12, 26, 9]))
+        mx = (m > ms) & (m.shift() <= ms.shift()) & (m < 0)
+        recent = st.astype(int).rolling(setup.get("window", 3) + 1, min_periods=1).max() > 0
+        sig = (mx & recent).to_numpy()
     else:
         raise ValueError(f"unknown setup {setup['type']}")
     sig = sig.copy()
