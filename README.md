@@ -82,7 +82,8 @@ run_strategy.py                       python run_strategy.py strategies/stochrsi
 report.py                             python report.py results/<family>/<variant>/<universe>
 compare.py                            python compare.py  -> results/comparison.csv (all runs, one table)
 results/<family>/<variant>/<universe>/ config.json, summary.csv, report.pdf (committed); equity/fills (ignored)
-tests/test_engine_parity.py           checks engine.py against the original per-strategy engines
+tests/test_engine_parity.py           checks engine.py against the original engines (lib/legacy/)
+reports/notes/                        one-off write-ups (trader profile)
 ```
 
 A new variant is a copy of a JSON file with the changed rule. Options are documented at the top of

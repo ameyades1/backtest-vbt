@@ -118,14 +118,16 @@ def build(run: Path):
     ax.set_title("Drawdown from peak", loc="left", fontsize=10.5, fontweight="bold", color=DARK)
     style(ax); fig.tight_layout(); p = run / "_c2.png"; fig.savefig(p); plt.close(fig); charts.append(p)
 
-    wl = [["Exit", "Closed trades", "Win %", "Avg net win %", "Avg net loss %", "Net trade P&L (Rs)"]]
+    wl = [["Exit", "Closed trades", "Win %", "Avg net win %", "Avg net loss %", "Med days win", "Med days loss", "Net P&L (Rs)"]]
     for col in S.index:
         tag = "none" if col == "No target" else col.split()[1].rstrip("%")
         f = pd.read_csv(run / f"fills_{tag}.csv")
         f = f.dropna(subset=["exit_date"])
         r = (f.proceeds / f.cost - 1) * 100
+        held = (pd.to_datetime(f.exit_date) - pd.to_datetime(f.entry_date)).dt.days
         wl.append([col, f"{len(f):,}", f"{(r > 0).mean() * 100:.0f}",
-                   f"{r[r > 0].mean():.1f}", f"{r[r <= 0].mean():.1f}", f"{(f.proceeds - f.cost).sum():,.0f}"])
+                   f"{r[r > 0].mean():.1f}", f"{r[r <= 0].mean():.1f}",
+                   f"{held[r > 0].median():.0f}", f"{held[r <= 0].median():.0f}", f"{(f.proceeds - f.cost).sum():,.0f}"])
 
     best = S["CAGR %"].idxmax(); b = S.loc[best]
     eq = EQ[best].dropna(); dd = eq / eq.cummax() - 1; tr = dd.idxmin(); pk = eq[:tr].idxmax()
@@ -159,7 +161,7 @@ def build(run: Path):
                                       "Deployed % = open positions / equity, averaged over all days. Worst % = worst "
                                       "trade as a share of starting capital.", SM)]),
               KeepTogether([Paragraph("Wins and losses (closed trades, after costs)", H2),
-                            table(wl, [26 * mm, 26 * mm, 18 * mm, 30 * mm, 30 * mm, 40 * mm])]),
+                            table(wl, [24 * mm, 22 * mm, 14 * mm, 22 * mm, 22 * mm, 22 * mm, 22 * mm, 26 * mm])]),
               Paragraph("Reproduce", H2),
               Paragraph(f"<font face='Courier' size='8'>python run_strategy.py strategies/{c['name']}.json"
                         + (f" --universe {c['universe']}" if c["universe"] != "NIFTY500" else "")

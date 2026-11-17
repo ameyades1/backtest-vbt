@@ -6,7 +6,8 @@ import sys, random
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pandas as pd
-from lib import data, indices, ema61, ema61_mtf, stochrsi_mtf, engine
+from lib import data, indices, ema61, engine
+from lib.legacy import ema61_mtf, stochrsi_mtf
 
 TREND3 = {"trend_ema": {"span": 61, "timeframes": ["M", "W", "D"]}, "rsi_min": {"period": 14, "value": 50}}
 SRSI = {"type": "stochrsi_cross", "rsi": 14, "stoch": 14, "k": 3, "d": 3, "oversold": 30}
