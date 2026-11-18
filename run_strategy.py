@@ -33,6 +33,9 @@ def engine_cfg(cfg, target):
     return e
 
 
+_TRADES = {}      # engine config + market filter + universe size -> trades; ranking variants reuse them
+
+
 def run(cfg, closes, dailies, out):
     siz, costs = cfg["sizing"], cfg["costs"]
     fee, slip = fee_per_side(costs["broker"], costs["product"]), costs["slippage_pct"] / 100
@@ -50,7 +53,10 @@ def run(cfg, closes, dailies, out):
         ec = engine_cfg(cfg, tg)
         mk = market.regime(ec["entry"]["day_filters"]["market_sma"]) \
             if "market_sma" in ec.get("entry", {}).get("day_filters", {}) else None
-        trades = [t for s, df in dailies.items() for t in engine.simulate(df, s, ec, mk)]
+        key = (json.dumps(ec, sort_keys=True), len(dailies), end)
+        if key not in _TRADES:
+            _TRADES[key] = [t for s, df in dailies.items() for t in engine.simulate(df, s, ec, mk)]
+        trades = _TRADES[key]
         trades = [t for t in trades if t.entry_date >= pd.Timestamp(start)]
         label = "No target" if tg is None else f"Target {tg:g}%"
         sd = np.array([(t.entry - t.stop) / t.entry * 100 for t in trades if t.stop is not None])

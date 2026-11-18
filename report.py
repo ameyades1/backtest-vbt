@@ -46,6 +46,15 @@ def table(rows, widths, num_from=1):
     return tb
 
 
+SCORE_TEXT = {
+    "macd_turn": "competing signals ranked by monthly MACD (histogram turning up below zero first, then turning up "
+                 "above zero)",
+    "weekly_pattern": "competing signals with a weekly bullish TA-Lib pattern (engulfing, hammer, morning star, "
+                      "piercing) in the last 2 completed weeks first",
+    "macd_pattern": "competing signals ranked by a 0-3 score: monthly MACD histogram rising +1, rising below zero +1, "
+                    "weekly bullish TA-Lib pattern in the last 2 weeks +1"}
+
+
 def rules(c):
     s, tf = c["setup"], TF[c["timeframe"]]
     if s["type"] == "ema_breakout":
@@ -99,9 +108,9 @@ def rules(c):
     rows.append(["Exits", "; ".join(xs)])
     z = c["sizing"]
     rows.append(["Sizing", f"{z['risk_pct']:g}% of starting capital at risk per trade; max {z['max_positions']} "
-                 f"open trades; " + ("competing signals ranked by monthly MACD (histogram turning up below "
-                 "zero first, then turning up above zero), ties by tightest stop" if z.get("score") else
-                 "tightest stop filled first")])
+                 f"open trades; " + (SCORE_TEXT.get(z["score"]["type"], z["score"]["type"])
+                 + (", ties by 12-month return" if z["score"].get("tiebreak") == "mom12" else ", ties by tightest stop")
+                 if z.get("score") else "tightest stop filled first")])
     k = c["costs"]
     rows.append(["Costs", f"{k['broker'].capitalize()} {k['product']} fees + {k['slippage_pct']:g}% slippage per side"])
     return [[a, Paragraph(b, SM)] for a, b in rows[1:]], rows[0]
