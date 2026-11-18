@@ -29,6 +29,9 @@ Config (a dict, normally loaded from JSON):
   stop        {"type": "none" | "signal_low" | "prev_week_low" | "trail_pct", "pct": 0.10,
                "trail": "weekly_low"}           trail_pct: Sharekhan trail fixed in rupees;
                                                 trail weekly_low: raise to each completed week's Low
+              "market_tighten": "weekly_low" | "exit"   while the market (as market_sma) closed below its
+                                                SMA the day before: raise the stop to the last completed
+                                                week's Low | sell at that day's Open
   exits       {"target_pct": 0.15 | null,
                "ema_close": {"span": 61, "timeframe": "M"} | null,
                                                    next open after a close below EMA (signal timeframe
@@ -135,7 +138,9 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
     valid = entry_cfg.get("valid_bars", 1)
     dayf = entry_cfg.get("day_filters", {})
     stype = stop_cfg.get("type", "none")
-    need_weeks = stype == "prev_week_low" or stop_cfg.get("trail") == "weekly_low" or "weekly_ema" in dayf
+    mt = stop_cfg.get("market_tighten")                 # None | "weekly_low" | "exit"
+    need_weeks = stype == "prev_week_low" or stop_cfg.get("trail") == "weekly_low" or "weekly_ema" in dayf \
+        or mt == "weekly_low"
     if need_weeks:
         w = resample(daily, "W")
         w_end = np.searchsorted(days, w.index, side="right")
@@ -145,9 +150,9 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
             w_close, w_ema = w["Close"].to_numpy(), ema(w["Close"], dayf["weekly_ema"]).to_numpy()
     if "daily_ema" in dayf:
         d_ema = ema(daily["Close"], dayf["daily_ema"]).to_numpy()
-    if "market_sma" in dayf:
+    if "market_sma" in dayf or mt:
         if market is None:
-            raise ValueError("market_sma filter needs the market regime (lib.market.regime)")
+            raise ValueError("market_sma filter / market_tighten need the market regime (lib.market.regime)")
         mkt_ok = market.astype(float).shift(1).reindex(days, method="ffill").fillna(0).to_numpy() > 0
     target = ex.get("target_pct")
     max_days = ex.get("max_days")
@@ -214,7 +219,11 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
                     stop = hh - trail_amt
                 elif stop_cfg.get("trail") == "weekly_low" and last_w[j] > last_w[k]:
                     stop = max(stop, w_low[last_w[j]])
+                if mt == "weekly_low" and not mkt_ok[j] and last_w[j] >= 0:
+                    stop = max(stop, w_low[last_w[j]])
                 o, h, l = d[j, 0], d[j, 1], d[j, 2]
+                if mt == "exit" and not mkt_ok[j]:
+                    exit_px, exit_day, reason = o, j, "market"; break
                 if max_days is not None and (days[j] - days[k]).days >= max_days:
                     exit_px, exit_day, reason = o, j, "time"; break
                 if o <= stop:

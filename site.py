@@ -162,6 +162,7 @@ opts = "".join(f'<option value="{f}">{f}</option>' for f in families)
 
 STUDY_TITLES = {"slot_ranking": "Slot ranking: which signals should fill the 8 slots",
                 "market_filter": "NIFTY 200-day market filter on every strategy",
+                "market_tighten": "Tightening stops / exiting when NIFTY is below its 200-day average",
                 "signal_rank": "Ranking signals with MACD and candlestick patterns",
                 "stochrsi_macd": "MACD with the StochRSI pullback: monthly gate, weekly gate, ranking"}
 studies = "".join(f'<li><a href="{REPO}{p.relative_to(ROOT).as_posix()}">'

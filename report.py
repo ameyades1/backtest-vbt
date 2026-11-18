@@ -94,6 +94,11 @@ def rules(c):
             "trail_pct": f"Trailing {st.get('pct', 0) * 100:g}% (fixed rupees)", "none": "None"}[st["type"]]
     if st.get("trail") == "weekly_low":
         stop += ", raised to each completed week's low"
+    if st.get("market_tighten") == "weekly_low":
+        stop += (f"; while NIFTY 50 is below its {st.get('market_sma', 200)}-day average (previous close), raised to "
+                 f"the last completed week's low")
+    elif st.get("market_tighten") == "exit":
+        stop += f"; all open trades sold at the next open when NIFTY 50 closes below its {st.get('market_sma', 200)}-day average"
     rows.append(["Stop", stop])
     ex = c["exits"]
     tg = [t for t in ex["targets_pct"] if t is not None]

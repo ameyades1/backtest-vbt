@@ -51,8 +51,8 @@ def run(cfg, closes, dailies, out):
     score = scores.table(siz["score"], dailies) if "score" in siz else None
     for tg in cfg["exits"]["targets_pct"]:
         ec = engine_cfg(cfg, tg)
-        mk = market.regime(ec["entry"]["day_filters"]["market_sma"]) \
-            if "market_sma" in ec.get("entry", {}).get("day_filters", {}) else None
+        mdays = ec.get("entry", {}).get("day_filters", {}).get("market_sma") or ec["stop"].get("market_sma")
+        mk = market.regime(mdays) if mdays else None
         key = (json.dumps(ec, sort_keys=True), len(dailies), end)
         if key not in _TRADES:
             _TRADES[key] = [t for s, df in dailies.items() for t in engine.simulate(df, s, ec, mk)]
