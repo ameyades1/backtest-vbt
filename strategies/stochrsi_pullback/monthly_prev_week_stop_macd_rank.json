@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd51-7649-8949-44fdd9cbb916",
   "name": "stochrsi_pullback/monthly_prev_week_stop_macd_rank",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. Competing signals ranked by monthly MACD: histogram turning up below zero first, then turning up above zero, then the rest; ties by tightest stop.",
   "universe": "NIFTY500",

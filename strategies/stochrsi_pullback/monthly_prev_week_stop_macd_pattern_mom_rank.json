@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd4d-702c-b0b5-1f83465c8f63",
   "name": "stochrsi_pullback/monthly_prev_week_stop_macd_pattern_mom_rank",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. Competing signals ranked by MACD + pattern score (0-3); ties by 12-month return.",
   "universe": "NIFTY500",

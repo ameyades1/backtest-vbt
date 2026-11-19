@@ -10,7 +10,7 @@ import argparse, copy, json, sys
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from lib import data, indices, engine, portfolio, market, scores
+from lib import data, indices, engine, portfolio, market, scores, ids
 from lib.costs import fee_per_side
 
 ROOT = Path(__file__).resolve().parent
@@ -80,6 +80,8 @@ def main():
     p.add_argument("configs", nargs="+")
     p.add_argument("--universe", help="override the config's universe")
     a = p.parse_args()
+    if not ids.check():
+        sys.exit("fix strategy ids first: python -m lib.ids assign")
     cache = {}
     for path in a.configs:
         cfg = json.load(open(path))

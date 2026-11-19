@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd2c-79aa-9300-395d9b48296a",
   "name": "ema61_breakout/monthly_candle_stop_time90",
   "description": "Monthly candle opens below and closes above EMA61; buy above its high next month; stop at its low. Plus a time exit after 90 calendar days.",
   "universe": "NIFTY500",

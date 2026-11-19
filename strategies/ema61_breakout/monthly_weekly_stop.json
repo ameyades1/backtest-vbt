@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd2e-76c3-a471-eb69673d38d0",
   "name": "ema61_breakout/monthly_weekly_stop",
   "description": "Monthly EMA61 breakout, entry only when weekly and daily closes are above EMA61; stop at previous week's low (fixed).",
   "universe": "NIFTY500",

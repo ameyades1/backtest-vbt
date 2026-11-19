@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd26-7a9e-953e-75b3b695a632",
   "name": "ema61_breakout/monthly_candle_stop_r2p4",
   "description": "Monthly candle opens below and closes above EMA61; buy above its high next month; stop at its low. Sized at 2% risk with max 4 positions.",
   "universe": "NIFTY500",

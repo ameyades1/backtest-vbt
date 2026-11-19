@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd59-7ddf-9a3c-725fe47492fc",
   "name": "stochrsi_pullback/weekly_candle_stop_nifty200",
   "description": "Weekly StochRSI pullback (monthly filter uses last completed month); stop at signal week low; fixed targets only. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
   "universe": "NIFTY500",

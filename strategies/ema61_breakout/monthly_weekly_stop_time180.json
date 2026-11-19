@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd3a-730e-98f1-8defb04af4f5",
   "name": "ema61_breakout/monthly_weekly_stop_time180",
   "description": "Monthly EMA61 breakout, entry only when weekly and daily closes are above EMA61; stop at previous week's low (fixed). Plus a time exit after 180 calendar days.",
   "universe": "NIFTY500",

@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd33-7a48-9698-d840116ba8b6",
   "name": "ema61_breakout/monthly_weekly_stop_macd_rank",
   "description": "Monthly EMA61 breakout, entry only when weekly and daily closes are above EMA61; stop at previous week's low (fixed). Competing signals ranked by monthly MACD histogram turning up below zero first, then turning up above zero, then the rest; ties by tightest stop.",
   "universe": "NIFTY500",

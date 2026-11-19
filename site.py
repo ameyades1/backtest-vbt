@@ -11,6 +11,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from lib.costs import fee_per_side
+from lib import ids
 
 ROOT = Path(__file__).resolve().parent
 REPO = "https://github.com/ameyades1/backtest-vbt/blob/main/"
@@ -24,6 +25,7 @@ def streak(losses):
     return best
 
 
+IDS = ids.by_name()
 rows = []
 for cfgp in sorted(ROOT.glob("results/*/*/*/config.json")):
     run = cfgp.parent
@@ -48,6 +50,7 @@ for cfgp in sorted(ROOT.glob("results/*/*/*/config.json")):
         win, loss = ret[ret > 0], ret[ret <= 0]
         yrs = (pd.Timestamp(f.exit_date.max()) - pd.Timestamp(c["period"]["start"])).days / 365.25
         rows.append({
+            "id": IDS.get(c["name"], ""), "sid": ids.short(IDS[c["name"]]) if c["name"] in IDS else "",
             "family": run.parts[-3], "variant": run.parts[-2], "universe": run.parts[-1].upper(), "exit": ex,
             "mkt": f"NIFTY > {c['entry']['day_filters']['market_sma']}-DMA"
                    if "market_sma" in c.get("entry", {}).get("day_filters", {}) else "none",
@@ -67,6 +70,7 @@ for cfgp in sorted(ROOT.glob("results/*/*/*/config.json")):
         })
 
 COLS = [  # key, header, format, tooltip
+    ("sid", "ID", None, "Permanent strategy ID (short form). Hover for the full ID"),
     ("strategy", "Strategy", None, "Strategy family / variant"),
     ("universe", "Universe", None, "Stocks traded (today's index members)"),
     ("exit", "Exit", None, "Fixed target, or no target (trend exit)"),
@@ -93,6 +97,8 @@ COLS = [  # key, header, format, tooltip
 
 
 GLOSSARY = {
+    "ID": "Permanent strategy ID: 'S' + a UUIDv7, shown by its last 8 characters (hover for the full ID). It never "
+          "changes when a strategy is renamed or edited, and is never reused. Full list: strategies/registry.csv.",
     "Strategy": "The setup tested (family) and the variant of its rules. Hover over a name for the full rules.",
     "Universe": "The stocks the strategy could trade: today's NIFTY 500 or NIFTY 50 members.",
     "Exit": "How winners are closed. 'Target X%' sells when price rises X% above entry. 'No target' holds until the "
@@ -132,6 +138,8 @@ def cell(r, k, fmt):
     v = r.get(k)
     if k == "strategy":
         return f'<td title="{html.escape(r["desc"])}">{r["family"]}<br><span class="v">{r["variant"]}</span></td>', f'{r["family"]}/{r["variant"]}'
+    if k == "sid":
+        return f'<td class="id" title="{r["id"]}"><code>{v}</code></td>', str(v)
     if k == "pdf":
         return f'<td><a href="{v}">PDF</a></td>', ""
     if fmt is None:

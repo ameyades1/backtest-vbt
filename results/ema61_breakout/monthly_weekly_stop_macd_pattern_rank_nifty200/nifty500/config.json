@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd32-7392-a0b9-76547bb6f4e1",
   "name": "ema61_breakout/monthly_weekly_stop_macd_pattern_rank_nifty200",
   "description": "Monthly EMA61 breakout, entry only when weekly and daily closes are above EMA61; stop at previous week's low (fixed). No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). Competing signals ranked by MACD + pattern score (monthly MACD histogram rising +1, rising below zero +1, weekly bullish TA-Lib pattern in the last 2 weeks +1); ties by tightest stop.",
   "universe": "NIFTY500",

@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd2b-71ac-8e00-f4bcd106b8d9",
   "name": "ema61_breakout/monthly_candle_stop_time365_nifty200",
   "description": "Monthly candle opens below and closes above EMA61; buy above its high next month; stop at its low. Plus a time exit after 365 calendar days. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
   "universe": "NIFTY500",

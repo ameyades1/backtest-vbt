@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd45-7ccf-ae4e-e71606307dd6",
   "name": "stochrsi_macd/monthly_prev_week_stop_no_rsi_nifty200",
   "description": "Monthly StochRSI cross from oversold, confirmed by a monthly MACD cross above its signal line below zero (same month or within 3 months) (no RSI > 50 filter); stop at the previous week's low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
   "universe": "NIFTY500",

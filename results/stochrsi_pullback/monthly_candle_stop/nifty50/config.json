@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd48-7983-815f-52b1aefd4973",
   "name": "stochrsi_pullback/monthly_candle_stop",
   "description": "Close > EMA61 on M/W/D, monthly RSI > 50, monthly StochRSI %K crosses %D below 30; stop at signal candle low.",
   "universe": "NIFTY50",

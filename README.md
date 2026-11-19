@@ -88,5 +88,17 @@ tests/test_engine_parity.py           checks engine.py against the original engi
 reports/notes/                        one-off write-ups (trader profile)
 ```
 
+### Strategy IDs
+
+Every strategy has a permanent ID: `S` + a UUIDv7, stored as `"id"` in its JSON and listed in
+`strategies/registry.csv` (id, short form, name, path, created, status). Reports and the scoreboard show the
+short form, `S` + the last 8 hex digits (for example `S7c315ace`). The ID never changes when a strategy is
+renamed or edited and is never reused; a removed strategy stays in the registry as `deleted`.
+
+```
+python -m lib.ids assign     give new configs an ID and update the registry
+python -m lib.ids check      unique IDs, unique short forms, registry complete (run_strategy.py runs it too)
+```
+
 A new variant is a copy of a JSON file with the changed rule. Options are documented at the top of
 `lib/engine.py`.

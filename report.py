@@ -8,6 +8,9 @@ summary.csv, equity.csv and fills_*.csv; nothing is written by hand.
 """
 import json, sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib import ids
+_IDS = ids.by_name()
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -160,7 +163,9 @@ def build(run: Path):
     best = S["CAGR %"].idxmax(); b = S.loc[best]
     eq = EQ[best].dropna(); dd = eq / eq.cummax() - 1; tr = dd.idxmin(); pk = eq[:tr].idxmax()
     rl, hdr = rules(c)
-    story = [Paragraph(c["name"], H1),
+    sid = c.get("id") or _IDS.get(c["name"], "")
+    story = [Paragraph((f"{ids.short(sid)} · " if sid else "") + c["name"], H1),
+             *([Paragraph(f"Strategy ID {sid}", SM)] if sid else []),
              Paragraph(f"Rs {c['sizing']['capital']:,} capital · {c['sizing']['risk_pct']:g}% risk · max "
                        f"{c['sizing']['max_positions']} open trades · {c['universe']} · from {c['period']['start']} · "
                        f"{eq.index[-1]:%d %b %Y}", SUB),
@@ -203,7 +208,7 @@ def build(run: Path):
 
     out = run / "report.pdf"
     SimpleDocTemplate(str(out), pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm, topMargin=16 * mm,
-                      bottomMargin=16 * mm, title=c["name"]).build(story, onFirstPage=footer, onLaterPages=footer)
+                      bottomMargin=16 * mm, title=(f"{ids.short(sid)} " if sid else "") + c["name"]).build(story, onFirstPage=footer, onLaterPages=footer)
     for p in charts:
         p.unlink()
     return out

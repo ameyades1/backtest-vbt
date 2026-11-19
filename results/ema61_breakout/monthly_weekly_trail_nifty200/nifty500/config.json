@@ -1,4 +1,5 @@
 {
+  "id": "S01a1f4c5-dd41-712c-b1eb-16122f869ae6",
   "name": "ema61_breakout/monthly_weekly_trail_nifty200",
   "description": "As monthly_weekly_stop, but the stop is raised to each completed week's low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
   "universe": "NIFTY500",
