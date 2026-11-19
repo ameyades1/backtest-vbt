@@ -1,0 +1,7 @@
+[
+ "stochrsi_pullback/monthly_prev_week_stop_nifty200_stop_atr2",
+ "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend",
+ "breakout/weekly_52w_high_obv_nifty200",
+ "stochrsi_pullback/monthly_prev_week_stop_nifty200_trend_ichimoku",
+ "breakout/weekly_bb_squeeze"
+]

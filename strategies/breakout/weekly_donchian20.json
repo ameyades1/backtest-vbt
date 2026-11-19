@@ -1,0 +1,51 @@
+{
+  "id": "S01a1f4e6-a4f8-7757-8c69-f8b9d2188314",
+  "name": "breakout/weekly_donchian20",
+  "description": "First weekly close above the prior 20-week high, with the monthly close above EMA61. Buy above the signal week's high; stop previous week low; no-target exit on a monthly close below EMA61.",
+  "universe": "NIFTY500",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "W",
+  "setup": {
+    "type": "donchian",
+    "period": 20
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M"
+      ]
+    }
+  },
+  "entry": {
+    "valid_bars": 1
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null,
+      "2R",
+      "P1.5R"
+    ],
+    "ema_close_when_no_target": {
+      "span": 61,
+      "timeframe": "M"
+    },
+    "max_days": null
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

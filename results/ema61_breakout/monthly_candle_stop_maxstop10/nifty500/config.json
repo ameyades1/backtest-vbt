@@ -1,0 +1,45 @@
+{
+  "id": "S01a1f4e6-a503-73ca-aabb-617dc38d67fc",
+  "name": "ema61_breakout/monthly_candle_stop_maxstop10",
+  "description": "Monthly candle opens below and closes above EMA61; buy above its high next month; stop at its low. Only signals with a stop within 10% of entry.",
+  "universe": "NIFTY500",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "ema_breakout",
+    "span": 61
+  },
+  "entry": {
+    "valid_bars": 1
+  },
+  "stop": {
+    "type": "signal_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null,
+      8,
+      15,
+      20,
+      30
+    ],
+    "ema_close_when_no_target": {
+      "span": 61
+    },
+    "max_days": null
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "tightest",
+    "max_stop_pct": 10
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

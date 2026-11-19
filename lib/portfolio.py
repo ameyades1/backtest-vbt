@@ -30,13 +30,19 @@ class Fill:
 
 def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_positions=4,
         fee=0.0, slip=0.0, rank="tightest", start=None, score: pd.DataFrame | None = None,
-        seed: int | None = None, sector_of: dict | None = None, sector_cap: int | None = None):
+        seed: int | None = None, sector_of: dict | None = None, sector_cap: int | None = None,
+        risk_mult: pd.Series | None = None, dd_rule: dict | None = None):
     """rank: order of same-day signals when slots are scarce.
          'tightest' smallest stop % first (default) | 'widest' largest stop % first
          'random'   shuffled with `seed`
          'score_tightest' highest score first, ties by smallest stop %
          'score'    highest value of score.at[entry day, symbol] first (NaN last); the score table
                     must only use data known before the entry day (shift it by one day)
+       risk_mult: day -> multiplier of the risk per new trade (market/breadth/VIX sizing; known before the day)
+       dd_rule:   {"halve": 10, "pause": 15, "pause_days": 21}: after a 10% fall from the equity high, new trades
+                  at half risk until a new high; on reaching a 15% fall, no new trades for 21 trading days (once per
+                  drawdown; re-armed at a new high). Uses the previous day's equity.
+       Trades with weight < 1 (partial-exit legs) get that share of the risk; legs of one stock share a slot.
        sector_cap: at most this many open positions per sector (sector_of: symbol -> sector);
                    signals over the cap count as skipped."""
     risk_amt = capital * risk_pct
@@ -52,10 +58,12 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
     rng = np.random.default_rng(seed)
     cash, open_, fills, skipped = capital, {}, [], 0
     rows = []
+    rm = risk_mult.reindex(days, method="ffill").fillna(1.0) if risk_mult is not None else None
+    peak, halved, prev_eq, pause_used, paused_left = capital, False, capital, False, 0
     for day in days:
         # exits
-        for sym in [s for s, (t, f) in open_.items() if t.exit_date == day]:
-            t, f = open_.pop(sym)
+        for key in [s for s, (t, f) in open_.items() if t.exit_date == day]:
+            t, f = open_.pop(key)
             f.exit, f.exit_date = t.exit, day
             f.proceeds = f.qty * t.exit * (1 - slip) * (1 - fee)
             cash += f.proceeds
@@ -78,19 +86,38 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                 v = score.at[day, t.symbol] if t.symbol in score.columns and day in score.index else np.nan
                 return (np.inf if np.isnan(v) else -v, (t.entry - t.stop) / t.entry)
             cands = sorted(cands, key=_k2)
+        mult = 1.0 if rm is None else float(rm.at[day])
+        if dd_rule:
+            peak = max(peak, prev_eq)
+            dd = (1 - prev_eq / peak) * 100
+            if prev_eq >= peak:
+                halved, pause_used = False, False
+            if dd >= dd_rule.get("halve", 10):
+                halved = True
+            if dd >= dd_rule.get("pause", 15) and not pause_used:
+                pause_used, paused_left = True, dd_rule.get("pause_days", 21)
+            if paused_left > 0:
+                mult, paused_left = 0.0, paused_left - 1
+            elif halved:
+                mult *= 0.5
+        held = {k.split("|")[0] for k in open_}
         for t in cands:
-            if t.symbol in open_:
+            key = f"{t.symbol}|{t.leg}"
+            if key in open_:
                 continue
-            if len(open_) >= max_positions:
+            if t.symbol not in held and len(held) >= max_positions:
+                skipped += 1
+                continue
+            if mult <= 0:
                 skipped += 1
                 continue
             if sector_cap is not None:
                 sec = sector_of.get(t.symbol)
-                if sec is not None and sum(sector_of.get(s) == sec for s in open_) >= sector_cap:
+                if sec is not None and sum(sector_of.get(s) == sec for s in held) >= sector_cap:
                     skipped += 1
                     continue
             px = t.entry * (1 + slip) * (1 + fee)
-            qty = int(risk_amt // (t.entry - t.stop))
+            qty = int(risk_amt * mult * t.weight // (t.entry - t.stop))
             capped = False
             if qty * px > cash:
                 qty, capped = int(cash // px), True
@@ -100,18 +127,21 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
             cost = qty * px
             cash -= cost
             f = Fill(t.symbol, day, None, qty, t.entry, None, t.stop, cost, 0.0, capped)
-            open_[t.symbol] = (t, f)
+            open_[key] = (t, f)
+            held.add(t.symbol)
             if t.exit_date == day:                       # same-day stop/target
                 f.exit, f.exit_date = t.exit, day
                 f.proceeds = qty * t.exit * (1 - slip) * (1 - fee)
                 cash += f.proceeds
                 fills.append(f)
-                del open_[t.symbol]
-        invested = sum(f.qty * closes.at[day, s] for s, (t, f) in open_.items()
-                       if not np.isnan(closes.at[day, s]))
-        rows.append((day, cash, invested, len(open_)))
-    for sym, (t, f) in open_.items():                   # mark open trades to market
-        last = closes[sym].dropna().iloc[-1]
+                del open_[key]
+                held = {k.split("|")[0] for k in open_}
+        invested = sum(f.qty * closes.at[day, t.symbol] for k, (t, f) in open_.items()
+                       if not np.isnan(closes.at[day, t.symbol]))
+        prev_eq = cash + invested
+        rows.append((day, cash, invested, len({k.split("|")[0] for k in open_})))
+    for key, (t, f) in open_.items():                   # mark open trades to market
+        last = closes[t.symbol].dropna().iloc[-1]
         f.proceeds = f.qty * last * (1 - slip) * (1 - fee)
         fills.append(f)
     curve = pd.DataFrame(rows, columns=["date", "cash", "invested", "positions"]).set_index("date")

@@ -1,0 +1,62 @@
+{
+  "id": "S01a1f4e6-a523-717b-a52c-2a397eea08bb",
+  "name": "pullback/weekly_cci_nifty200",
+  "description": "Weekly CCI(20) crosses back above -100, in an uptrend (EMA61 on M/W/D, monthly RSI > 50). Buy above the signal candle's high; stop previous week low; no-target exit on a monthly close below EMA61. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
+  "universe": "NIFTY500",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "W",
+  "setup": {
+    "type": "cci_cross",
+    "period": 20,
+    "level": -100
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M",
+        "W",
+        "D"
+      ]
+    },
+    "rsi_min": {
+      "period": 14,
+      "value": 50,
+      "timeframe": "M"
+    }
+  },
+  "entry": {
+    "valid_bars": 1,
+    "day_filters": {
+      "market_sma": 200
+    }
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null,
+      "2R",
+      "P1.5R"
+    ],
+    "ema_close_when_no_target": {
+      "span": 61,
+      "timeframe": "M"
+    },
+    "max_days": null
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

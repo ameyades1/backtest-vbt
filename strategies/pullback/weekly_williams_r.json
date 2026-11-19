@@ -1,0 +1,59 @@
+{
+  "id": "S01a1f4e6-a526-7b73-a7a3-4d69010e5325",
+  "name": "pullback/weekly_williams_r",
+  "description": "Weekly Williams %R(14) crosses back above -80, in an uptrend (EMA61 on M/W/D, monthly RSI > 50). Buy above the signal candle's high; stop previous week low; no-target exit on a monthly close below EMA61.",
+  "universe": "NIFTY500",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "W",
+  "setup": {
+    "type": "williams_r",
+    "period": 14,
+    "level": -80
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M",
+        "W",
+        "D"
+      ]
+    },
+    "rsi_min": {
+      "period": 14,
+      "value": 50,
+      "timeframe": "M"
+    }
+  },
+  "entry": {
+    "valid_bars": 1
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null,
+      "2R",
+      "P1.5R"
+    ],
+    "ema_close_when_no_target": {
+      "span": 61,
+      "timeframe": "M"
+    },
+    "max_days": null
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

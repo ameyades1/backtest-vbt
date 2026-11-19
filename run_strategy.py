@@ -24,13 +24,56 @@ def load_dailies(universe):
 
 
 def engine_cfg(cfg, target):
-    """Turn a strategy config plus one target (percent or None) into an engine config."""
+    """Turn a strategy config plus one target into an engine config. target: None (no target: trend exit),
+    a percent (8), "2R" (2 x initial risk) or "P1.5R" (sell half at 1.5R, the rest by the no-target exits)."""
     e = {k: cfg[k] for k in ("timeframe", "setup", "filters", "entry", "stop") if k in cfg}
     ex = cfg["exits"]
-    e["exits"] = {"target_pct": None if target is None else target / 100,
-                  "ema_close": ex.get("ema_close_when_no_target") if target is None else None,
+    trend = target is None or (isinstance(target, str) and target.startswith("P"))
+    e["exits"] = {"target_pct": target / 100 if isinstance(target, (int, float)) else None,
+                  "ema_close": ex.get("ema_close_when_no_target") if trend else None,
                   "max_days": ex.get("max_days")}
+    if trend and ex.get("supertrend_exit_when_no_target"):
+        e["exits"]["supertrend_exit"] = ex["supertrend_exit_when_no_target"]
+    if isinstance(target, str) and target.startswith("P"):
+        e["exits"]["partial"] = {"frac": ex.get("partial_frac", 0.5), "at_r": float(target[1:-1])}
+    elif isinstance(target, str):
+        e["exits"]["target_r"] = float(target[:-1])
     return e
+
+
+def label(tg):
+    return "No target" if tg is None else f"Target {tg:g}%" if isinstance(tg, (int, float)) else f"Target {tg}"
+
+
+def fid(tg):
+    return "none" if tg is None else f"{tg:g}" if isinstance(tg, (int, float)) else tg
+
+
+_BREADTH = {}
+
+
+def risk_mult(rules, closes):
+    """Day -> risk multiplier from sizing.risk_rules (market_sma, breadth, vix); uses data known before the day."""
+    m = pd.Series(1.0, index=closes.index)
+    if "market_sma" in rules:
+        r = rules["market_sma"]
+        ok = market.regime(r.get("days", 200)).astype(float).reindex(closes.index, method="ffill").fillna(1) > 0
+        m[~ok.shift(1, fill_value=True)] *= r.get("mult", 0.5)
+    if "breadth" in rules:
+        r = rules["breadth"]
+        k = (tuple(closes.columns), r.get("days", 200))
+        if k not in _BREADTH:
+            c = closes.ffill()
+            sm = c.rolling(r.get("days", 200), min_periods=r.get("days", 200)).mean()
+            valid = sm.notna()
+            _BREADTH[k] = ((c > sm) & valid).sum(axis=1) / valid.sum(axis=1).replace(0, np.nan) * 100
+        b = _BREADTH[k].shift(1)
+        m[(b < r.get("min", 40)).fillna(False)] *= r.get("mult", 0.5)
+    if "vix" in rules:
+        r = rules["vix"]
+        v = data.load(["^INDIAVIX"])["Close"]["^INDIAVIX"].reindex(closes.index, method="ffill").shift(1)
+        m[(v > r.get("max", 25)).fillna(False)] *= r.get("mult", 0.5)
+    return m
 
 
 _TRADES = {}      # engine config + market filter + universe size -> trades; ranking variants reuse them
@@ -49,24 +92,27 @@ def run(cfg, closes, dailies, out):
         f.unlink()
     rows, curves = {}, {}
     score = scores.table(siz["score"], dailies) if "score" in siz else None
+    rm = risk_mult(siz["risk_rules"], closes) if siz.get("risk_rules") else None
     for tg in cfg["exits"]["targets_pct"]:
         ec = engine_cfg(cfg, tg)
         mdays = ec.get("entry", {}).get("day_filters", {}).get("market_sma") or ec["stop"].get("market_sma")
         mk = market.regime(mdays) if mdays else None
-        key = (json.dumps(ec, sort_keys=True), len(dailies), end)
+        key = (json.dumps(ec, sort_keys=True), tuple(dailies), end)
         if key not in _TRADES:
             _TRADES[key] = [t for s, df in dailies.items() for t in engine.simulate(df, s, ec, mk)]
         trades = _TRADES[key]
         trades = [t for t in trades if t.entry_date >= pd.Timestamp(start)]
-        label = "No target" if tg is None else f"Target {tg:g}%"
+        if siz.get("max_stop_pct"):
+            trades = [t for t in trades if (t.entry - t.stop) / t.entry * 100 <= siz["max_stop_pct"]]
+        lbl = label(tg)
         sd = np.array([(t.entry - t.stop) / t.entry * 100 for t in trades if t.stop is not None])
         curve, fills, skipped = portfolio.run(trades, closes, siz["capital"], siz["risk_pct"] / 100,
                                               siz["max_positions"], fee, slip, siz.get("rank", "tightest"), start,
-                                              score=score)
-        rows[label] = {"Signals filled": len(trades), "Median stop %": np.median(sd) if len(sd) else np.nan,
+                                              score=score, risk_mult=rm, dd_rule=siz.get("dd_rule"))
+        rows[lbl] = {"Signals filled": len(trades), "Median stop %": np.median(sd) if len(sd) else np.nan,
                        **portfolio.summary(curve, fills, skipped, siz["capital"], siz["max_positions"])}
-        curves[label] = curve["equity"]
-        pd.DataFrame([vars(f) for f in fills]).to_csv(out / f"fills_{'none' if tg is None else f'{tg:g}'}.csv",
+        curves[lbl] = curve["equity"]
+        pd.DataFrame([vars(f) for f in fills]).to_csv(out / f"fills_{fid(tg)}.csv",
                                                       index=False)
     tab = pd.DataFrame(rows).T
     tab.to_csv(out / "summary.csv")

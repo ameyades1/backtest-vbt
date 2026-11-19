@@ -37,13 +37,18 @@ Config (a dict, normally loaded from JSON):
                                                    next open after a close below EMA (signal timeframe
                                                    unless `timeframe` is given)
                "max_days": 180 | null}             open of the first day >= N calendar days after entry
+Also: setups rsi_pullback, williams_r, cci_cross, ema_touch, donchian, bb_squeeze, rs_high, candle_pattern;
+filters adx, supertrend, sma_rising, ichimoku, volume, obv_high (each {"timeframe": ...}); entry
+"delay_days"; exits "target_r" (multiple of initial risk), "partial" {"frac", "at_r"} (sell `frac` at
+at_r x risk, the rest by the other exits; returned as two Trades with weights), "supertrend_exit".
 Fill rules: gaps fill at Open; each day checks time, gap-stop, gap-target, EMA exit, stop, target
 in that order; the entry day checks only the Close. One open trade per stock.
 """
 from dataclasses import dataclass
 import numpy as np
 import pandas as pd
-from .indicators import resample, ema, rsi, stoch_rsi, macd
+from .indicators import (resample, RESAMPLE, ema, rsi, stoch_rsi, macd, sma, atr, adx, supertrend, williams_r,
+                         cci, ichimoku_above_cloud, obv, bollinger)
 
 
 @dataclass
@@ -56,6 +61,44 @@ class Trade:
     exit: float | None
     reason: str
     stop: float | None = None
+    weight: float = 1.0          # share of the position (partial exits split one trade into legs)
+    leg: str = ""
+
+
+_NIFTY = None
+
+
+def nifty_close() -> pd.Series:
+    """NIFTY 50 close, with the Sensex (scaled at the splice) before NIFTY's Yahoo history starts."""
+    global _NIFTY
+    if _NIFTY is None:
+        from . import data
+        c = data.load(["^NSEI", "^BSESN"])["Close"]
+        n, x = c["^NSEI"].dropna(), c["^BSESN"].dropna()
+        _NIFTY = pd.concat([x[x.index < n.index[0]] / x.asof(n.index[0]) * n.iloc[0], n])
+    return _NIFTY
+
+
+def _tf_bool(daily, bars, tf, ftf, fn, last_day):
+    """Evaluate a per-candle boolean `fn(bars_of_ftf)` and align it to the signal candles (last completed
+    `ftf` candle at each signal candle's close)."""
+    if ftf == tf:
+        return fn(bars).fillna(False).to_numpy(dtype=bool)
+    if ftf == "D":
+        return fn(daily).fillna(False).to_numpy(dtype=bool)[last_day]
+    fb = resample(daily, ftf)
+    return _on_candles(daily, ftf, fn(fb).fillna(False).to_numpy(dtype=bool), last_day)[0]
+
+
+FILTERS = {   # name -> (cfg -> fn(bars) -> bool Series)
+    "adx": lambda c: lambda b: (lambda a: (a[0] >= c.get("min", 20)) & (a[1] > a[2]))(adx(b, c.get("period", 14))),
+    "supertrend": lambda c: lambda b: supertrend(b, c.get("period", 10), c.get("mult", 3.0)),
+    "sma_rising": lambda c: lambda b: (lambda m: (b["Close"] > m) & (m > m.shift(c.get("slope_bars", 4))))(
+        sma(b["Close"], c.get("period", 40))),
+    "ichimoku": lambda c: lambda b: ichimoku_above_cloud(b),
+    "volume": lambda c: lambda b: b["Volume"] > c.get("mult", 1.5) * b["Volume"].shift().rolling(c.get("period", 20)).mean(),
+    "obv_high": lambda c: lambda b: (lambda o: o >= o.rolling(c.get("period", 26)).max())(obv(b)),
+}
 
 
 def _on_candles(daily, ftf, values, last_day):
@@ -102,6 +145,35 @@ def _signal_mask(daily, bars, tf, cfg):
         m, ms, _ = macd(bars["Close"], *setup.get("macd", [12, 26, 9]))
         mx = ((m > ms) & (m.shift() <= ms.shift()) & (m < 0)).to_numpy()
         sig = mx & (since <= 7 * setup.get("window_weeks", 13))
+    elif setup["type"] == "rsi_pullback":                 # RSI(n) below level (e.g. RSI(2) < 10)
+        sig = (rsi(bars["Close"], setup.get("period", 2)) < setup.get("level", 10)).to_numpy()
+    elif setup["type"] == "williams_r":                   # %R crosses up through level (-80)
+        w = williams_r(bars, setup.get("period", 14)); lv = setup.get("level", -80)
+        sig = ((w > lv) & (w.shift() <= lv)).to_numpy()
+    elif setup["type"] == "cci_cross":                    # CCI crosses back above level (-100)
+        x = cci(bars, setup.get("period", 20)); lv = setup.get("level", -100)
+        sig = ((x > lv) & (x.shift() <= lv)).to_numpy()
+    elif setup["type"] == "ema_touch":                    # Low reaches the EMA, Close back above it
+        e = ema(bars["Close"], setup.get("span", 21))
+        sig = ((bars["Low"] <= e) & (bars["Close"] > e)).to_numpy()
+    elif setup["type"] == "donchian":                     # first close above the prior N-candle high
+        hh = bars["High"].shift().rolling(setup.get("period", 20)).max()
+        sig = ((bars["Close"] > hh) & (bars["Close"].shift() <= hh.shift())).to_numpy()
+    elif setup["type"] == "bb_squeeze":                   # close crosses the upper band after a squeeze
+        lo, m, up = bollinger(bars["Close"], setup.get("period", 20), setup.get("k", 2.0))
+        wd = (up - lo) / m
+        sq = (wd <= wd.rolling(setup.get("lookback", 26)).min()).astype(int).rolling(setup.get("recent", 4)).max() > 0
+        sig = ((bars["Close"] > up) & (bars["Close"].shift() <= up.shift()) & sq).to_numpy()
+    elif setup["type"] == "rs_high":                      # stock / NIFTY ratio makes a new N-candle high
+        nb = nifty_close().reindex(daily.index, method="ffill").resample(RESAMPLE[tf]).last().reindex(bars.index)
+        r = bars["Close"] / nb
+        mx = r.shift().rolling(setup.get("period", 26)).max()
+        sig = ((r > mx) & (r.shift() <= mx.shift())).fillna(False).to_numpy()
+    elif setup["type"] == "candle_pattern":
+        import talib
+        o, h, l, c = (bars[x].to_numpy(dtype=float) for x in ("Open", "High", "Low", "Close"))
+        out = getattr(talib, setup["pattern"])(o, h, l, c)
+        sig = out > 0
     else:
         raise ValueError(f"unknown setup {setup['type']}")
     sig = sig.copy()
@@ -123,6 +195,10 @@ def _signal_mask(daily, bars, tf, cfg):
         rb = bars if rtf == tf else resample(daily, rtf)
         ok = (rsi(rb["Close"], f["rsi_min"].get("period", 14)) > f["rsi_min"]["value"]).to_numpy()
         sig &= ok if rtf == tf else _on_candles(daily, rtf, ok, last_day)[0]
+    for name, mk in FILTERS.items():
+        if name in f:
+            fc = f[name]
+            sig &= _tf_bool(daily, bars, tf, fc.get("timeframe", tf), mk(fc), last_day)
     return sig
 
 
@@ -140,7 +216,7 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
     stype = stop_cfg.get("type", "none")
     mt = stop_cfg.get("market_tighten")                 # None | "weekly_low" | "exit"
     need_weeks = stype == "prev_week_low" or stop_cfg.get("trail") == "weekly_low" or "weekly_ema" in dayf \
-        or mt == "weekly_low"
+        or mt == "weekly_low" or stop_cfg.get("trail") == "atr"
     if need_weeks:
         w = resample(daily, "W")
         w_end = np.searchsorted(days, w.index, side="right")
@@ -154,6 +230,10 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
         if market is None:
             raise ValueError("market_sma filter / market_tighten need the market regime (lib.market.regime)")
         mkt_ok = market.astype(float).shift(1).reindex(days, method="ffill").fillna(0).to_numpy() > 0
+    if stype == "atr" or stop_cfg.get("trail") == "atr":
+        d_atr = atr(daily, stop_cfg.get("period", 14)).to_numpy()
+    delay = entry_cfg.get("delay_days", 0)
+    part = ex.get("partial")                              # {"frac": 0.5, "at_r": 1.5}
     target = ex.get("target_pct")
     max_days = ex.get("max_days")
     ema_exit = set()
@@ -163,10 +243,17 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
         e_end = bar_end if etf == tf else np.searchsorted(days, eb.index, side="right")
         below = (eb["Close"] < ema(eb["Close"], ex["ema_close"].get("span", 61))).to_numpy()
         ema_exit = {e_end[i] for i in np.flatnonzero(below)}
+    if ex.get("supertrend_exit"):
+        sc = ex["supertrend_exit"]
+        stf = sc.get("timeframe", tf)
+        sb = bars if stf == tf else resample(daily, stf)
+        s_end = bar_end if stf == tf else np.searchsorted(days, sb.index, side="right")
+        bear = (~supertrend(sb, sc.get("period", 10), sc.get("mult", 3.0))).to_numpy()
+        ema_exit = ema_exit | {s_end[i] for i in np.flatnonzero(bear)}
 
     trades, free = [], 0
     for b in np.flatnonzero(sig):
-        start = bar_end[b]
+        start = bar_end[b] + delay
         if start < free or start >= len(days):
             continue
         end = bar_end[min(b + valid, len(bars) - 1)] if b + valid < len(bars) else len(days)
@@ -196,6 +283,11 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
             stop = bars["Low"].iat[b]
         elif stype == "prev_week_low":
             stop = w_low[last_w[k]]
+        elif stype == "atr":
+            a = d_atr[k - 1] if k > 0 else np.nan
+            if np.isnan(a):
+                continue
+            stop = entry - stop_cfg.get("mult", 2.0) * a
         elif stype == "trail_pct":
             trail_amt = entry * stop_cfg["pct"]
             stop = entry - trail_amt
@@ -203,8 +295,13 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
             stop = -np.inf
         if stop >= entry:
             continue
-        init_stop = stop if stype in ("signal_low", "prev_week_low") else None
+        init_stop = stop if stype in ("signal_low", "prev_week_low", "atr") else None
+        risk = entry - stop
         tgt = entry * (1 + target) if target is not None else np.inf
+        if ex.get("target_r") is not None:
+            tgt = entry + ex["target_r"] * risk
+        ptgt = entry + part["at_r"] * risk if part else np.inf
+        p_px = p_day = None
         exit_px = exit_day = None
         reason = "open"
         c = d[k, 3]
@@ -219,6 +316,8 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
                     stop = hh - trail_amt
                 elif stop_cfg.get("trail") == "weekly_low" and last_w[j] > last_w[k]:
                     stop = max(stop, w_low[last_w[j]])
+                elif stop_cfg.get("trail") == "atr" and not np.isnan(d_atr[j - 1]):
+                    stop = max(stop, hh - stop_cfg.get("trail_mult", 3.0) * d_atr[j - 1])
                 if mt == "weekly_low" and not mkt_ok[j] and last_w[j] >= 0:
                     stop = max(stop, w_low[last_w[j]])
                 o, h, l = d[j, 0], d[j, 1], d[j, 2]
@@ -230,15 +329,26 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
                     exit_px, exit_day, reason = o, j, "stop-gap"; break
                 if o >= tgt:
                     exit_px, exit_day, reason = o, j, "target-gap"; break
+                if p_px is None and o >= ptgt:
+                    p_px, p_day = o, j
                 if j in ema_exit:
                     exit_px, exit_day, reason = o, j, "close<ema"; break
                 if l <= stop:
                     exit_px, exit_day, reason = stop, j, "stop"; break
                 if h >= tgt:
                     exit_px, exit_day, reason = tgt, j, "target"; break
+                if p_px is None and h >= ptgt:
+                    p_px, p_day = ptgt, j
                 hh = max(hh, h)
-        trades.append(Trade(symbol, bars.index[b], days[k], entry,
-                            days[exit_day] if exit_day is not None else None,
-                            exit_px, reason, init_stop))
+        if p_px is not None:                              # partial profit taken: two legs
+            trades.append(Trade(symbol, bars.index[b], days[k], entry, days[p_day], p_px, "partial", init_stop,
+                                part["frac"], "p"))
+            trades.append(Trade(symbol, bars.index[b], days[k], entry,
+                                days[exit_day] if exit_day is not None else None, exit_px, reason, init_stop,
+                                1 - part["frac"], ""))
+        else:
+            trades.append(Trade(symbol, bars.index[b], days[k], entry,
+                                days[exit_day] if exit_day is not None else None,
+                                exit_px, reason, init_stop))
         free = (exit_day + 1) if exit_day is not None else len(days)
     return trades

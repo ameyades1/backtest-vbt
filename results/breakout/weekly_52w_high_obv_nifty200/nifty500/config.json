@@ -1,0 +1,58 @@
+{
+  "id": "S01a1f4e6-a4f4-793f-a83b-4c4ffb92d87e",
+  "name": "breakout/weekly_52w_high_obv_nifty200",
+  "description": "First weekly close at a new 52-week high, with the monthly close above EMA61 and OBV at a 26-week high. Buy above the signal week's high; stop previous week low; no-target exit on a monthly close below EMA61. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
+  "universe": "NIFTY500",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "W",
+  "setup": {
+    "type": "donchian",
+    "period": 52
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M"
+      ]
+    },
+    "obv_high": {
+      "timeframe": "W",
+      "period": 26
+    }
+  },
+  "entry": {
+    "valid_bars": 1,
+    "day_filters": {
+      "market_sma": 200
+    }
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null,
+      "2R",
+      "P1.5R"
+    ],
+    "ema_close_when_no_target": {
+      "span": 61,
+      "timeframe": "M"
+    },
+    "max_days": null
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

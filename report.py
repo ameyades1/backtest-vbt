@@ -60,8 +60,20 @@ SCORE_TEXT = {
 
 def rules(c):
     s, tf = c["setup"], TF[c["timeframe"]]
+    T = tf.capitalize()
+    NEW = {"rsi_pullback": lambda: f"{T} RSI({s.get('period', 2)}) below {s.get('level', 10)}",
+           "williams_r": lambda: f"{T} Williams %R({s.get('period', 14)}) crosses back above {s.get('level', -80)}",
+           "cci_cross": lambda: f"{T} CCI({s.get('period', 20)}) crosses back above {s.get('level', -100)}",
+           "ema_touch": lambda: f"{T} low touches EMA{s.get('span', 21)} and the close is above it",
+           "donchian": lambda: f"First {tf} close above the highest high of the prior {s.get('period', 20)} {tf[:-2]}s",
+           "bb_squeeze": lambda: (f"{T} close crosses above the upper Bollinger band ({s.get('period', 20)},"
+                                  f"{s.get('k', 2.0):g}) within {s.get('recent', 4)} candles of a "
+                                  f"{s.get('lookback', 26)}-candle low in band width"),
+           "rs_high": lambda: f"Stock / NIFTY 50 ratio makes a new {s.get('period', 26)}-{tf[:-2]} high"}
     if s["type"] == "ema_breakout":
         setup = f"{tf.capitalize()} candle opens below and closes above EMA{s['span']}"
+    elif s["type"] in NEW:
+        setup = NEW[s["type"]]()
     else:
         stf = "monthly" if s["type"] == "stochrsi_wmacd" else tf
         setup = (f"{stf.capitalize()} Stochastic RSI ({s['rsi']},{s['stoch']},{s['k']},{s['d']}): %K crosses above %D "
@@ -82,6 +94,15 @@ def rules(c):
                      + ", ".join(TF[x] for x in f["trend_ema"]["timeframes"]) + " (last completed bars)"])
     if "rsi_min" in f:
         rows.append(["Momentum", f"{TF[f['rsi_min'].get('timeframe', c['timeframe'])].capitalize()} RSI({f['rsi_min']['period']}) > {f['rsi_min']['value']}"])
+    FT = {"adx": lambda v: f"ADX({v.get('period', 14)}) >= {v.get('min', 20)} with +DI > -DI",
+          "supertrend": lambda v: f"Supertrend({v.get('period', 10)},{v.get('mult', 3):g}) bullish",
+          "sma_rising": lambda v: f"close above a rising {v.get('period', 40)}-candle average",
+          "ichimoku": lambda v: "close above the Ichimoku cloud",
+          "volume": lambda v: f"signal-candle volume above {v.get('mult', 1.5):g} x its {v.get('period', 20)}-candle average",
+          "obv_high": lambda v: f"on-balance volume at a {v.get('period', 26)}-candle high"}
+    for k, fn in FT.items():
+        if k in f:
+            rows.append(["Filter", f"{TF[f[k].get('timeframe', c['timeframe'])].capitalize()} " + fn(f[k])])
     e = c.get("entry", {})
     ent = f"Buy above the signal candle's high during the next {e.get('valid_bars', 1)} {tf} candle(s)"
     df = e.get("day_filters", {})
@@ -91,10 +112,15 @@ def rules(c):
              "daily_ema": f"yesterday's close >= daily EMA{df.get('daily_ema')}",
              "market_sma": f"NIFTY 50 closed above its {df.get('market_sma')}-day average yesterday "
                            f"(Sensex before mid-2008)"}[k] for k in df)
+    if e.get("delay_days"):
+        ent += f"; entry no earlier than {e['delay_days']} trading day(s) after the signal candle"
     rows.append(["Entry", ent])
     st = c["stop"]
     stop = {"signal_low": "Signal candle's low", "prev_week_low": "Low of the previous completed week",
-            "trail_pct": f"Trailing {st.get('pct', 0) * 100:g}% (fixed rupees)", "none": "None"}[st["type"]]
+            "trail_pct": f"Trailing {st.get('pct', 0) * 100:g}% (fixed rupees)", "none": "None",
+            "atr": f"{st.get('mult', 2):g} x daily ATR({st.get('period', 14)}) below entry"}[st["type"]]
+    if st.get("trail") == "atr":
+        stop += f", trailed at the highest high since entry minus {st.get('trail_mult', 3):g} x ATR"
     if st.get("trail") == "weekly_low":
         stop += ", raised to each completed week's low"
     if st.get("market_tighten") == "weekly_low":
@@ -107,10 +133,15 @@ def rules(c):
     tg = [t for t in ex["targets_pct"] if t is not None]
     xs = []
     if tg:
-        xs.append("targets " + ", ".join(f"{t:g}%" for t in tg))
+        xs.append("targets " + ", ".join(f"{t:g}%" if isinstance(t, (int, float)) else
+                                         (f"half at {t[1:]} (rest by the trend exit)" if t.startswith("P") else t)
+                                         for t in tg) + ("; R = initial risk (entry minus stop)"
+                                                         if any(isinstance(t, str) for t in tg) else ""))
     if None in ex["targets_pct"]:
         xs.append(f"no target (exit on {TF[ex['ema_close_when_no_target'].get('timeframe', c['timeframe'])]} close below EMA{ex['ema_close_when_no_target']['span']})"
-                  if ex.get("ema_close_when_no_target") else "no target (stop only)")
+                  if ex.get("ema_close_when_no_target") else
+                  (f"no target (exit when the {TF[ex['supertrend_exit_when_no_target'].get('timeframe', 'W')]} "
+                   f"Supertrend turns bearish)" if ex.get("supertrend_exit_when_no_target") else "no target (stop only)"))
     if ex.get("max_days"):
         xs.append(f"time exit after {ex['max_days']} days")
     rows.append(["Exits", "; ".join(xs)])
@@ -119,6 +150,23 @@ def rules(c):
                  f"open trades; " + (SCORE_TEXT.get(z["score"]["type"], z["score"]["type"])
                  + (", ties by 12-month return" if z["score"].get("tiebreak") == "mom12" else ", ties by tightest stop")
                  if z.get("score") else "tightest stop filled first")])
+    extra = []
+    if z.get("max_stop_pct"):
+        extra.append(f"only signals with a stop within {z['max_stop_pct']:g}% of entry")
+    if z.get("dd_rule"):
+        d = z["dd_rule"]
+        extra.append(f"half risk after a {d.get('halve', 10)}% fall from the equity high until a new high; no new "
+                     f"trades for {d.get('pause_days', 21)} trading days on reaching {d.get('pause', 15)}%")
+    rr = z.get("risk_rules", {})
+    if "market_sma" in rr:
+        extra.append(f"x{rr['market_sma'].get('mult', 0.5):g} risk while NIFTY 50 is below its 200-day average")
+    if "breadth" in rr:
+        extra.append(f"x{rr['breadth'].get('mult', 0.5):g} risk while under {rr['breadth'].get('min', 40)}% of the "
+                     f"universe is above its 200-day average")
+    if "vix" in rr:
+        extra.append(f"x{rr['vix'].get('mult', 0.5):g} risk while India VIX is above {rr['vix'].get('max', 25)}")
+    if extra:
+        rows.append(["Sizing rules", "; ".join(extra)])
     k = c["costs"]
     rows.append(["Costs", f"{k['broker'].capitalize()} {k['product']} fees + {k['slippage_pct']:g}% slippage per side"])
     return [[a, Paragraph(b, SM)] for a, b in rows[1:]], rows[0]

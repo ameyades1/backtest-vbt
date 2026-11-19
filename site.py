@@ -1,4 +1,4 @@
-"""Build docs/index.html: one sortable table of every 1% risk / 8 slot run in results/.
+"""Build docs/index.html: one sortable table of every run in results/.
 
     python site.py
 
@@ -31,8 +31,6 @@ for cfgp in sorted(ROOT.glob("results/*/*/*/config.json")):
     run = cfgp.parent
     c = json.load(open(cfgp))
     z = c["sizing"]
-    if z["risk_pct"] != 1.0 or z["max_positions"] != 8:
-        continue
     fee = fee_per_side(c["costs"]["broker"], c["costs"]["product"]); slip = c["costs"]["slippage_pct"] / 100
     S = pd.read_csv(run / "summary.csv", index_col=0)
     for ex, s in S.iterrows():
@@ -51,6 +49,8 @@ for cfgp in sorted(ROOT.glob("results/*/*/*/config.json")):
         yrs = (pd.Timestamp(f.exit_date.max()) - pd.Timestamp(c["period"]["start"])).days / 365.25
         rows.append({
             "id": IDS.get(c["name"], ""), "sid": ids.short(IDS[c["name"]]) if c["name"] in IDS else "",
+            "risk": z["risk_pct"], "slots": z["max_positions"],
+            "sizing": ", ".join(k for k in ("dd_rule", "risk_rules", "max_stop_pct") if z.get(k)) or "fixed",
             "family": run.parts[-3], "variant": run.parts[-2], "universe": run.parts[-1].upper(), "exit": ex,
             "mkt": f"NIFTY > {c['entry']['day_filters']['market_sma']}-DMA"
                    if "market_sma" in c.get("entry", {}).get("day_filters", {}) else "none",
@@ -74,6 +74,8 @@ COLS = [  # key, header, format, tooltip
     ("strategy", "Strategy", None, "Strategy family / variant"),
     ("universe", "Universe", None, "Stocks traded (today's index members)"),
     ("exit", "Exit", None, "Fixed target, or no target (trend exit)"),
+    ("risk", "Risk %", "{:g}", "Risk per trade, % of starting capital"),
+    ("slots", "Slots", "{:d}", "Maximum open trades"),
     ("mkt", "Market filter", None, "New entries only when NIFTY 50 is above its 200-day average"),
     ("win", "Win %", "{:.0f}", "Share of closed trades that made money after costs"),
     ("avg_ret", "Avg trade %", "{:+.1f}", "Average net return per trade"),
@@ -90,7 +92,7 @@ COLS = [  # key, header, format, tooltip
     ("streak", "Max losing streak", "{:d}", "Most consecutive losing trades (by exit date)"),
     ("hold", "Median days", "{:.0f}", "Median holding period in calendar days"),
     ("deployed", "Deployed %", "{:.0f}", "Average share of equity in open positions"),
-    ("skipped", "Skipped", "{:,}", "Signals not taken because all 8 slots were full or cash ran out"),
+    ("skipped", "Skipped", "{:,}", "Signals not taken because all slots were full, cash ran out or a sizing rule paused entries"),
     ("cost_pct", "Costs % of gross", "{:.0f}", "Fees + slippage as a share of profit before costs"),
     ("pdf", "Report", None, "Full PDF report"),
 ]
@@ -103,6 +105,8 @@ GLOSSARY = {
     "Universe": "The stocks the strategy could trade: today's NIFTY 500 or NIFTY 50 members.",
     "Exit": "How winners are closed. 'Target X%' sells when price rises X% above entry. 'No target' holds until the "
             "trend exit (a close below EMA61 on the signal timeframe) or the stop. Every trade also has a stop loss.",
+    "Risk %": "Rupees risked per trade (entry minus stop, times quantity) as a % of starting capital. Most runs use 1%.",
+    "Slots": "Maximum number of open trades at once. Most runs use 8.",
     "Market filter": "'NIFTY > 200-DMA' means no new trades are opened while NIFTY 50 closed below its 200-day "
                      "simple moving average the day before (BSE Sensex is used before mid-2008, when NIFTY data "
                      "starts). Open trades are not sold by the filter. 'none' means no market filter.",
@@ -171,6 +175,7 @@ opts = "".join(f'<option value="{f}">{f}</option>' for f in families)
 STUDY_TITLES = {"slot_ranking": "Slot ranking: which signals should fill the 8 slots",
                 "market_filter": "NIFTY 200-day market filter on every strategy",
                 "market_tighten": "Tightening stops / exiting when NIFTY is below its 200-day average",
+                "overnight": "Overnight study: robustness, sizing, high win-rate fixes, new indicators",
                 "signal_rank": "Ranking signals with MACD and candlestick patterns",
                 "stochrsi_macd": "MACD with the StochRSI pullback: monthly gate, weekly gate, ranking"}
 studies = "".join(f'<li><a href="{REPO}{p.relative_to(ROOT).as_posix()}">'
@@ -204,7 +209,7 @@ h2{{font-size:17px;margin:24px 0 8px}}
 .notes{{margin-top:16px;font-size:12.5px;color:var(--mut)}} .notes li{{margin:2px 0}}
 </style></head><body><main>
 <h1>Strategy scoreboard</h1>
-<p>Every backtest at <b>1% risk per trade, 8 slots</b>, ₹1,00,000 starting capital, from 2000. Click a header to sort; hover a header for its meaning.</p>
+<p>Every backtest (most at <b>1% risk per trade, 8 slots</b>; see the Risk and Slots columns), ₹1,00,000 starting capital, from 2000. Click a header to sort; hover a header for its meaning.</p>
 <div class="bar"><label>Strategy <select id="fam"><option value="">All</option>{opts}</select></label>
 <label>Market filter <select id="mkt"><option value="">All</option><option>none</option><option>NIFTY &gt; 200-DMA</option></select></label>
 <span id="count" class="v"></span></div>
