@@ -14,3 +14,4 @@ data/nifty50_stochrsi_*/
 results/**/fills_*.csv
 results/**/equity.csv
 results/**/equity_*.csv
+results/studies/overnight/nohup.out

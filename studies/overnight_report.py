@@ -216,7 +216,32 @@ if len(p3):
     b = p3.iloc[0]
     summ.append(f"<b>Best fix for the 74% win-rate strategy</b>: {b['id']} {b['name']} ({b['exit']}): "
                 f"{fmt(b['CAGR'])}% / {fmt(b['DD'], '{:.0f}')}%, win {fmt(b['Win'], '{:.0f}')}%.")
-story += [Paragraph("Headlines (computed)", H2)] + bl(summ)
+NOTES = [
+    "<b>The main strategy's edge is real but fragile.</b> It earns 10-11% a year on NIFTY 50, NIFTY 100 and Midcap 150 "
+    "as well (6-8% on Smallcap 250), so it is not a NIFTY 500 accident. But removing its 5 best trades cuts CAGR from "
+    "11% to under 5%, and removing 10 leaves about 0-1%. Started fresh in each 5-year window it made 5-9% a year "
+    "until 2019 and 32% after 2020; the 200-DMA version lost 7% a year with a 62% drawdown in 2015-19.",
+    "<b>Parameters are a plateau, not a peak.</b> EMA 55/61/89, oversold 30/40 and RSI 40/50 all give 10.5-12.4% "
+    "CAGR. EMA34, EMA144 and RSI 60 are clearly worse. Entering 1-2 days late costs little. Good: 61/30/50 is not a "
+    "lucky choice.",
+    "<b>Sizing rules do not cut the drawdown.</b> Drawdown halving, VIX, breadth and NIFTY-based half sizing all leave "
+    "the drawdown at 38-43% and cost 0.7-2 points of CAGR. With the 200-DMA entry filter, NIFTY-based sizing changes "
+    "nothing (no entries happen below the average anyway). Risk per trade scales CAGR (0.75%: 10.7%, 2%: 14.5% with "
+    "the filter) with only a small rise in drawdown, because a few positions dominate either way.",
+    "<b>Best new idea: a 2 x ATR stop on the main strategy (Sd07eb46e)</b>: 12.3% / -30% on NIFTY 500 against "
+    "11.8% / -39%. But the hold-out (2019+) is weak (2.1% / -28%) and on Midcap/Smallcap the drawdown is 53%. "
+    "Worth a closer look, not a switch.",
+    "<b>Supertrend exit (S3f9854aa)</b> gives the shallowest drawdowns of the trend strategies (-16% to -28% on every "
+    "universe) at 5.5-9% CAGR, with 3x more trades and less dependence on a few winners (top-5 share 60%). The most "
+    "robust risk-reducing change found so far.",
+    "<b>Breakouts with a 2R target</b> (Donchian 55 / 52-week high, with the market filter) are steady but small: "
+    "about 4.5-5% CAGR with a -12% drawdown, 47% wins, and profits spread over many trades (top-5 share 8-20%).",
+    "<b>The 74% win-rate strategy</b>: R-multiple targets fix the payoff (3R: 4.1% / -11%, 49% wins) and more slots "
+    "raise CAGR (24 slots, 30% target: 5.1% / -23%), but nothing tested gets it above about 5% a year.",
+    "<b>No new trigger beats StochRSI.</b> Williams %R, CCI, EMA21 touch and daily RSI(2) pullbacks, and Donchian, "
+    "Bollinger and relative-strength breakouts, all land at or below 10% with similar or deeper drawdowns.",
+]
+story += [Paragraph("Headlines (computed)", H2)] + bl(summ) + [Paragraph("Reviewer's notes", H2)] + bl(NOTES)
 
 # phase 1
 story += [PageBreak(), Paragraph("Phase 1 · Is the main strategy's edge real?", H2),
@@ -224,8 +249,10 @@ story += [PageBreak(), Paragraph("Phase 1 · Is the main strategy's edge real?",
           table(wf_rows, [40 * mm] + [26 * mm] * 5),
           Paragraph("Remove the best trades (no-target exit; simple sum of trade P&amp;L)", P),
           table(top_rows, [50 * mm, 25 * mm, 30 * mm, 30 * mm]),
-          Paragraph("Monte Carlo: 1,000 reshuffles of the trade order (fixed ₹ risk, trades taken one after another; "
-                    "ignores overlap, so it shows sequence risk, not exact portfolio paths)", P),
+          Paragraph("Monte Carlo: 1,000 reshuffles of the closed-trade order (fixed ₹ risk, one trade after another). "
+                    "<b>Caution:</b> this counts only realised P&amp;L. The real drawdowns come from open positions "
+                    "falling in value before they are closed, so these figures badly understate the risk; use the "
+                    "actual and walk-forward drawdowns instead. The losing-streak figure is still meaningful.", P),
           table(mc_rows, [40 * mm, 24 * mm, 22 * mm, 24 * mm, 22 * mm, 26 * mm]),
           Paragraph("Other universes", P)]
 urows = [HDR]
