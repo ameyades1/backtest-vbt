@@ -104,3 +104,25 @@ def check() -> bool:
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "check"
     sys.exit(0 if (assign() if cmd == "assign" else check()) else 1)
+
+
+def pdf_section(names, h2_style, fs=7.2):
+    """ReportLab flowables for a study PDF: heading + table of short ID, full ID and name for each strategy."""
+    from reportlab.lib import colors
+    from reportlab.lib.units import mm
+    from reportlab.platypus import Paragraph, Table, TableStyle, KeepTogether
+    m = by_name()
+    seen, rows = set(), [["ID", "Full ID", "Strategy"]]
+    for n in names:
+        if n in seen:
+            continue
+        seen.add(n)
+        rows.append([short(m[n]) if n in m else "–", m.get(n, "(no config)"), n])
+    tb = Table(rows, colWidths=[20 * mm, 70 * mm, 86 * mm], repeatRows=1)
+    tb.setStyle(TableStyle([
+        ("FONT", (0, 0), (-1, 0), "Helvetica-Bold", fs), ("FONT", (0, 1), (-1, -1), "Helvetica", fs),
+        ("FONT", (0, 1), (1, -1), "Courier", fs - .6),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0f172a")),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f1f5f9")]),
+        ("TOPPADDING", (0, 0), (-1, -1), 2.2), ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2)]))
+    return [KeepTogether([Paragraph("Strategy IDs", h2_style), tb])]

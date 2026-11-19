@@ -20,7 +20,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, KeepTogether, PageBreak
-from lib import data, market
+from lib import data, market, ids
 
 OUT = ROOT / "results" / "studies" / "market_filter"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -43,6 +43,8 @@ NAMES = {"ema61_breakout/monthly_candle_stop": "EMA61 breakout, candle-low stop"
 pairs = []
 for f in sorted(ROOT.glob("results/*/*_nifty200/*/summary.csv")):
     fam, var, uni = f.parts[-4], f.parts[-3].replace("_nifty200", ""), f.parts[-2]
+    if f"{fam}/{var}" not in NAMES:          # the study covers the 13 strategies that existed when it was made
+        continue
     base = ROOT / "results" / fam / var / uni
     pairs.append({"key": f"{fam}/{var}", "uni": uni.upper(), "base": base, "filt": f.parent,
                   "name": NAMES.get(f"{fam}/{var}", f"{fam}/{var}") + ("" if uni == "nifty500" else " (NIFTY 50)")})
@@ -373,6 +375,7 @@ def footer(c, d):
     c.drawRightString(A4[0] - 18 * mm, 10 * mm, f"Page {d.page}")
 
 
+story += ids.pdf_section(sorted({p["key"] for p in pairs} | {p["key"] + "_nifty200" for p in pairs}), H2)
 SimpleDocTemplate(str(OUT / "report.pdf"), pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm, topMargin=16 * mm,
                   bottomMargin=16 * mm, title="NIFTY 200-Day Market Filter").build(story, onFirstPage=footer, onLaterPages=footer)
 for p in charts:

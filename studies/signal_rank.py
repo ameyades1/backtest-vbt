@@ -22,7 +22,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image, KeepTogether
-from lib import engine, portfolio, market, scores
+from lib import engine, portfolio, market, scores, ids
 from lib.costs import fee_per_side
 from run_strategy import engine_cfg, load_dailies
 
@@ -286,6 +286,7 @@ story = [
     Paragraph("Changed = trades taken that the current rule did not take. vs random = percentile among random rankings "
               "(no-target exit only).", SM)] + port_tabs + [
     Paragraph("Signal-level detail", H2)] + sig_tabs
+story += ids.pdf_section([b + sfx for b in STRATS.values() for sfx in ["", "_nifty200"]] + sorted(n for n in ids.by_name() if "_rank" in n and any(n.startswith(b + "_") for b in STRATS.values())), H2)
 SimpleDocTemplate(str(OUT / "report.pdf"), pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm, topMargin=16 * mm,
                   bottomMargin=16 * mm, title="Signal ranking: MACD and patterns").build(story)
 for p in charts:

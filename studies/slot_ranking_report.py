@@ -2,11 +2,13 @@
 import sys
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from lib import ids
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -287,6 +289,7 @@ def footer(c, d):
     c.drawRightString(A4[0] - 18 * mm, 10 * mm, f"Page {d.page}")
 
 
+story += ids.pdf_section(["stochrsi_pullback/monthly_prev_week_stop", "stochrsi_pullback/monthly_candle_stop", "ema61_breakout/monthly_candle_stop"], H2)
 SimpleDocTemplate(str(OUT), pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm, topMargin=16 * mm,
                   bottomMargin=16 * mm, title="Slot Ranking Study").build(story, onFirstPage=footer, onLaterPages=footer)
 for p in charts:

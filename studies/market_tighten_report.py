@@ -20,7 +20,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image, KeepTogether
-from lib import market
+from lib import market, ids
 
 OUT = ROOT / "results" / "studies" / "market_tighten"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -229,6 +229,7 @@ story = [
     [[KeepTogether([Paragraph(f"{s} · {ex}", P), tab(s, ex)]) for ex in ["Target 15%", "Target 20%"]
       if ex in C[C.Strategy == s].Exit.values] for s in STRATS], []) + [
     Paragraph("What the study shows", H2)] + bl(FIND) + [Paragraph("Recommendation", H2)] + bl(REC)
+story += ids.pdf_section([STRATS[s] + VERS[v] for s in STRATS for v in VERS], H2)
 SimpleDocTemplate(str(OUT / "report.pdf"), pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm, topMargin=16 * mm,
                   bottomMargin=16 * mm, title="Acting on open trades below the 200-day average").build(story)
 for p in charts:

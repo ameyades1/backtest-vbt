@@ -15,6 +15,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from lib import ids
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -306,6 +307,7 @@ story = [
     PageBreak(), Paragraph("Appendix: every trade, StochRSI + MACD, no-target exit", H2),
     table(trade_rows, [32 * mm, 24 * mm, 24 * mm, 22 * mm, 22 * mm, 16 * mm, 14 * mm], num_from=3, fs=7)]
 
+story += ids.pdf_section(list(RUNS.values()), H2)
 SimpleDocTemplate(str(OUT / "report.pdf"), pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm, topMargin=16 * mm,
                   bottomMargin=16 * mm, title="MACD with the StochRSI pullback").build(story)
 for p in charts:
