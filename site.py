@@ -184,6 +184,19 @@ STUDY_TITLES = {"slot_ranking": "Slot ranking: which signals should fill the 8 s
 studies = "".join(f'<li><a href="{REPO}{p.relative_to(ROOT).as_posix()}">'
                   f'{STUDY_TITLES.get(p.parent.name, p.parent.name)}</a></li>'
                   for p in sorted(ROOT.glob("results/studies/*/report.pdf")))
+_rp = ROOT / "results" / "studies" / "recommendations" / "recommendations.json"
+recs = ""
+if _rp.exists():
+    _r = json.load(open(_rp))
+    for _sec in _r["sections"]:
+        _trs = "".join("<tr>" + "".join(f"<td>{html.escape(_c)}</td>" for _c in _row) + "</tr>" for _row in _sec["rows"])
+        recs += (f'<h3>{html.escape(_sec["title"])}</h3><div class="wrap"><table class="rec"><thead><tr>'
+                 + "".join(f"<th>{html.escape(_h)}</th>" for _h in _sec["head"])
+                 + f"</tr></thead><tbody>{_trs}</tbody></table></div>"
+                 + ("<ul class=\"notes\">" + "".join(f"<li>{html.escape(_n)}</li>" for _n in _sec["notes"]) + "</ul>"
+                    if _sec.get("notes") else ""))
+    recs = (f'<h2>Recommendations</h2><p>{html.escape(_r["intro"])} '
+            f'<a href="{REPO}results/studies/recommendations/report.pdf">PDF</a> · updated {_r.get("date", "")}</p>' + recs)
 gloss = "".join(f"<dt>{h}</dt><dd>{html.escape(GLOSSARY[h])}</dd>" for _, h, _, _ in COLS)
 
 page = f"""<!doctype html>
@@ -209,18 +222,22 @@ h2{{font-size:17px;margin:24px 0 8px}}
 .gloss{{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;font-size:13px;margin:0}}
 .gloss dt{{font-weight:600}} .gloss dd{{margin:0;color:var(--mut)}}
 @media (max-width:600px){{.gloss{{grid-template-columns:1fr}} .gloss dd{{margin-bottom:6px}}}}
+h3{{font-size:14.5px;margin:16px 0 6px}}
+table.rec{{white-space:normal}} table.rec th{{text-align:left;cursor:default}} table.rec td{{vertical-align:top}}
 .notes{{margin-top:16px;font-size:12.5px;color:var(--mut)}} .notes li{{margin:2px 0}}
 </style></head><body><main>
 <h1>Strategy scoreboard</h1>
 <p>Every backtest (most at <b>1% risk per trade, 8 slots</b>; see the Risk and Slots columns), ₹1,00,000 starting capital, from 2000. Click a header to sort; hover a header for its meaning.</p>
+{recs}
+<h2>All runs</h2>
 <div class="bar"><label>Strategy <select id="fam"><option value="">All</option>{opts}</select></label>
 <label>Market filter <select id="mkt"><option value="">All</option><option>none</option><option>NIFTY &gt; 200-DMA</option></select></label>
 <span id="count" class="v"></span></div>
 <div class="wrap"><table id="t"><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>
 <ul class="notes">
 <li>Prices are actual traded prices (adjusted for splits and bonuses, not dividends); dividend income is not counted.</li>
-<li>Universe is <b>today's</b> index members, so results carry survivorship bias and are optimistic.</li>
-<li>Costs: Sharekhan delivery fees (~0.47% per side) plus 0.1% slippage per side. Risk is 1% of <i>starting</i> capital, so positions do not grow with the account.</li>
+<li>Most universes are <b>today's</b> index members, so those results carry survivorship bias and are optimistic. Universe <b>NIFTY500_PIT</b> uses historical NIFTY 500 membership rebuilt from NSE's change notices and is the most realistic.</li>
+<li>Costs: Sharekhan delivery fees (~0.47% per side) plus 0.1% slippage per side. Risk is a % of <i>starting</i> capital unless the strategy compounds (risk on current equity; see its PDF).</li>
 <li>Gaps fill at the open; stop is checked before target on the same day. Tax is not deducted.</li>
 <li>Red: negative return, drawdown worse than 40%, or costs over half the gross profit. Green: CAGR ≥ 8% or CAGR/DD ≥ 0.2.</li>
 <li>Research and education only, not investment advice. Generated {date.today():%d %b %Y} by <code>site.py</code>.</li>
