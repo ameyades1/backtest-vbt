@@ -116,7 +116,36 @@ story += [Paragraph("Method and remaining bias", H2)] + bl([
     "a little lower still.",
     "A trade is allowed only if the stock is in the index on its entry day; open positions are held to their exits "
     "after a stock leaves the index."])
-story += ids.pdf_section([NAME, "longshort/L_cap20_dd_liqtop60"], H2)
+# ---- all main strategies: today's list vs point in time ----
+import json
+J = json.load(open(OUT / "jobs.json"))
+
+
+def one(n, u):
+    d = ROOT / "results" / n / u
+    if not (d / "summary.csv").exists():
+        return None
+    sm = pd.read_csv(d / "summary.csv", index_col=0)
+    r = sm.loc["No target"] if "No target" in sm.index else sm.iloc[0]
+    e = pd.read_csv(d / "equity.csv", index_col=0, parse_dates=True)[r.name].dropna()
+    a = e[:"2018-12-31"]
+    ins = ((a.iloc[-1] / a.iloc[0]) ** (365.25 / (a.index[-1] - a.index[0]).days) - 1) * 100
+    out = ((e.iloc[-1] / a.iloc[-1]) ** (365.25 / (e.index[-1] - a.index[-1]).days) - 1) * 100
+    return r["CAGR %"], r["Max DD %"], ins, out
+
+
+allr = [["ID", "Strategy", "Today: CAGR / DD", "PIT: CAGR / DD", "Δ CAGR", "PIT 2000-18", "PIT 2019+"]]
+for j in J:
+    t, q = one(j["name"], "nifty500"), one(j["name"], "nifty500_pit")
+    if q is None:
+        continue
+    allr.append([ids.short(IDS[j["name"]]) if j["name"] in IDS else "", j["name"].split("/")[-1][:40],
+                 f"{t[0]:.1f} / {t[1]:.0f}" if t else "–", f"{q[0]:.1f} / {q[1]:.0f}",
+                 f"{q[0] - t[0]:+.1f}" if t else "–", f"{q[2]:.1f}", f"{q[3]:.1f}"])
+story += [Paragraph("All main strategies: today's list vs point in time (NIFTY 500)", H2),
+          table(allr, [15 * mm, 62 * mm, 25 * mm, 23 * mm, 14 * mm, 18 * mm, 16 * mm], fs=6.8)]
+story += bl(json.load(open(OUT / "notes.json"))["all"])
+story += ids.pdf_section([NAME, "longshort/L_cap20_dd_liqtop60"] + [j["name"] for j in J], H2)
 SimpleDocTemplate(str(OUT / "report.pdf"), pagesize=A4, leftMargin=12 * mm, rightMargin=12 * mm, topMargin=12 * mm,
                   bottomMargin=12 * mm, title="NIFTY 500 point in time").build(story)
 print("wrote", OUT / "report.pdf")

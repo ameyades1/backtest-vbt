@@ -1,0 +1,104 @@
+[
+ {
+  "phase": "pit",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop.json",
+  "universe": "NIFTY500_PIT",
+  "name": "stochrsi_pullback/monthly_prev_week_stop"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200.json",
+  "universe": "NIFTY500_PIT",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend.json",
+  "universe": "NIFTY500_PIT",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_stop_atr2.json",
+  "universe": "NIFTY500_PIT",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_stop_atr2"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/ema61_breakout/monthly_candle_stop.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ema61_breakout/monthly_candle_stop"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/breakout/weekly_donchian55_nifty200.json",
+  "universe": "NIFTY500_PIT",
+  "name": "breakout/weekly_donchian55_nifty200"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound.json",
+  "universe": "NIFTY500_PIT",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound.json",
+  "universe": "NIFTY500_PIT",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound.json",
+  "universe": "NIFTY500_PIT",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/longshort/L_dd.json",
+  "universe": "NIFTY500_PIT",
+  "name": "longshort/L_dd"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/longshort/L_cap20_dd.json",
+  "universe": "NIFTY500_PIT",
+  "name": "longshort/L_cap20_dd"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/longshort/L_cap20_dd_r075.json",
+  "universe": "NIFTY500_PIT",
+  "name": "longshort/L_cap20_dd_r075"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/longshort/L_cap20_dd_r050.json",
+  "universe": "NIFTY500_PIT",
+  "name": "longshort/L_cap20_dd_r050"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/longshort/L_cap20_dd_r025.json",
+  "universe": "NIFTY500_PIT",
+  "name": "longshort/L_cap20_dd_r025"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/longshort/LS_short_w_st10_2.json",
+  "universe": "NIFTY500_PIT",
+  "name": "longshort/LS_short_w_st10_2"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/rotation/momentum_top10.json",
+  "universe": "NIFTY500_PIT",
+  "name": "rotation/momentum_top10"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/rotation/momentum_top10_nomkt.json",
+  "universe": "NIFTY500_PIT",
+  "name": "rotation/momentum_top10_nomkt"
+ }
+]

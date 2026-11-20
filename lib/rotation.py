@@ -6,7 +6,7 @@ On the first trading day of each month, using closes up to the previous day:
   hold the `top` best; a held stock is kept while its rank <= top x buffer (cuts turnover)
   market_sma: while NIFTY 50 is below its N-day SMA, no new buys (held stocks still exit by rank/SMA)
 Trades fill at that day's Open, equal weight = equity / top per new position; costs per side as lib.costs.
-Uses current index constituents (survivorship bias, as every run in this repo).
+allowed: optional day x symbol bool (point-in-time membership); otherwise uses current index constituents (survivorship bias, as every run in this repo).
 """
 import numpy as np
 import pandas as pd
@@ -14,12 +14,14 @@ from .portfolio import Fill
 from . import engine
 
 
-def run(cfg, closes, dailies, capital, fee, slip, start, cash_ret=None):
+def run(cfg, closes, dailies, capital, fee, slip, start, cash_ret=None, allowed=None):
     s = cfg["setup"]
     top, lb, skip, buf = s.get("top", 10), s.get("lookback", 252), s.get("skip", 21), s.get("buffer", 2)
     c = closes.ffill()
     o = pd.DataFrame({k: d["Open"] for k, d in dailies.items()}).reindex(c.index)
     mom = (c.shift(skip) / c.shift(lb) - 1).shift(1)
+    if allowed is not None:                          # point in time: rank only stocks in the index that day
+        mom = mom.where(allowed.reindex(index=c.index, columns=c.columns).fillna(False).astype(bool))
     above = (c > c.rolling(s.get("sma", 200), min_periods=s.get("sma", 200)).mean()).shift(1, fill_value=False)
     mkt_ok = pd.Series(True, index=c.index)
     if s.get("market_sma"):

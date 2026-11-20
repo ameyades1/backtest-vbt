@@ -1,0 +1,9 @@
+{
+ "all": [
+  "<b>Strategies sized on starting capital barely change</b> (S7c315ace 11.0 \u2192 10.9%, Sd07eb46e 12.3 \u2192 12.3%, Se32915a5 8.1 \u2192 8.2%): their trades after 2019 are small next to the grown account, so the biased recent period hardly moves the result.",
+  "<b>Compounding strategies lose 2.5\u20135 points</b> (Sa15d9d9c 18.0 \u2192 13.1%, S295f582c 18.0 \u2192 13.8%, Sde394f26 16.6 \u2192 13.7%, S150d745e 13.8 \u2192 11.1%): with risk on current equity, the 2019+ period carries big weight, and that is where today's list was most flattering.",
+  "<b>One exception: Scaa0a5e0</b> (main version, stacked levers, RS ranking, compounding) holds up: 19.4 \u2192 18.7%, with the same \u221240% drawdown and 21.7% after 2019. Its relative-strength ranking picks leaders that were already index members. Worth a closer look, but the \u221240% drawdown remains.",
+  "<b>Momentum rotation halves</b>: S29186978 42.8 \u2192 23.3% (\u221269% drawdown), Sc84b59b8 40.3 \u2192 23.4% (\u221260%). Part of the remaining 23% is still bias: delisted members with no price data are missing (about 20% of early members). Treat it as unproven; a NIFTY 200 Momentum 30 index fund is the clean way to own the factor.",
+  "<b>Revised short list (point in time):</b> Sde394f26 13.7% / \u221227% at 1% risk; S150d745e 11.1% / \u221220% at 0.5%; Sf594c67c long/short 14.1% / \u221228%. These are now the figures to plan with, with live results likely a little lower."
+ ]
+}

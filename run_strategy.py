@@ -143,9 +143,6 @@ def run(cfg, closes, dailies, out):
     if siz.get("sector_top"):
         top_sectors_tab = scores.top_sectors(dailies, siz["sector_top"].get("n", 4), siz["sector_top"].get("months", 6))
     sec_of = scores.sector_map() if siz.get("sector_cap") else None
-    if cfg.get("universe") == "NIFTY500_PIT":
-        from lib import membership
-        pit = membership.membership_table(closes.index, list(dailies))
     if siz.get("liq_top_pct"):
         liq_rank = pd.DataFrame({s: (d["Close"] * d["Volume"]).rolling(60, min_periods=20).median().shift(1)
                                  for s, d in dailies.items()}).rank(axis=1, pct=True)
@@ -163,8 +160,12 @@ def run(cfg, closes, dailies, out):
         h = siz["hedge"]
         hedge_spec = {"ratio": h.get("ratio", 1.0), "fee": sfee,
                       "regime": ~market.regime(h.get("sma", 200)).shift(1, fill_value=True).astype(bool)}
+    if cfg.get("universe") == "NIFTY500_PIT":
+        from lib import membership
+        pit = membership.membership_table(closes.index, list(dailies))
     if cfg["setup"]["type"] == "momentum_rotation":
-        curve, fills, skipped = rotation.run(cfg, closes, dailies, siz["capital"], fee, slip, start, cr)
+        curve, fills, skipped = rotation.run(cfg, closes, dailies, siz["capital"], fee, slip, start, cr,
+                                             pit if cfg.get("universe") == "NIFTY500_PIT" else None)
         tab = pd.DataFrame({"No target": {"Signals filled": len(fills), "Median stop %": np.nan,
                             **portfolio.summary(curve, fills, skipped, siz["capital"], cfg["setup"].get("top", 10))}}).T
         tab.to_csv(out / "summary.csv")
