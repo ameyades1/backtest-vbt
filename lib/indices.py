@@ -29,6 +29,7 @@ _R = [
     ("TOTALMARKET",   "broad",    "Nifty Total Market",        "niftytotalmarket_",     None),
     ("TOTALMARKET_IT",  "sectoral", "Total Market: Information Technology", None,       None),
     ("TOTALMARKET_FIN", "sectoral", "Total Market: Financial Services",     None,       None),
+    ("TOTALMARKET_ITFIN", "sectoral", "Total Market: IT + Financial Services", None,     None),
     ("BANK",          "sectoral", "Nifty Bank",                "niftybank",             "^NSEBANK"),
     ("PSUBANK",       "sectoral", "Nifty PSU Bank",            "niftypsubank",          "^CNXPSUBANK"),
     ("PVTBANK",       "sectoral", "Nifty Private Bank",        "nifty_privatebank",     None),
@@ -73,14 +74,16 @@ def resolve(keys: list[str]) -> list[str]:
 
 # universes cut from a broad index by NSE's own Industry label: key -> (base index, Industry)
 DERIVED = {"TOTALMARKET_IT": ("TOTALMARKET", "Information Technology"),
-           "TOTALMARKET_FIN": ("TOTALMARKET", "Financial Services")}
+           "TOTALMARKET_FIN": ("TOTALMARKET", "Financial Services"),
+           "TOTALMARKET_ITFIN": ("TOTALMARKET", ("Information Technology", "Financial Services"))}
 
 
 def constituents(key: str, refresh: bool = False) -> pd.DataFrame:
     if key in DERIVED:
         base, industry = DERIVED[key]
         df = constituents(base, refresh)
-        df = df[df["Industry"].str.strip() == industry].reset_index(drop=True)
+        inds = (industry,) if isinstance(industry, str) else industry
+        df = df[df["Industry"].str.strip().isin(inds)].reset_index(drop=True)
         CACHE.mkdir(parents=True, exist_ok=True)
         df.to_csv(CACHE / f"{key}.csv", index=False)
         return df
