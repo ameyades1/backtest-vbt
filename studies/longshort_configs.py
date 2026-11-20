@@ -117,8 +117,34 @@ def part3(long, shorts):
     print(len(jobs), "jobs")
 
 
+def part4():
+    """Cost stress for NIFTY 750 (microcaps): heavier microcap slippage, liquidity floor."""
+    jobs = []
+    base = load("longshort/L_cap20_dd")
+    for suf, desc, cost, siz, unis in [
+            ("mslip05", "Microcap 250 trades pay 0.5% slippage per side.", {"universe": "MICROCAP250", "pct": 0.5}, {},
+             ("NIFTY750",)),
+            ("mslip10", "Microcap 250 trades pay 1% slippage per side.", {"universe": "MICROCAP250", "pct": 1.0}, {},
+             ("NIFTY750",)),
+            ("liq2", "Only stocks with a 60-day median traded value of at least Rs 2 crore.", None,
+             {"min_turnover_cr": 2}, ("NIFTY750", "NIFTY500")),
+            ("liq5", "Only stocks with a 60-day median traded value of at least Rs 5 crore.", None,
+             {"min_turnover_cr": 5}, ("NIFTY750", "NIFTY500")),
+            ("liq5_mslip05", "Rs 5 crore liquidity floor + 0.5% microcap slippage.", {"universe": "MICROCAP250", "pct": 0.5},
+             {"min_turnover_cr": 5}, ("NIFTY750",))]:
+        c = copy.deepcopy(base); c.pop("id", None)
+        c["name"] = f"longshort/L_cap20_dd_{suf}"; c["description"] = base["description"] + f" [{desc}]"
+        c["universe"] = "NIFTY750"
+        if cost:
+            c["costs"]["slippage_extra"] = cost
+        c["sizing"].update(siz)
+        write(c, "4-stress", unis, jobs)
+    json.dump(jobs, open(OUT / "jobs4.json", "w"), indent=1)
+    print(len(jobs), "jobs")
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--stage", type=int, default=12)
     ap.add_argument("--long"); ap.add_argument("--short", nargs="*")
     a = ap.parse_args()
-    part12() if a.stage == 12 else part3(a.long, a.short)
+    part12() if a.stage == 12 else part4() if a.stage == 4 else part3(a.long, a.short)

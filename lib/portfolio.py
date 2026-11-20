@@ -34,7 +34,7 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
         seed: int | None = None, sector_of: dict | None = None, sector_cap: int | None = None,
         risk_mult: pd.Series | None = None, dd_rule: dict | None = None,
         cash_ret: pd.Series | None = None, compound: bool = False, pos_cap: float | None = None,
-        short: dict | None = None, max_open_risk: float | None = None, hedge: dict | None = None):
+        short: dict | None = None, max_open_risk: float | None = None, hedge: dict | None = None, slip_of: dict | None = None):
     """rank: order of same-day signals when slots are scarce.
          'tightest' smallest stop % first (default) | 'widest' largest stop % first
          'random'   shuffled with `seed`
@@ -58,9 +58,11 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                   share of equity
        hedge:     {"ratio": 1.0, "fee": per side, "regime": bool day series (True = hedge on, known before the day)}:
                   short NIFTY futures worth ratio x the long book while on; daily P&L = -notional x NIFTY return
+       slip_of:   symbol -> slippage per side, overriding `slip` (e.g. heavier for microcaps)
        sector_cap: at most this many open positions per sector (sector_of: symbol -> sector);
                    signals over the cap count as skipped."""
     risk_amt = capital * risk_pct
+    sl = (lambda sym: slip_of.get(sym, slip)) if slip_of else (lambda sym: slip)
     # value open positions at the last known close: the combined table has dates on which
     # some stocks have no row (holidays/suspensions/data gaps); NaN must not count as 0
     closes = closes.ffill()
@@ -91,10 +93,10 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
         nonlocal cash
         f.exit, f.exit_date = px, day
         if side(t) > 0:
-            f.proceeds = f.qty * px * (1 - slip) * (1 - fee)
+            f.proceeds = f.qty * px * (1 - sl(t.symbol)) * (1 - fee)
         else:
             months = max((day - f.entry_date).days / 30.4, 0)
-            pnl = f.qty * (f.entry * (1 - slip) * (1 - sh["fee"]) - px * (1 + slip) * (1 + sh["fee"])) \
+            pnl = f.qty * (f.entry * (1 - sl(t.symbol)) * (1 - sh["fee"]) - px * (1 + sl(t.symbol)) * (1 + sh["fee"])) \
                 - f.qty * f.entry * sh["roll"] * np.ceil(months)
             f.proceeds = f.cost + pnl
         cash += f.proceeds
@@ -181,7 +183,7 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                 qty = min(qty, int(max(room, 0) // dist(t)))
             capped = False
             if side(t) > 0:
-                px = t.entry * (1 + slip) * (1 + fee)
+                px = t.entry * (1 + sl(t.symbol)) * (1 + fee)
                 if qty * px > cash:
                     qty, capped = int(cash // px), True
                 unit = px
@@ -214,7 +216,7 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                     n = f.qty - int(pos_cap * eq // px)
                     if 0 < n < f.qty:
                         part = Fill(t.symbol, f.entry_date, day, n, f.entry, px, f.stop, f.cost * n / f.qty,
-                                    n * px * (1 - slip) * (1 - fee), False)
+                                    n * px * (1 - sl(t.symbol)) * (1 - fee), False)
                         part.side = 1
                         f.cost -= part.cost
                         f.qty -= n
@@ -229,7 +231,7 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
     for key, (t, f) in open_.items():                   # mark open trades to market
         last = closes[t.symbol].dropna().iloc[-1]
         if side(t) > 0:
-            f.proceeds = f.qty * last * (1 - slip) * (1 - fee)
+            f.proceeds = f.qty * last * (1 - sl(t.symbol)) * (1 - fee)
         else:
             f.proceeds = f.cost + f.qty * (f.entry - last)
         fills.append(f)

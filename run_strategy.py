@@ -139,6 +139,13 @@ def run(cfg, closes, dailies, out):
     if siz.get("sector_top"):
         top_sectors_tab = scores.top_sectors(dailies, siz["sector_top"].get("n", 4), siz["sector_top"].get("months", 6))
     sec_of = scores.sector_map() if siz.get("sector_cap") else None
+    if siz.get("min_turnover_cr"):
+        turnover = pd.DataFrame({s: (d["Close"] * d["Volume"]).rolling(60, min_periods=20).median().shift(1)
+                                 for s, d in dailies.items()})
+    slip_of = None
+    if costs.get("slippage_extra"):                     # {"universe": "MICROCAP250", "pct": 0.5}
+        x = costs["slippage_extra"]
+        slip_of = {s: x["pct"] / 100 for s in indices.symbols(x["universe"])}
     sfee = fee_per_side(costs["broker"], costs.get("short_product", "futures"))
     short_spec = {"fee": sfee, **siz.get("short", {})}
     hedge_spec = None
@@ -166,6 +173,10 @@ def run(cfg, closes, dailies, out):
             keep = set(indices.symbols(sub["universe"])) if sub.get("universe") else None
             trades += [t for t in _sim(engine_cfg(sc, sub.get("target")), dailies, end)
                        if keep is None or t.symbol in keep]
+        if siz.get("min_turnover_cr"):                  # liquidity: median daily traded value, last 60 days
+            tv = turnover
+            trades = [t for t in trades if t.entry_date in tv.index and t.symbol in tv.columns
+                      and tv.at[t.entry_date, t.symbol] >= siz["min_turnover_cr"] * 1e7]
         if siz.get("sector_top"):
             ok = top_sectors_tab
             trades = [t for t in trades if t.entry_date in ok.index and t.symbol in ok.columns
@@ -180,7 +191,7 @@ def run(cfg, closes, dailies, out):
                                               score=score, risk_mult=rm, dd_rule=siz.get("dd_rule"),
                                               cash_ret=cr, compound=siz.get("compound", False),
                                               pos_cap=siz.get("pos_cap"), max_open_risk=siz.get("max_open_risk"),
-                                              short=short_spec, hedge=hedge_spec, sector_of=sec_of, sector_cap=siz.get("sector_cap"))
+                                              short=short_spec, hedge=hedge_spec, slip_of=slip_of, sector_of=sec_of, sector_cap=siz.get("sector_cap"))
         rows[lbl] = {"Signals filled": len(trades), "Median stop %": np.median(sd) if len(sd) else np.nan,
                        **portfolio.summary(curve, fills, skipped, siz["capital"], siz["max_positions"])}
         curves[lbl] = curve["equity"]

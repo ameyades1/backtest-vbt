@@ -204,6 +204,11 @@ def rules(c):
     if z.get("sector_top"):
         extra.append(f"only stocks in the {z['sector_top'].get('n', 4)} strongest sectors by "
                      f"{z['sector_top'].get('months', 6)}-month median return")
+    if z.get("min_turnover_cr"):
+        extra.append(f"only stocks with a 60-day median traded value of at least Rs {z['min_turnover_cr']:g} crore")
+    if c["costs"].get("slippage_extra"):
+        x = c["costs"]["slippage_extra"]
+        extra.append(f"{x['universe']} trades pay {x['pct']:g}% slippage per side")
     if z.get("pos_cap"):
         extra.append(f"positions above {z['pos_cap'] * 100:g}% of equity trimmed at month end")
     if z.get("max_open_risk"):

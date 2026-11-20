@@ -26,6 +26,7 @@ _R = [
     ("SMALLCAP100",   "broad",    "Nifty Smallcap 100",        "niftysmallcap100",      None),
     ("SMALLCAP250",   "broad",    "Nifty Smallcap 250",        "niftysmallcap250",      "NIFTYSMLCAP250.NS"),
     ("MICROCAP250",   "broad",    "Nifty Microcap 250",        "niftymicrocap250_",     None),
+    ("NIFTY750",      "broad",    "Nifty Total Market (NIFTY 500 + Microcap 250)", "niftytotalmarket_", None),
     ("TOTALMARKET",   "broad",    "Nifty Total Market",        "niftytotalmarket_",     None),
     ("TOTALMARKET_IT",  "sectoral", "Total Market: Information Technology", None,       None),
     ("TOTALMARKET_FIN", "sectoral", "Total Market: Financial Services",     None,       None),

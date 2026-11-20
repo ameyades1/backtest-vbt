@@ -272,3 +272,8 @@ S01a1f97b-b4c3-7480-9b77-215906057f7c,S06057f7c,longshort/LS_short_w_st10_2_hedg
 S01a1f97b-b4c4-70dd-83e7-c57ebf7534db,Sbf7534db,longshort/LS_short_w_st10_2_risk8,strategies/longshort/LS_short_w_st10_2_risk8.json,2026-11-20,active
 S01a1fa03-d512-7cfa-b062-8fefe01037f3,Se01037f3,longshort/L_cap20_dd_r025,strategies/longshort/L_cap20_dd_r025.json,2026-11-20,active
 S01a1fa03-d513-7329-b693-cb71150d745e,S150d745e,longshort/L_cap20_dd_r050,strategies/longshort/L_cap20_dd_r050.json,2026-11-20,active
+S01a1fa37-4480-74ee-a4d4-14c2b0119554,Sb0119554,longshort/L_cap20_dd_liq2,strategies/longshort/L_cap20_dd_liq2.json,2026-11-20,active
+S01a1fa37-4481-715a-ae95-2743f194284d,Sf194284d,longshort/L_cap20_dd_liq5,strategies/longshort/L_cap20_dd_liq5.json,2026-11-20,active
+S01a1fa37-4482-7b23-8dfb-0e7d53a46ded,S53a46ded,longshort/L_cap20_dd_liq5_mslip05,strategies/longshort/L_cap20_dd_liq5_mslip05.json,2026-11-20,active
+S01a1fa37-4483-73f8-b9e7-a020d891200a,Sd891200a,longshort/L_cap20_dd_mslip05,strategies/longshort/L_cap20_dd_mslip05.json,2026-11-20,active
+S01a1fa37-4484-7c76-8817-090f4c842bbf,S4c842bbf,longshort/L_cap20_dd_mslip10,strategies/longshort/L_cap20_dd_mslip10.json,2026-11-20,active

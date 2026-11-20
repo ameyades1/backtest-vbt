@@ -19,7 +19,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, 
 from lib import ids
 
 OUT = ROOT / "results" / "studies" / "longshort"
-JOBS = json.load(open(OUT / "jobs12.json")) + json.load(open(OUT / "jobs3.json"))
+JOBS = json.load(open(OUT / "jobs12.json")) + json.load(open(OUT / "jobs3.json")) + json.load(open(OUT / "jobs4.json")) \
+    + [{"phase": "4-stress", "config": "strategies/longshort/L_cap20_dd.json", "universe": u, "name": "longshort/L_cap20_dd"}
+       for u in ("NIFTY750",)]
 IDS = ids.by_name()
 UNI5 = ["NIFTY500", "NIFTY50", "NIFTY100", "MIDCAP150", "SMALLCAP250"]
 CRISIS = {"2008": ("2007-12-31", "2008-12-31"), "2018-20": ("2018-08-31", "2020-08-31"), "COVID": ("2020-02-19", "2020-03-23")}
@@ -100,6 +102,15 @@ story += [PageBreak(), Paragraph("Part 2: short books on their own", H2),
                     "Idle cash earns 6.5%, so a flat short book shows about 6%.", SM), table(t2, [15 * mm, 30 * mm] + [14 * mm] * 9)]
 story += bl(NOTES["part2"])
 story += [Paragraph("Part 3: combined books (long = L_cap20_dd)", H2), grid("3-combined")] + bl(NOTES["part3"])
+
+s4 = ALL[(ALL.part == "4-stress") | ((ALL.name == "longshort/L_cap20_dd") & (ALL.universe == "NIFTY500"))]
+t4 = [["ID", "Variant", "Universe", "CAGR", "Max DD", "Trades", "2000-18", "2019+", "2008", "2018-20"]]
+for _, r in s4.sort_values(["name", "universe"]).iterrows():
+    t4.append([r.id, r.short, r.universe, f1(r.CAGR), f1(r.DD, "{:.0f}"), r.Trades, f1(r.CAGR_in), f1(r.CAGR_out),
+               f1(r["2008"], "{:+.0f}"), f1(r["2018-20"], "{:+.0f}")])
+story += [PageBreak(), Paragraph("Part 4: NIFTY 750 (NIFTY 500 + Microcap 250) and the cost stress test", H2),
+          table(t4, [15 * mm, 38 * mm, 20 * mm, 12 * mm, 13 * mm, 12 * mm, 15 * mm, 13 * mm, 12 * mm, 14 * mm])]
+story += bl(NOTES["part4"])
 
 fig, ax = plt.subplots(figsize=(7.4, 3.4))
 for n, lab in [("longshort/L_base", "Sa15d9d9c (L_base)"), ("longshort/L_cap20_dd", "L_cap20_dd"),

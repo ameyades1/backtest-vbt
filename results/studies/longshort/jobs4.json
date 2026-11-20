@@ -1,0 +1,44 @@
+[
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_mslip05.json",
+  "universe": "NIFTY750",
+  "name": "longshort/L_cap20_dd_mslip05"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_mslip10.json",
+  "universe": "NIFTY750",
+  "name": "longshort/L_cap20_dd_mslip10"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liq2.json",
+  "universe": "NIFTY750",
+  "name": "longshort/L_cap20_dd_liq2"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liq2.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_liq2"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liq5.json",
+  "universe": "NIFTY750",
+  "name": "longshort/L_cap20_dd_liq5"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liq5.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_liq5"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liq5_mslip05.json",
+  "universe": "NIFTY750",
+  "name": "longshort/L_cap20_dd_liq5_mslip05"
+ }
+]
