@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a4fb-7396-be26-963baa6a6cb0",
   "name": "breakout/weekly_donchian20_vol_nifty200",
   "description": "First weekly close above the prior 20-week high, with the monthly close above EMA61 and breakout-week volume above 1.5 x its 20-week average. Buy above the signal week's high; stop previous week low; no-target exit on a monthly close below EMA61. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

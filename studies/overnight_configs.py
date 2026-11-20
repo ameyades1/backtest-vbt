@@ -117,7 +117,7 @@ COST = m200["costs"]
 
 
 def fresh(name, desc, tf, setup, filters, stop, mkt=True):
-    return {"name": name, "description": desc + (MKT if mkt else ""), "universe": "NIFTY500",
+    return {"name": name, "description": desc + (MKT if mkt else ""), "universe": "NIFTY500_PIT",
             "period": {"start": "2000-01-01"}, "timeframe": tf, "setup": setup, "filters": filters,
             "entry": {"valid_bars": 1, **({"day_filters": {"market_sma": 200}} if mkt else {})},
             "stop": stop, "exits": EXIT_M, "sizing": SIZ, "costs": COST}

@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a545-7384-b819-f9bd89ea312f",
   "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_trend_adx",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). [Trend filter swapped: weekly ADX(14) >= 20 with +DI > -DI instead of EMA61 on M/W/D.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

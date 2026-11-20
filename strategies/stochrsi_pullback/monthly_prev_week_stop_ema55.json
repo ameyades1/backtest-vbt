@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a52c-7573-8851-4f33d3296bf9",
   "name": "stochrsi_pullback/monthly_prev_week_stop_ema55",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. [Sensitivity: EMA55 instead of EMA61 for the trend filter and the exit.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

@@ -2,7 +2,7 @@
   "id": "S01a1f4c5-dd50-7e58-83ac-7ea1b2be95a0",
   "name": "stochrsi_pullback/monthly_prev_week_stop_macd_pattern_rank_nifty200",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). Competing signals ranked by MACD + pattern score (monthly MACD histogram rising +1, rising below zero +1, weekly bullish TA-Lib pattern in the last 2 weeks +1); ties by tightest stop.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

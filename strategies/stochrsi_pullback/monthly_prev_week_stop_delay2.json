@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a529-742b-b4db-3f15e5254569",
   "name": "stochrsi_pullback/monthly_prev_week_stop_delay2",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. [Sensitivity: entry 2 trading day(s) later than the signal allows.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

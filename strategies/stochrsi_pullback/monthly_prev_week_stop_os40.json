@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a54a-7a58-aa9d-4304233a533e",
   "name": "stochrsi_pullback/monthly_prev_week_stop_os40",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. [Sensitivity: StochRSI oversold level 40 instead of 30.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

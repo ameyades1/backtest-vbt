@@ -59,7 +59,7 @@ For notebooks, open the folder in VS Code (`code .`) with the WSL and Jupyter ex
 ## Data notes and caveats
 
 - **Source:** Yahoo Finance daily OHLCV, adjusted for splits, bonuses and dividends. `^NSEI` starts in 2007. Most large-cap stocks start around 1996–2002.
-- **Survivorship bias:** the universe is *today's* NIFTY 500. Companies that were delisted or dropped from the index are missing, so results are optimistic.
+- **Survivorship bias:** the default universe is **NIFTY500_PIT**: historical NIFTY 500 membership rebuilt from NSE Indices' change notices (`lib/membership.py`, `data/constituents/NIFTY500_changes.csv`); a stock is tradeable only while it was in the index. Other universes (`--universe NIFTY50`, `MIDCAP150`, ...) use *today's* members and are optimistic. Delisted companies with no Yahoo price history (about 20% of 2003–09 members) are still missing.
 - **Cleaning:** removes non-positive prices, fixes inconsistent OHLC, and drops single-day ±40% spikes that reverse the next day.
 - **Costs:** Sharekhan standard plan by default: delivery is about 0.47% per side (0.93% round trip) including STT, stamp duty, exchange, SEBI and GST, plus 0.1% slippage. A `discount` broker profile is also included. Run `python -m lib.costs` to see the table.
 - **Per-stock backtests:** each symbol is backtested on its own. This is not a combined portfolio.

@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a54f-7845-acbb-f1d4ad530a29",
   "name": "stochrsi_pullback/monthly_prev_week_stop_rsi60",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. [Sensitivity: monthly RSI > 60 instead of 50.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

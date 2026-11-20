@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a551-738a-b6f5-667a0c02e8ff",
   "name": "stochrsi_pullback/monthly_prev_week_stop_size_dd",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. Sizing: half risk after a 10% fall from the equity high until a new high; no new trades for 21 trading days on reaching 15%.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

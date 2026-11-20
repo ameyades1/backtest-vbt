@@ -2,7 +2,7 @@
   "id": "S01a1f732-8025-7ab1-80c6-dbea54d3a24f",
   "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. [Stack (10 slots, liquid-fund cash, 25-day time stop) with compounding risk.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

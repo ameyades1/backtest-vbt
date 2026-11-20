@@ -2,7 +2,7 @@
   "id": "S01a1f4c5-dd46-7fbc-8a25-3c0bbe78eb5b",
   "name": "stochrsi_macd/weekly_macd_prev_week_stop",
   "description": "Monthly StochRSI cross from oversold sets up; a weekly MACD cross above its signal line below zero within 13 weeks triggers (buy-stop above that week's high). Monthly RSI > 50, EMA61 on M/W/D; stop at the previous week's low; no-target exit on a monthly close below EMA61.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

@@ -2,7 +2,7 @@
   "id": "S01a1f72a-6a06-717c-b1bf-d5d2fedc0d26",
   "name": "stochrsi_pullback/monthly_prev_week_stop_c18_rank_rs_sector6",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. [Rank same-day signals by rs_sector (6 months), then tightest stop.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

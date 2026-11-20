@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a53b-73ce-b70e-a2f05a217f54",
   "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_rsi40",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). [Sensitivity: monthly RSI > 40 instead of 50.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

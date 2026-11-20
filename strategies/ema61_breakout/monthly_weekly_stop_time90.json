@@ -2,7 +2,7 @@
   "id": "S01a1f4c5-dd3e-7970-85d4-dd25c1167d42",
   "name": "ema61_breakout/monthly_weekly_stop_time90",
   "description": "Monthly EMA61 breakout, entry only when weekly and daily closes are above EMA61; stop at previous week's low (fixed). Plus a time exit after 90 calendar days.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

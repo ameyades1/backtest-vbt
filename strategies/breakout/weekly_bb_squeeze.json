@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a4f6-72e5-9c17-860b5cf0d50c",
   "name": "breakout/weekly_bb_squeeze",
   "description": "Weekly close above the upper Bollinger band (20,2) within 4 weeks of a 26-week band-width low, with the monthly close above EMA61. Buy above the signal week's high; stop previous week low; no-target exit on a monthly close below EMA61.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

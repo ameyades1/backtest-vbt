@@ -2,7 +2,7 @@
   "id": "S01a1f4c5-dd40-7a60-be5b-168ba23f6cf9",
   "name": "ema61_breakout/monthly_weekly_trail",
   "description": "As monthly_weekly_stop, but the stop is raised to each completed week's low.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

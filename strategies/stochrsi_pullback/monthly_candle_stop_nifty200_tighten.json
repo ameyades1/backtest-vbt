@@ -2,7 +2,7 @@
   "id": "S01a1f4c5-dd4b-7043-9922-d8d894103d86",
   "name": "stochrsi_pullback/monthly_candle_stop_nifty200_tighten",
   "description": "Close > EMA61 on M/W/D, monthly RSI > 50, monthly StochRSI %K crosses %D below 30; stop at signal candle low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). While NIFTY 50 is below its 200-day average, open trades' stops are raised to the last completed week's low.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

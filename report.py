@@ -309,7 +309,7 @@ def build(run: Path):
                             table(wl, [24 * mm, 22 * mm, 14 * mm, 22 * mm, 22 * mm, 22 * mm, 22 * mm, 26 * mm])]),
               Paragraph("Reproduce", H2),
               Paragraph(f"<font face='Courier' size='8'>python run_strategy.py strategies/{c['name']}.json"
-                        + (f" --universe {c['universe']}" if c["universe"] != "NIFTY500" else "")
+                        + (f" --universe {c['universe']}" if c["universe"] != "NIFTY500_PIT" else "")
                         + f"<br/>python report.py {run.as_posix()}</font>", P),
               Paragraph("For research and education only; not investment advice.", SM)]
 

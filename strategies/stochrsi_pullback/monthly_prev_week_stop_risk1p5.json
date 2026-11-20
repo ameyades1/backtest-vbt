@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a54c-7c2d-b2c0-7d362dabff9a",
   "name": "stochrsi_pullback/monthly_prev_week_stop_risk1p5",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. Sizing: 1.5% risk per trade.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

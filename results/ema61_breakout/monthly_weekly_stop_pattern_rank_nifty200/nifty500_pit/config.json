@@ -1,0 +1,53 @@
+{
+  "id": "S01a1f4c5-dd39-725f-b545-733bab3c6f55",
+  "name": "ema61_breakout/monthly_weekly_stop_pattern_rank_nifty200",
+  "description": "Monthly EMA61 breakout, entry only when weekly and daily closes are above EMA61; stop at previous week's low (fixed). No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). Competing signals ranked by weekly bullish candle pattern (TA-Lib engulfing, hammer, morning star, piercing) in the last 2 completed weeks first; ties by tightest stop.",
+  "universe": "NIFTY500_PIT",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "ema_breakout",
+    "span": 61
+  },
+  "entry": {
+    "valid_bars": 1,
+    "day_filters": {
+      "weekly_ema": 61,
+      "daily_ema": 61,
+      "market_sma": 200
+    }
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null,
+      8,
+      15,
+      20,
+      30
+    ],
+    "ema_close_when_no_target": {
+      "span": 61
+    },
+    "max_days": null
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "score_tightest",
+    "score": {
+      "type": "weekly_pattern",
+      "weeks": 2
+    }
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

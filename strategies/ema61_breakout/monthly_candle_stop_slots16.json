@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a513-702e-b79f-6fc477969b4c",
   "name": "ema61_breakout/monthly_candle_stop_slots16",
   "description": "Monthly candle opens below and closes above EMA61; buy above its high next month; stop at its low. Sizing: 16 slots.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

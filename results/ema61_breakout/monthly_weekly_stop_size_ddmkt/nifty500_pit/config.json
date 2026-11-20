@@ -1,0 +1,59 @@
+{
+  "id": "S01a1f4e6-a51d-75f9-9419-24ade426a482",
+  "name": "ema61_breakout/monthly_weekly_stop_size_ddmkt",
+  "description": "Monthly EMA61 breakout, entry only when weekly and daily closes are above EMA61; stop at previous week's low (fixed). Sizing: drawdown rule (half at 10%, 21-day pause at 15%) and half risk below the NIFTY 200-day average.",
+  "universe": "NIFTY500_PIT",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "ema_breakout",
+    "span": 61
+  },
+  "entry": {
+    "valid_bars": 1,
+    "day_filters": {
+      "weekly_ema": 61,
+      "daily_ema": 61
+    }
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null,
+      8,
+      15,
+      20,
+      30
+    ],
+    "ema_close_when_no_target": {
+      "span": 61
+    },
+    "max_days": null
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "tightest",
+    "dd_rule": {
+      "halve": 10,
+      "pause": 15,
+      "pause_days": 21
+    },
+    "risk_rules": {
+      "market_sma": {
+        "days": 200,
+        "mult": 0.5
+      }
+    }
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

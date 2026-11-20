@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a526-7b73-a7a3-4d69010e5325",
   "name": "pullback/weekly_williams_r",
   "description": "Weekly Williams %R(14) crosses back above -80, in an uptrend (EMA61 on M/W/D, monthly RSI > 50). Buy above the signal candle's high; stop previous week low; no-target exit on a monthly close below EMA61.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

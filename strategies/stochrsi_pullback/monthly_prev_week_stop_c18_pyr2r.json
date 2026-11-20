@@ -2,7 +2,7 @@
   "id": "S01a1f72a-6a03-75d2-9ca6-499ba5d57f60",
   "name": "stochrsi_pullback/monthly_prev_week_stop_c18_pyr2r",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. [Add half a position at +2R; stop to break-even first.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

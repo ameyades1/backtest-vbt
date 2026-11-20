@@ -2,7 +2,7 @@
   "id": "S01a1f4c5-dd2f-7155-81f8-5b5a25d9d9f2",
   "name": "ema61_breakout/monthly_weekly_stop_macd_pattern_mom_rank",
   "description": "Monthly EMA61 breakout, entry only when weekly and daily closes are above EMA61; stop at previous week's low (fixed). Competing signals ranked by MACD + pattern score (0-3); ties by 12-month return.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

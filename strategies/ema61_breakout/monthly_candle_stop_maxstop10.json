@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a503-73ca-aabb-617dc38d67fc",
   "name": "ema61_breakout/monthly_candle_stop_maxstop10",
   "description": "Monthly candle opens below and closes above EMA61; buy above its high next month; stop at its low. Only signals with a stop within 10% of entry.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

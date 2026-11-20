@@ -2,7 +2,7 @@
   "id": "S01a1f72a-6a09-7f1a-beef-eea572a991ed",
   "name": "stochrsi_pullback/monthly_prev_week_stop_c18_reg_vix25",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. [No new trades while India VIX > 25.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

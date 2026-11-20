@@ -2,7 +2,7 @@
   "id": "S01a1f72a-6a35-7f90-820a-64f3015445ab",
   "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots10_r1.5",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). [Trend exit swapped: weekly Supertrend(10,3) turns bearish instead of a monthly close below EMA61.] [10 slots, 1.5% risk per trade.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

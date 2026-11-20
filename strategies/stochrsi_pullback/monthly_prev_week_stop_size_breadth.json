@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a550-7fd9-a251-c4db626c6b6e",
   "name": "stochrsi_pullback/monthly_prev_week_stop_size_breadth",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. Sizing: half risk while fewer than 40% of the universe trade above their 200-day average.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

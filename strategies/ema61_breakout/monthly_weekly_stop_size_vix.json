@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a51f-7ce6-baec-174a2607cbd3",
   "name": "ema61_breakout/monthly_weekly_stop_size_vix",
   "description": "Monthly EMA61 breakout, entry only when weekly and daily closes are above EMA61; stop at previous week's low (fixed). Sizing: half risk while India VIX is above 25 (VIX from 2008).",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

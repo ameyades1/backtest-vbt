@@ -2,7 +2,7 @@
   "id": "S01a1f976-f094-73dd-b4c6-fba2e6ad019d",
   "name": "longshort/S_w_ema55",
   "description": "SHORT (stock futures, NIFTY 200 names): weekly StochRSI %K crosses below %D with %D above 70; close below EMA55 on M, W, D; RSI < 50; sell-stop below the signal low; stop at the previous week's high; cover when the weekly Supertrend(10, 3) turns bullish. New shorts only while NIFTY 50 is below its 200-day average. [Weekly, EMA55.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

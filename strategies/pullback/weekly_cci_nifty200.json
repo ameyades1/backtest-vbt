@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a523-717b-a52c-2a397eea08bb",
   "name": "pullback/weekly_cci_nifty200",
   "description": "Weekly CCI(20) crosses back above -100, in an uptrend (EMA61 on M/W/D, monthly RSI > 50). Buy above the signal candle's high; stop previous week low; no-target exit on a monthly close below EMA61. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

@@ -2,7 +2,7 @@
   "id": "S01a1f4c5-dd58-75f1-880b-e55088d880ad",
   "name": "stochrsi_pullback/weekly_candle_stop",
   "description": "Weekly StochRSI pullback (monthly filter uses last completed month); stop at signal week low; fixed targets only.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a540-706a-924e-6e427b901006",
   "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_size_mkt",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). Sizing: half risk while NIFTY 50 is below its 200-day average.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

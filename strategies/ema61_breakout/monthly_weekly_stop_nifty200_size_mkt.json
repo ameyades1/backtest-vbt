@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a519-75ab-b67b-9d6270e93652",
   "name": "ema61_breakout/monthly_weekly_stop_nifty200_size_mkt",
   "description": "Monthly EMA61 breakout, entry only when weekly and daily closes are above EMA61; stop at previous week's low (fixed). No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). Sizing: half risk while NIFTY 50 is below its 200-day average.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

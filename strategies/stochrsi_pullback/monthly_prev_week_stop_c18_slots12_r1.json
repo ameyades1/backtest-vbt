@@ -2,7 +2,7 @@
   "id": "S01a1f72a-6a0e-7690-8709-e5668200e996",
   "name": "stochrsi_pullback/monthly_prev_week_stop_c18_slots12_r1",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. [12 slots, 1% risk per trade.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

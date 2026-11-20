@@ -2,7 +2,7 @@
   "id": "S01a1f4e6-a50c-7570-ba10-0667213d1382",
   "name": "ema61_breakout/monthly_candle_stop_nifty200_rtargets",
   "description": "Monthly candle opens below and closes above EMA61; buy above its high next month; stop at its low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). Targets set as multiples of the initial risk (1R-3R); P1.5R = half at 1.5R, rest by the trend exit.",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },

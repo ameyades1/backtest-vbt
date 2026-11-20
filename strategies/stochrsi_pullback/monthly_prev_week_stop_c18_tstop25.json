@@ -2,7 +2,7 @@
   "id": "S01a1f72a-6a15-7dbe-a1fc-7c7998e7e1be",
   "name": "stochrsi_pullback/monthly_prev_week_stop_c18_tstop25",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. [Time stop: out at the next open if not +0.5R after 25 calendar days.]",
-  "universe": "NIFTY500",
+  "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
   },
