@@ -636,6 +636,16 @@ stochrsi_pullback/monthly_prev_week_stop,smallcap250,Target 8%,50.97493036211698
 stochrsi_pullback/monthly_prev_week_stop,smallcap250,Target 15%,39.82808022922636,-0.8988918958524827,-30.941431071471335,349.0
 stochrsi_pullback/monthly_prev_week_stop,smallcap250,Target 20%,36.20178041543027,0.73450344456647,-20.299483634069503,337.0
 stochrsi_pullback/monthly_prev_week_stop,smallcap250,Target 30%,29.260450160771708,1.6507622054378945,-18.43917390082035,311.0
+stochrsi_pullback/monthly_prev_week_stop,totalmarket_fin,No target,18.947368421052634,6.881001734348691,-48.3472373715607,95.0
+stochrsi_pullback/monthly_prev_week_stop,totalmarket_fin,Target 8%,51.91256830601093,-0.5441745009623689,-19.662744226658123,183.0
+stochrsi_pullback/monthly_prev_week_stop,totalmarket_fin,Target 15%,39.548022598870055,0.36247626156595825,-16.46311676746305,177.0
+stochrsi_pullback/monthly_prev_week_stop,totalmarket_fin,Target 20%,32.748538011695906,0.5709289711620436,-16.2920578771783,171.0
+stochrsi_pullback/monthly_prev_week_stop,totalmarket_fin,Target 30%,24.848484848484848,1.0915775511595394,-22.710583269315286,165.0
+stochrsi_pullback/monthly_prev_week_stop,totalmarket_it,No target,33.33333333333333,7.630194375839361,-42.701997018213135,39.0
+stochrsi_pullback/monthly_prev_week_stop,totalmarket_it,Target 8%,50.0,-0.4842044639284837,-16.352487688403393,76.0
+stochrsi_pullback/monthly_prev_week_stop,totalmarket_it,Target 15%,37.333333333333336,-0.3679824081598393,-17.564165081516027,75.0
+stochrsi_pullback/monthly_prev_week_stop,totalmarket_it,Target 20%,34.66666666666667,0.014955144207617899,-14.633405372302743,75.0
+stochrsi_pullback/monthly_prev_week_stop,totalmarket_it,Target 30%,29.333333333333332,0.4616329653985618,-13.917136246348482,75.0
 stochrsi_pullback/monthly_prev_week_stop_c18_base,nifty500,No target,25.0,11.004875655433356,-37.99106060576604,112.0
 stochrsi_pullback/monthly_prev_week_stop_c18_cash_liquid,midcap150,No target,21.73913043478261,12.042866535461382,-42.3331998250848,92.0
 stochrsi_pullback/monthly_prev_week_stop_c18_cash_liquid,nifty100,No target,25.773195876288657,12.899181467467514,-43.30150981501725,97.0

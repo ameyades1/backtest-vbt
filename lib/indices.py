@@ -1,6 +1,7 @@
 """Registry of NIFTY indices: NSE constituent CSV + Yahoo ticker for the index series.
 
-Constituents are *current* members (survivorship bias). `yahoo=None` means Yahoo has no
+Constituents are *current* members (survivorship bias). TOTALMARKET_IT / TOTALMARKET_FIN: NIFTY Total Market (750) members whose NSE Industry is Information Technology /
+Financial Services (see DERIVED). `yahoo=None` means Yahoo has no
 usable history for the index series; it is skipped when trading indices directly.
 """
 from io import StringIO
@@ -24,6 +25,10 @@ _R = [
     ("MIDCAP150",     "broad",    "Nifty Midcap 150",          "niftymidcap150",        "NIFTYMIDCAP150.NS"),
     ("SMALLCAP100",   "broad",    "Nifty Smallcap 100",        "niftysmallcap100",      None),
     ("SMALLCAP250",   "broad",    "Nifty Smallcap 250",        "niftysmallcap250",      "NIFTYSMLCAP250.NS"),
+    ("MICROCAP250",   "broad",    "Nifty Microcap 250",        "niftymicrocap250_",     None),
+    ("TOTALMARKET",   "broad",    "Nifty Total Market",        "niftytotalmarket_",     None),
+    ("TOTALMARKET_IT",  "sectoral", "Total Market: Information Technology", None,       None),
+    ("TOTALMARKET_FIN", "sectoral", "Total Market: Financial Services",     None,       None),
     ("BANK",          "sectoral", "Nifty Bank",                "niftybank",             "^NSEBANK"),
     ("PSUBANK",       "sectoral", "Nifty PSU Bank",            "niftypsubank",          "^CNXPSUBANK"),
     ("PVTBANK",       "sectoral", "Nifty Private Bank",        "nifty_privatebank",     None),
@@ -66,7 +71,19 @@ def resolve(keys: list[str]) -> list[str]:
     return list(dict.fromkeys(out))
 
 
+# universes cut from a broad index by NSE's own Industry label: key -> (base index, Industry)
+DERIVED = {"TOTALMARKET_IT": ("TOTALMARKET", "Information Technology"),
+           "TOTALMARKET_FIN": ("TOTALMARKET", "Financial Services")}
+
+
 def constituents(key: str, refresh: bool = False) -> pd.DataFrame:
+    if key in DERIVED:
+        base, industry = DERIVED[key]
+        df = constituents(base, refresh)
+        df = df[df["Industry"].str.strip() == industry].reset_index(drop=True)
+        CACHE.mkdir(parents=True, exist_ok=True)
+        df.to_csv(CACHE / f"{key}.csv", index=False)
+        return df
     slug = INDICES[key]["slug"]
     if slug is None:
         return pd.DataFrame(columns=["Company Name", "Industry", "Symbol"])
