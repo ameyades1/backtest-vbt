@@ -1,0 +1,25 @@
+{"verdict": [
+ "<b>Recommended: LS_short_w_st10_2</b> — the hardened long book (20% position cap, halve-at-10% / pause-at-15% drawdown rule) plus a weekly short book in NIFTY 200 names. NIFTY 500: 16.6% CAGR, −29% max drawdown (Sa15d9d9c: 18.0% / −46%). Other universes: 9.1–12.1% CAGR with −15% to −22% drawdowns.",
+ "<b>The drawdown rule did most of the work</b>, not the shorts: on its own it cut Sa15d9d9c's NIFTY 500 drawdown from −46% to −32% at the same 18.0% CAGR (L_dd). The short book took a further 3 points off the drawdown and softened 2008 and 2018–20.",
+ "<b>The short book alone makes about nothing:</b> its 6% CAGR is the liquid-fund interest on idle cash. It earns in bear markets (over Aug 2018 – Aug 2020, including cash: +23% to +33% for the monthly versions, +11% to +22% for the weekly ones; +24% to +27% in 2008 for the weekly trend-exit versions) and bleeds slowly otherwise. That is insurance, which is what it is for.",
+ "<b>The NIFTY-futures hedge is a fair alternative:</b> LS_hedge100 had the smallest 2008 loss (−8%), but cost about 1 point of CAGR; a 50% hedge sat in between. Shorting individual weak stocks did slightly better overall and is the better complement in mid/small-cap bear markets such as 2018–20."],
+"part1": [
+ "The drawdown rule (L_dd) is the single best change: same 18.0% on NIFTY 500, drawdown −46% → −32%, 2018–20 loss −44% → −29%.",
+ "Position caps cost CAGR (15%: −2 points; 20%: −1.3; 25%: −1.1) and barely cut the drawdown on their own: big winners are where the money is. A cap is still worth having as a concentration rule.",
+ "0.75% risk with the cap and drawdown rule (L_cap20_dd_r075) is the most conservative version: 15.2% / −26% on NIFTY 500 and −14% to −22% elsewhere.",
+ "A 2-per-sector cap added nothing consistent."],
+"part2": [
+ "The exact monthly mirror fires rarely (30 trades in 26 years): stocks in downtrends seldom become overbought on a monthly chart. Weekly signals give 90–100 trades.",
+ "Every short version has a low win rate (20–42%): shorts in a rising market get stopped often; the payoff comes from a few bear phases.",
+ "Shorting without the NIFTY 200-DMA filter (S_w_nomkt) or with only weekly/daily trend filters (S_w_wd) doubles the trades and the drawdown: shorting in bull markets is a losing game in India.",
+ "Short-side figures assume futures are available on every NIFTY 200 name since 2001. In reality single-stock futures began in Nov 2001 on a short list that grew over time; the 2002–07 short trades are optimistic."],
+"part3": [
+ "Adding either short book cut the NIFTY 500 drawdown from −32% to −28%/−29% with no CAGR cost; on the other universes, drawdowns stayed the same or improved slightly.",
+ "The 8% total-open-risk cap never came into play (identical results): with 1% risk per trade and stops trailed, open risk stayed below 8%.",
+ "Combining shorts with a 50% NIFTY hedge cut 2008 further but cost 0.1–0.4 points of CAGR; not worth the complexity."],
+"risk": [
+ "<b>Short-side mechanics in real life:</b> stock futures have lot sizes (₹5–10 lakh notional), so with small capital the short book cannot be sized at 1% risk; the NIFTY futures hedge (or NIFTY puts) is the practical form below ₹50 lakh capital.",
+ "<b>Gaps and circuits hurt shorts more:</b> results days, upper circuits and short squeezes are only partly captured (stops fill at the open on gaps). Keep shorts out of results weeks.",
+ "<b>Margin:</b> 25% of notional is assumed; SEBI peak-margin rules and volatility can push it higher, which ties up more cash.",
+ "<b>All universes are today's constituents</b> (survivorship bias): it flatters longs and hurts shorts (failed stocks that would have been good shorts are missing). The true short-side value is likely somewhat higher than shown.",
+ "Next step: paper-trade LS_short_w_st10_2 alongside S7c315ace for 6 months; journal every signal, including those skipped for lot size or margin."]}

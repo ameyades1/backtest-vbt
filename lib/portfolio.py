@@ -26,13 +26,15 @@ class Fill:
     cost: float          # cash paid incl. costs
     proceeds: float      # cash received incl. costs (or MTM at end)
     capped: bool         # qty reduced by cash
+    side: int = 1        # 1 long, -1 short (stock futures)
 
 
 def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_positions=4,
         fee=0.0, slip=0.0, rank="tightest", start=None, score: pd.DataFrame | None = None,
         seed: int | None = None, sector_of: dict | None = None, sector_cap: int | None = None,
         risk_mult: pd.Series | None = None, dd_rule: dict | None = None,
-        cash_ret: pd.Series | None = None, compound: bool = False):
+        cash_ret: pd.Series | None = None, compound: bool = False, pos_cap: float | None = None,
+        short: dict | None = None, max_open_risk: float | None = None, hedge: dict | None = None):
     """rank: order of same-day signals when slots are scarce.
          'tightest' smallest stop % first (default) | 'widest' largest stop % first
          'random'   shuffled with `seed`
@@ -47,40 +49,84 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
        cash_ret:  day -> return earned that day by uninvested cash (liquid fund / index ETF); applied to the
                   previous day's cash before the day's trades
        compound:  risk per trade = risk_pct x the previous day's equity (default: x the starting capital)
+       pos_cap:   a long position worth more than this share of equity at a month's last close is trimmed back to
+                  it at that close (the trimmed shares are booked as a separate fill)
+       short:     settings for trades with side -1 (stock futures): {"fee": per side, "margin": 0.25 (share of
+                  notional blocked as cash), "roll": 0.001 (per month held, of entry notional), "max": 6 (open
+                  shorts)}. P&L = qty x (entry - exit); margin returns at exit.
+       max_open_risk: skip a new trade if the open initial risk (sum of qty x |entry - stop|) would exceed this
+                  share of equity
+       hedge:     {"ratio": 1.0, "fee": per side, "regime": bool day series (True = hedge on, known before the day)}:
+                  short NIFTY futures worth ratio x the long book while on; daily P&L = -notional x NIFTY return
        sector_cap: at most this many open positions per sector (sector_of: symbol -> sector);
                    signals over the cap count as skipped."""
     risk_amt = capital * risk_pct
     # value open positions at the last known close: the combined table has dates on which
     # some stocks have no row (holidays/suspensions/data gaps); NaN must not count as 0
     closes = closes.ffill()
-    trades = [t for t in trades if t.stop is not None and t.entry > t.stop
+    sh = {"fee": fee, "margin": 0.25, "roll": 0.001, "max": 6, **(short or {})}
+    side = lambda t: getattr(t, "side", 1)
+    dist = lambda t: abs(t.entry - t.stop)
+    trades = [t for t in trades if t.stop is not None and (t.entry - t.stop) * side(t) > 0
               and (start is None or t.entry_date >= pd.Timestamp(start))]
     by_entry: dict = {}
     for t in trades:
         by_entry.setdefault(t.entry_date, []).append(t)
     days = closes.index[closes.index >= (pd.Timestamp(start) if start else closes.index[0])]
+    month_end = set(days[np.r_[days.month[1:] != days.month[:-1], True]])
     rng = np.random.default_rng(seed)
     cash, open_, fills, skipped = capital, {}, [], 0
     rows = []
     rm = risk_mult.reindex(days, method="ffill").fillna(1.0) if risk_mult is not None else None
-    peak, halved, prev_eq, pause_used, paused_left = capital, False, capital, False, 0
     cr = cash_ret.reindex(days).fillna(0.0) if cash_ret is not None else None
+    if hedge:
+        from .engine import nifty_close
+        nret = nifty_close().reindex(days, method="ffill").pct_change().fillna(0.0)
+        hon = hedge["regime"].reindex(days, method="ffill").fillna(False).astype(bool)
+        h_was = False
+    peak, halved, prev_eq, pause_used, paused_left = capital, False, capital, False, 0
+    prev_long = 0.0
+
+    def close_out(t, f, day, px):
+        nonlocal cash
+        f.exit, f.exit_date = px, day
+        if side(t) > 0:
+            f.proceeds = f.qty * px * (1 - slip) * (1 - fee)
+        else:
+            months = max((day - f.entry_date).days / 30.4, 0)
+            pnl = f.qty * (f.entry * (1 - slip) * (1 - sh["fee"]) - px * (1 + slip) * (1 + sh["fee"])) \
+                - f.qty * f.entry * sh["roll"] * np.ceil(months)
+            f.proceeds = f.cost + pnl
+        cash += f.proceeds
+        fills.append(f)
+
+    def value(t, f, px):
+        if side(t) > 0:
+            return f.qty * px
+        return f.cost + f.qty * (f.entry - px)
+
     for day in days:
         if cr is not None:
             cash *= 1 + float(cr.at[day])
+        if hedge:                                        # NIFTY short hedge on yesterday's long book
+            if hon.at[day]:
+                n = hedge.get("ratio", 1.0) * prev_long
+                cash -= n * float(nret.at[day])
+                if not h_was:
+                    cash -= n * hedge.get("fee", 0.0003)
+                if day in month_end:
+                    cash -= n * 0.0005                   # monthly roll: slippage + fees
+            h_was = bool(hon.at[day])
         # exits
         for key in [s for s, (t, f) in open_.items() if t.exit_date == day]:
             t, f = open_.pop(key)
-            f.exit, f.exit_date = t.exit, day
-            f.proceeds = f.qty * t.exit * (1 - slip) * (1 - fee)
-            cash += f.proceeds
-            fills.append(f)
+            close_out(t, f, day, t.exit)
         # entries
         cands = by_entry.get(day, [])
         if rank == "tightest":
-            cands = sorted(cands, key=lambda t: (t.entry - t.stop) / t.entry)
+            cands = sorted(cands, key=lambda t: dist(t) / t.entry)
         elif rank == "widest":
-            cands = sorted(cands, key=lambda t: -(t.entry - t.stop) / t.entry)
+            cands = sorted(cands, key=lambda t: -dist(t) / t.entry)
         elif rank == "random" and cands:
             cands = [cands[i] for i in rng.permutation(len(cands))]
         elif rank == "score":
@@ -91,7 +137,7 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
         elif rank == "score_tightest":
             def _k2(t):
                 v = score.at[day, t.symbol] if t.symbol in score.columns and day in score.index else np.nan
-                return (np.inf if np.isnan(v) else -v, (t.entry - t.stop) / t.entry)
+                return (np.inf if np.isnan(v) else -v, dist(t) / t.entry)
             cands = sorted(cands, key=_k2)
         mult = 1.0 if rm is None else float(rm.at[day])
         if dd_rule:
@@ -108,11 +154,16 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
             elif halved:
                 mult *= 0.5
         held = {k.split("|")[0] for k in open_}
+        open_risk = sum(f.qty * abs(f.entry - f.stop) for _, f in open_.values())
         for t in cands:
             key = f"{t.symbol}|{t.leg}"
             if key in open_:
                 continue
             if t.symbol not in held and len(held) >= max_positions:
+                skipped += 1
+                continue
+            if side(t) < 0 and t.symbol not in held and \
+                    sum(1 for tt, _ in open_.values() if side(tt) < 0) >= sh["max"]:
                 skipped += 1
                 continue
             if mult <= 0:
@@ -123,34 +174,64 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                 if sec is not None and sum(sector_of.get(s) == sec for s in held) >= sector_cap:
                     skipped += 1
                     continue
-            px = t.entry * (1 + slip) * (1 + fee)
             base = prev_eq * risk_pct if compound else risk_amt
-            qty = int(base * mult * t.weight // (t.entry - t.stop))
+            qty = int(base * mult * t.weight // dist(t))
+            if max_open_risk is not None:
+                room = max_open_risk * prev_eq - open_risk
+                qty = min(qty, int(max(room, 0) // dist(t)))
             capped = False
-            if qty * px > cash:
-                qty, capped = int(cash // px), True
+            if side(t) > 0:
+                px = t.entry * (1 + slip) * (1 + fee)
+                if qty * px > cash:
+                    qty, capped = int(cash // px), True
+                unit = px
+            else:
+                unit = t.entry * sh["margin"]
+                if qty * unit > cash:
+                    qty, capped = int(cash // unit), True
             if qty < 1:
                 skipped += 1
                 continue
-            cost = qty * px
+            cost = qty * unit
             cash -= cost
             f = Fill(t.symbol, day, None, qty, t.entry, None, t.stop, cost, 0.0, capped)
+            f.side = side(t)
             open_[key] = (t, f)
             held.add(t.symbol)
+            open_risk += qty * dist(t)
             if t.exit_date == day:                       # same-day stop/target
-                f.exit, f.exit_date = t.exit, day
-                f.proceeds = qty * t.exit * (1 - slip) * (1 - fee)
-                cash += f.proceeds
-                fills.append(f)
                 del open_[key]
+                close_out(t, f, day, t.exit)
                 held = {k.split("|")[0] for k in open_}
-        invested = sum(f.qty * closes.at[day, t.symbol] for k, (t, f) in open_.items()
-                       if not np.isnan(closes.at[day, t.symbol]))
+        vals = {k: value(t, f, closes.at[day, t.symbol]) for k, (t, f) in open_.items()
+                if not np.isnan(closes.at[day, t.symbol])}
+        invested = sum(vals.values())
+        eq = cash + invested
+        if pos_cap and day in month_end:                 # trim oversized longs at the month's close
+            for k, (t, f) in list(open_.items()):
+                if side(t) > 0 and k in vals and vals[k] > pos_cap * eq:
+                    px = closes.at[day, t.symbol]
+                    n = f.qty - int(pos_cap * eq // px)
+                    if 0 < n < f.qty:
+                        part = Fill(t.symbol, f.entry_date, day, n, f.entry, px, f.stop, f.cost * n / f.qty,
+                                    n * px * (1 - slip) * (1 - fee), False)
+                        part.side = 1
+                        f.cost -= part.cost
+                        f.qty -= n
+                        cash += part.proceeds
+                        fills.append(part)
+            vals = {k: value(t, f, closes.at[day, t.symbol]) for k, (t, f) in open_.items()
+                    if not np.isnan(closes.at[day, t.symbol])}
+            invested = sum(vals.values())
         prev_eq = cash + invested
+        prev_long = sum(v for k, v in vals.items() if side(open_[k][0]) > 0)
         rows.append((day, cash, invested, len({k.split("|")[0] for k in open_})))
     for key, (t, f) in open_.items():                   # mark open trades to market
         last = closes[t.symbol].dropna().iloc[-1]
-        f.proceeds = f.qty * last * (1 - slip) * (1 - fee)
+        if side(t) > 0:
+            f.proceeds = f.qty * last * (1 - slip) * (1 - fee)
+        else:
+            f.proceeds = f.cost + f.qty * (f.entry - last)
         fills.append(f)
     curve = pd.DataFrame(rows, columns=["date", "cash", "invested", "positions"]).set_index("date")
     curve["equity"] = curve["cash"] + curve["invested"]

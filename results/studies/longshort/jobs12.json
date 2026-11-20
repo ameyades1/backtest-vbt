@@ -1,0 +1,572 @@
+[
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_base.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_base"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_base.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_base"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_base.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_base"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_base.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_base"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_base.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_base"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap15.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap15"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap15.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap15"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap15.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap15"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap15.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap15"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap15.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap15"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap20"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap20"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap20"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap20"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap25.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap25"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap25.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap25"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap25.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap25"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap25.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap25"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap25.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap25"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_dd.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_dd"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_dd.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_dd"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_dd.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_dd"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_dd.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_dd"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_dd.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_dd"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_r075.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_r075"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_r075.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_r075"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_r075.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_r075"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_r075.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_r075"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_r075.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_r075"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap20_dd"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap20_dd"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap20_dd"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap20_dd"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r075.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_r075"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r075.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap20_dd_r075"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r075.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap20_dd_r075"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r075.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap20_dd_r075"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r075.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap20_dd_r075"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_sec2.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_sec2"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_sec2.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap20_sec2"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_sec2.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap20_sec2"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_sec2.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap20_sec2"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_sec2.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap20_sec2"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_sec2.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_sec2"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_sec2.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap20_dd_sec2"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_sec2.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap20_dd_sec2"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_sec2.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap20_dd_sec2"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_sec2.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap20_dd_sec2"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_mirror.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_m_mirror"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_mirror.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_m_mirror"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_mirror.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_m_mirror"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_ob60.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_m_ob60"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_ob60.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_m_ob60"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_ob60.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_m_ob60"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_ob50.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_m_ob50"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_ob50.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_m_ob50"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_ob50.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_m_ob50"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_mw.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_m_mw"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_mw.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_m_mw"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_m_mw.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_m_mw"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_mirror.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_mirror"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_mirror.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_mirror"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_mirror.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_mirror"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ob60.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_ob60"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ob60.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_ob60"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ob60.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_ob60"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_wd.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_wd"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_wd.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_wd"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_wd.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_wd"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ema34.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_ema34"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ema34.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_ema34"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ema34.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_ema34"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ema55.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_ema55"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ema55.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_ema55"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ema55.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_ema55"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ema89.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_ema89"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ema89.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_ema89"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_ema89.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_ema89"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_2r.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_2r"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_2r.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_2r"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_2r.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_2r"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_max90.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_max90"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_max90.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_max90"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_max90.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_max90"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_weak.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_weak"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_weak.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_weak"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_weak.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_weak"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_nomkt.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_nomkt"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_nomkt.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_nomkt"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_nomkt.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_nomkt"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_st10_2.json",
+  "universe": "NIFTY100",
+  "name": "longshort/S_w_st10_2"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_st10_2.json",
+  "universe": "NIFTY200",
+  "name": "longshort/S_w_st10_2"
+ },
+ {
+  "phase": "2-short",
+  "config": "strategies/longshort/S_w_st10_2.json",
+  "universe": "NIFTY500",
+  "name": "longshort/S_w_st10_2"
+ }
+]

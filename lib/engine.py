@@ -45,6 +45,8 @@ at_r x risk, the rest by the other exits; returned as two Trades with weights), 
 entry + min_r x risk), "pyramid" {"at_r", "weight"} (once the price reaches entry + at_r x risk: stop to
 break-even and add a leg of `weight` x the normal risk, its stop at the first entry); filter near_high
 {"pct", "period"} (close within pct % of the period-bar high).
+Shorts: run_strategy passes the reciprocal price series (C/price, High <-> Low) and maps trades back, so every
+price-level rule mirrors exactly; day filter "market_below_sma": N enters only while the market is below its SMA.
 Fill rules: gaps fill at Open; each day checks time, gap-stop, gap-target, EMA exit, stop, target
 in that order; the entry day checks only the Close. One open trade per stock.
 """
@@ -67,6 +69,7 @@ class Trade:
     stop: float | None = None
     weight: float = 1.0          # share of the position (partial exits split one trade into legs)
     leg: str = ""
+    side: int = 1                # 1 long, -1 short
 
 
 _NIFTY = None
@@ -232,6 +235,10 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
             w_close, w_ema = w["Close"].to_numpy(), ema(w["Close"], dayf["weekly_ema"]).to_numpy()
     if "daily_ema" in dayf:
         d_ema = ema(daily["Close"], dayf["daily_ema"]).to_numpy()
+    if "market_below_sma" in dayf:
+        if market is None:
+            raise ValueError("market_below_sma needs the market regime")
+        mkt_below = market.astype(float).shift(1).reindex(days, method="ffill").fillna(1).to_numpy() == 0
     if "market_sma" in dayf or mt:
         if market is None:
             raise ValueError("market_sma filter / market_tighten need the market regime (lib.market.regime)")
@@ -277,6 +284,8 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
                 if np.isnan(w_ema[lw]) or w_close[lw] < w_ema[lw]:
                     continue
             if "market_sma" in dayf and not mkt_ok[j]:
+                continue
+            if "market_below_sma" in dayf and not mkt_below[j]:
                 continue
             if "daily_ema" in dayf:
                 if j == 0 or np.isnan(d_ema[j - 1]) or d[j - 1, 3] < d_ema[j - 1]:

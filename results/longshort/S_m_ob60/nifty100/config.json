@@ -1,0 +1,81 @@
+{
+  "id": "S01a1f976-f091-7899-b4f0-71d4e86f8f5a",
+  "name": "longshort/S_m_ob60",
+  "description": "SHORT (stock futures, NIFTY 200 names): monthly StochRSI %K crosses below %D with %D above 60; close below EMA61 on M, W, D; RSI < 50; sell-stop below the signal low; stop at the previous week's high; cover when the weekly Supertrend(10, 3) turns bullish. New shorts only while NIFTY 50 is below its 200-day average. [Monthly, overbought 60.]",
+  "universe": "NIFTY100",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "stochrsi_cross",
+    "rsi": 14,
+    "stoch": 14,
+    "k": 3,
+    "d": 3,
+    "oversold": 40
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M",
+        "W",
+        "D"
+      ]
+    },
+    "rsi_min": {
+      "period": 14,
+      "value": 50
+    }
+  },
+  "entry": {
+    "valid_bars": 1,
+    "day_filters": {
+      "market_below_sma": 200
+    }
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null
+    ],
+    "ema_close_when_no_target": null,
+    "max_days": null,
+    "supertrend_exit_when_no_target": {
+      "timeframe": "W",
+      "period": 10,
+      "mult": 3
+    },
+    "time_stop": {
+      "days": 25,
+      "min_r": 0.5
+    }
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 6,
+    "rank": "tightest",
+    "compound": true,
+    "cash": {
+      "type": "liquid",
+      "rate": 6.5
+    },
+    "short": {
+      "margin": 0.25,
+      "roll": 0.001,
+      "max": 6
+    }
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1,
+    "short_product": "futures"
+  },
+  "side": "short",
+  "symbols_from": "NIFTY200"
+}

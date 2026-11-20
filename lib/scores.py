@@ -10,6 +10,7 @@ Config: sizing.score = {"type": ..., "tiebreak": "mom12" (optional)}
   mom             the stock's percentile rank of its `months`-month return (default 6) among the universe
   rs_sector       0.5 x stock percentile of `months` return + 0.5 x its sector's percentile (sector = median
                   stock return of the sector; sectors from NSE constituent lists)
+  weak            1 - percentile of `months` return (shorts: weakest first)
   tiebreak mom12  adds 0.9 x the stock's percentile rank of 12-month return that day (ties broken by
                   relative strength; never outweighs one point)
 """
@@ -58,6 +59,10 @@ def table(cfg: dict, dailies: dict) -> pd.DataFrame:
     elif t == "macd_pattern":
         tab = pd.DataFrame({s: parts["macd_turn"](d).fillna(0) + parts["weekly_pattern"](d).fillna(0)
                             for s, d in dailies.items()})
+    elif t == "weak":                                   # shorts: weakest `months` return first
+        n = int(21 * cfg.get("months", 6))
+        c = pd.DataFrame({s: d["Close"] for s, d in dailies.items()}).ffill()
+        tab = 1 - (c / c.shift(n) - 1).shift(1).rank(axis=1, pct=True)
     elif t in ("mom", "rs_sector"):
         n = int(21 * cfg.get("months", 6))
         c = pd.DataFrame({s: d["Close"] for s, d in dailies.items()}).ffill()

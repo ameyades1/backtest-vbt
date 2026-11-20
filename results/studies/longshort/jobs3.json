@@ -1,0 +1,272 @@
+[
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_hedge100.json",
+  "universe": "NIFTY500",
+  "name": "longshort/LS_hedge100"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_hedge100.json",
+  "universe": "NIFTY50",
+  "name": "longshort/LS_hedge100"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_hedge100.json",
+  "universe": "NIFTY100",
+  "name": "longshort/LS_hedge100"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_hedge100.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/LS_hedge100"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_hedge100.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/LS_hedge100"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_hedge50.json",
+  "universe": "NIFTY500",
+  "name": "longshort/LS_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_hedge50.json",
+  "universe": "NIFTY50",
+  "name": "longshort/LS_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_hedge50.json",
+  "universe": "NIFTY100",
+  "name": "longshort/LS_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_hedge50.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/LS_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_hedge50.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/LS_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror.json",
+  "universe": "NIFTY500",
+  "name": "longshort/LS_short_m_mirror"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror.json",
+  "universe": "NIFTY50",
+  "name": "longshort/LS_short_m_mirror"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror.json",
+  "universe": "NIFTY100",
+  "name": "longshort/LS_short_m_mirror"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/LS_short_m_mirror"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/LS_short_m_mirror"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror_risk8.json",
+  "universe": "NIFTY500",
+  "name": "longshort/LS_short_m_mirror_risk8"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror_risk8.json",
+  "universe": "NIFTY50",
+  "name": "longshort/LS_short_m_mirror_risk8"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror_risk8.json",
+  "universe": "NIFTY100",
+  "name": "longshort/LS_short_m_mirror_risk8"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror_risk8.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/LS_short_m_mirror_risk8"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror_risk8.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/LS_short_m_mirror_risk8"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror_hedge50.json",
+  "universe": "NIFTY500",
+  "name": "longshort/LS_short_m_mirror_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror_hedge50.json",
+  "universe": "NIFTY50",
+  "name": "longshort/LS_short_m_mirror_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror_hedge50.json",
+  "universe": "NIFTY100",
+  "name": "longshort/LS_short_m_mirror_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror_hedge50.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/LS_short_m_mirror_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_m_mirror_hedge50.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/LS_short_m_mirror_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2.json",
+  "universe": "NIFTY500",
+  "name": "longshort/LS_short_w_st10_2"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2.json",
+  "universe": "NIFTY50",
+  "name": "longshort/LS_short_w_st10_2"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2.json",
+  "universe": "NIFTY100",
+  "name": "longshort/LS_short_w_st10_2"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/LS_short_w_st10_2"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/LS_short_w_st10_2"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2_risk8.json",
+  "universe": "NIFTY500",
+  "name": "longshort/LS_short_w_st10_2_risk8"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2_risk8.json",
+  "universe": "NIFTY50",
+  "name": "longshort/LS_short_w_st10_2_risk8"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2_risk8.json",
+  "universe": "NIFTY100",
+  "name": "longshort/LS_short_w_st10_2_risk8"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2_risk8.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/LS_short_w_st10_2_risk8"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2_risk8.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/LS_short_w_st10_2_risk8"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2_hedge50.json",
+  "universe": "NIFTY500",
+  "name": "longshort/LS_short_w_st10_2_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2_hedge50.json",
+  "universe": "NIFTY50",
+  "name": "longshort/LS_short_w_st10_2_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2_hedge50.json",
+  "universe": "NIFTY100",
+  "name": "longshort/LS_short_w_st10_2_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2_hedge50.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/LS_short_w_st10_2_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_w_st10_2_hedge50.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/LS_short_w_st10_2_hedge50"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_both.json",
+  "universe": "NIFTY500",
+  "name": "longshort/LS_short_both"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_both.json",
+  "universe": "NIFTY50",
+  "name": "longshort/LS_short_both"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_both.json",
+  "universe": "NIFTY100",
+  "name": "longshort/LS_short_both"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_both.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/LS_short_both"
+ },
+ {
+  "phase": "3-combined",
+  "config": "strategies/longshort/LS_short_both.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/LS_short_both"
+ }
+]

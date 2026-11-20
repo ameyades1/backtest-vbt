@@ -95,6 +95,13 @@ def rules(c):
             setup += (f" (completed month); then weekly MACD ({a},{b},{c9}) crosses above its signal line while "
                       f"below zero within {s.get('window_weeks', 13)} weeks of that month's end. Signal candle = "
                       f"the MACD-cross week")
+    if c.get("side") == "short":
+        setup = ("SHORT (stock futures), mirrored on the reciprocal price: " + setup.replace("crosses above", "crosses below")
+                 .replace("below 30", "above 70").replace("below 40", "above 60").replace("below 50", "above 50")
+                 + "; trend filters, stops and exits mirrored (close below EMA, stop at the previous week's high, cover "
+                 "when Supertrend turns bullish)")
+        if c.get("symbols_from"):
+            setup += f"; only {c['symbols_from']} names"
     rows = [["Rule", "Value"], ["Setup", setup]]
     if s["type"] == "momentum_rotation":
         k = c["costs"]
@@ -128,7 +135,9 @@ def rules(c):
             {"weekly_ema": f"last week's close >= weekly EMA{df.get('weekly_ema')}",
              "daily_ema": f"yesterday's close >= daily EMA{df.get('daily_ema')}",
              "market_sma": f"NIFTY 50 closed above its {df.get('market_sma')}-day average yesterday "
-                           f"(Sensex before mid-2008)"}[k] for k in df)
+                           f"(Sensex before mid-2008)",
+             "market_below_sma": f"NIFTY 50 closed below its {df.get('market_below_sma')}-day average yesterday "
+                                 f"(Sensex before mid-2008)"}[k] for k in df)
     if e.get("delay_days"):
         ent += f"; entry no earlier than {e['delay_days']} trading day(s) after the signal candle"
     rows.append(["Entry", ent])
@@ -195,11 +204,23 @@ def rules(c):
     if z.get("sector_top"):
         extra.append(f"only stocks in the {z['sector_top'].get('n', 4)} strongest sectors by "
                      f"{z['sector_top'].get('months', 6)}-month median return")
+    if z.get("pos_cap"):
+        extra.append(f"positions above {z['pos_cap'] * 100:g}% of equity trimmed at month end")
+    if z.get("max_open_risk"):
+        extra.append(f"total open risk at most {z['max_open_risk'] * 100:g}% of equity")
+    if z.get("hedge"):
+        extra.append(f"short NIFTY futures worth {z['hedge'].get('ratio', 1) * 100:g}% of the long book while NIFTY 50 is "
+                     f"below its {z['hedge'].get('sma', 200)}-day average")
+    if c.get("side") == "short" or c.get("combine"):
+        sh = {"margin": 0.25, "roll": 0.001, "max": 6, **z.get("short", {})}
+        extra.append(f"shorts: {sh['margin'] * 100:g}% margin, {sh['roll'] * 100:g}% roll cost a month, at most "
+                     f"{sh['max']} open, futures fees")
     if z.get("sector_cap"):
         extra.append(f"at most {z['sector_cap']} open positions per sector")
     if c.get("combine"):
         extra.append("shares capital with " + ", ".join(x["config"].split("strategies/")[-1].replace(".json", "")
                                                         + (f" ({x['target']} target)" if x.get("target") else "")
+                                                        + (f" ({x['universe']} names)" if x.get("universe") else "")
                                                         for x in c["combine"]))
     if extra:
         rows.append(["Sizing rules", "; ".join(extra)])

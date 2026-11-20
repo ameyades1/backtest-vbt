@@ -12,18 +12,21 @@ Broker brokerage (per side, % of trade value):
               sharekhan.com/pricing — prepaid plans are cheaper)
   discount    delivery 0     | intraday 0.03% capped at Rs 20 (approximated as %)
 
+Stock/index futures (used for shorts): STT 0.02% sell (today's rate, applied to all history: conservative),
+stamp 0.002% buy, brokerage ~0.03% per side (approximate). Exchange fee taken as the cash rate.
+
 Not modelled: DP charge on delivery sells (flat Rs per scrip per day), minimum-per-share
 brokerage (only matters for sub-Rs-3 stocks), and the Rs 20 cap for discount brokers.
 """
-STT = {"delivery": (0.001, 0.001), "intraday": (0.0, 0.00025)}          # (buy, sell)
-STAMP = {"delivery": (0.00015, 0.0), "intraday": (0.00003, 0.0)}
+STT = {"delivery": (0.001, 0.001), "intraday": (0.0, 0.00025), "futures": (0.0, 0.0002)}          # (buy, sell)
+STAMP = {"delivery": (0.00015, 0.0), "intraday": (0.00003, 0.0), "futures": (0.00002, 0.0)}
 EXCHANGE = 0.0000297
 SEBI = 0.000001
 GST = 0.18
 
 BROKERS = {
-    "sharekhan": {"delivery": 0.0030, "intraday": 0.0002},
-    "discount":  {"delivery": 0.0,    "intraday": 0.0003},
+    "sharekhan": {"delivery": 0.0030, "intraday": 0.0002, "futures": 0.0003},
+    "discount":  {"delivery": 0.0,    "intraday": 0.0003, "futures": 0.0003},
 }
 
 
