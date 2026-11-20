@@ -9,3 +9,4 @@ nbformat
 reportlab
 matplotlib
 TA-Lib>=0.6
+pdfplumber

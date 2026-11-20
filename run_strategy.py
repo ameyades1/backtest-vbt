@@ -17,7 +17,11 @@ ROOT = Path(__file__).resolve().parent
 
 
 def load_dailies(universe):
-    syms = [s for s in indices.symbols(universe) if s in data.cached_symbols()]
+    if universe == "NIFTY500_PIT":                      # every stock ever in NIFTY 500 (trades filtered by date)
+        from lib import membership
+        syms = [s for s in membership.ever_members() if s in data.cached_symbols()]
+    else:
+        syms = [s for s in indices.symbols(universe) if s in data.cached_symbols()]
     d = data.load(syms)
     return d["Close"], {s: pd.DataFrame({f: d[f][s] for f in ["Open", "High", "Low", "Close", "Volume"]}).dropna()
                         for s in syms}
@@ -139,6 +143,9 @@ def run(cfg, closes, dailies, out):
     if siz.get("sector_top"):
         top_sectors_tab = scores.top_sectors(dailies, siz["sector_top"].get("n", 4), siz["sector_top"].get("months", 6))
     sec_of = scores.sector_map() if siz.get("sector_cap") else None
+    if cfg.get("universe") == "NIFTY500_PIT":
+        from lib import membership
+        pit = membership.membership_table(closes.index, list(dailies))
     if siz.get("liq_top_pct"):
         liq_rank = pd.DataFrame({s: (d["Close"] * d["Volume"]).rolling(60, min_periods=20).median().shift(1)
                                  for s, d in dailies.items()}).rank(axis=1, pct=True)
@@ -168,6 +175,8 @@ def run(cfg, closes, dailies, out):
     for tg in cfg["exits"]["targets_pct"]:
         ec = engine_cfg(cfg, tg)
         trades = list(_sim(ec, dailies, end))
+        if cfg.get("universe") == "NIFTY500_PIT":       # point in time: only stocks in the index on the entry day
+            trades = [t for t in trades if bool(pit.at[t.entry_date, t.symbol])]
         if cfg.get("symbols_from"):                     # e.g. shorts only in an F&O-like list (NIFTY 200)
             keep = set(indices.symbols(cfg["symbols_from"]))
             trades = [t for t in trades if t.symbol in keep]
