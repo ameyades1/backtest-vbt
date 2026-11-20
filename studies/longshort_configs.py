@@ -43,6 +43,8 @@ def part12():
             ("r075", "0.75% of equity per trade.", {"risk_pct": 0.75}),
             ("cap20_dd", "20% position cap + drawdown rule.", {"pos_cap": 0.20, "dd_rule": DD}),
             ("cap20_dd_r075", "20% cap + drawdown rule + 0.75% risk.", {"pos_cap": 0.20, "dd_rule": DD, "risk_pct": 0.75}),
+            ("cap20_dd_r050", "20% cap + drawdown rule + 0.5% risk.", {"pos_cap": 0.20, "dd_rule": DD, "risk_pct": 0.5}),
+            ("cap20_dd_r025", "20% cap + drawdown rule + 0.25% risk.", {"pos_cap": 0.20, "dd_rule": DD, "risk_pct": 0.25}),
             ("cap20_sec2", "20% cap + at most 2 positions per sector.", {"pos_cap": 0.20, "sector_cap": 2}),
             ("cap20_dd_sec2", "20% cap + drawdown rule + sector cap 2.", {"pos_cap": 0.20, "dd_rule": DD, "sector_cap": 2})]:
         write(lvar(suf, d, **kw), "1-harden", UNI5, jobs)

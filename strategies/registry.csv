@@ -270,3 +270,5 @@ S01a1f97b-b4c1-797f-8ced-2936816e54bb,S816e54bb,longshort/LS_short_m_mirror_risk
 S01a1f97b-b4c2-7917-81cf-eda0f594c67c,Sf594c67c,longshort/LS_short_w_st10_2,strategies/longshort/LS_short_w_st10_2.json,2026-11-20,active
 S01a1f97b-b4c3-7480-9b77-215906057f7c,S06057f7c,longshort/LS_short_w_st10_2_hedge50,strategies/longshort/LS_short_w_st10_2_hedge50.json,2026-11-20,active
 S01a1f97b-b4c4-70dd-83e7-c57ebf7534db,Sbf7534db,longshort/LS_short_w_st10_2_risk8,strategies/longshort/LS_short_w_st10_2_risk8.json,2026-11-20,active
+S01a1fa03-d512-7cfa-b062-8fefe01037f3,Se01037f3,longshort/L_cap20_dd_r025,strategies/longshort/L_cap20_dd_r025.json,2026-11-20,active
+S01a1fa03-d513-7329-b693-cb71150d745e,S150d745e,longshort/L_cap20_dd_r050,strategies/longshort/L_cap20_dd_r050.json,2026-11-20,active

@@ -241,6 +241,66 @@
  },
  {
   "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r050.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_r050"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r050.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap20_dd_r050"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r050.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap20_dd_r050"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r050.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap20_dd_r050"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r050.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap20_dd_r050"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r025.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_r025"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r025.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap20_dd_r025"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r025.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap20_dd_r025"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r025.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap20_dd_r025"
+ },
+ {
+  "phase": "1-harden",
+  "config": "strategies/longshort/L_cap20_dd_r025.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap20_dd_r025"
+ },
+ {
+  "phase": "1-harden",
   "config": "strategies/longshort/L_cap20_sec2.json",
   "universe": "NIFTY500",
   "name": "longshort/L_cap20_sec2"
