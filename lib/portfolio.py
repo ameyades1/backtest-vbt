@@ -31,7 +31,8 @@ class Fill:
 def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_positions=4,
         fee=0.0, slip=0.0, rank="tightest", start=None, score: pd.DataFrame | None = None,
         seed: int | None = None, sector_of: dict | None = None, sector_cap: int | None = None,
-        risk_mult: pd.Series | None = None, dd_rule: dict | None = None):
+        risk_mult: pd.Series | None = None, dd_rule: dict | None = None,
+        cash_ret: pd.Series | None = None, compound: bool = False):
     """rank: order of same-day signals when slots are scarce.
          'tightest' smallest stop % first (default) | 'widest' largest stop % first
          'random'   shuffled with `seed`
@@ -43,6 +44,9 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                   at half risk until a new high; on reaching a 15% fall, no new trades for 21 trading days (once per
                   drawdown; re-armed at a new high). Uses the previous day's equity.
        Trades with weight < 1 (partial-exit legs) get that share of the risk; legs of one stock share a slot.
+       cash_ret:  day -> return earned that day by uninvested cash (liquid fund / index ETF); applied to the
+                  previous day's cash before the day's trades
+       compound:  risk per trade = risk_pct x the previous day's equity (default: x the starting capital)
        sector_cap: at most this many open positions per sector (sector_of: symbol -> sector);
                    signals over the cap count as skipped."""
     risk_amt = capital * risk_pct
@@ -60,7 +64,10 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
     rows = []
     rm = risk_mult.reindex(days, method="ffill").fillna(1.0) if risk_mult is not None else None
     peak, halved, prev_eq, pause_used, paused_left = capital, False, capital, False, 0
+    cr = cash_ret.reindex(days).fillna(0.0) if cash_ret is not None else None
     for day in days:
+        if cr is not None:
+            cash *= 1 + float(cr.at[day])
         # exits
         for key in [s for s, (t, f) in open_.items() if t.exit_date == day]:
             t, f = open_.pop(key)
@@ -117,7 +124,8 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                     skipped += 1
                     continue
             px = t.entry * (1 + slip) * (1 + fee)
-            qty = int(risk_amt * mult * t.weight // (t.entry - t.stop))
+            base = prev_eq * risk_pct if compound else risk_amt
+            qty = int(base * mult * t.weight // (t.entry - t.stop))
             capped = False
             if qty * px > cash:
                 qty, capped = int(cash // px), True

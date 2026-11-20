@@ -55,7 +55,9 @@ SCORE_TEXT = {
     "weekly_pattern": "competing signals with a weekly bullish TA-Lib pattern (engulfing, hammer, morning star, "
                       "piercing) in the last 2 completed weeks first",
     "macd_pattern": "competing signals ranked by a 0-3 score: monthly MACD histogram rising +1, rising below zero +1, "
-                    "weekly bullish TA-Lib pattern in the last 2 weeks +1"}
+                    "weekly bullish TA-Lib pattern in the last 2 weeks +1",
+    "mom": "competing signals ranked by the stock's 6/12-month return percentile",
+    "rs_sector": "competing signals ranked by stock + sector relative strength (6-month return percentiles)"}
 
 
 def rules(c):
@@ -69,6 +71,12 @@ def rules(c):
            "bb_squeeze": lambda: (f"{T} close crosses above the upper Bollinger band ({s.get('period', 20)},"
                                   f"{s.get('k', 2.0):g}) within {s.get('recent', 4)} candles of a "
                                   f"{s.get('lookback', 26)}-candle low in band width"),
+           "momentum_rotation": lambda: (f"Monthly rotation: hold the {s.get('top', 10)} strongest stocks by "
+                                         f"{s.get('lookback', 252) // 21}-1 month return, above their "
+                                         f"{s.get('sma', 200)}-day average; keep while in the top "
+                                         f"{s.get('top', 10) * s.get('buffer', 2)}; equal weight"
+                                         + (f"; no new buys while NIFTY 50 is below its {s['market_sma']}-day average"
+                                            if s.get('market_sma') else "")),
            "rs_high": lambda: f"Stock / NIFTY 50 ratio makes a new {s.get('period', 26)}-{tf[:-2]} high"}
     if s["type"] == "ema_breakout":
         setup = f"{tf.capitalize()} candle opens below and closes above EMA{s['span']}"
@@ -88,6 +96,14 @@ def rules(c):
                       f"below zero within {s.get('window_weeks', 13)} weeks of that month's end. Signal candle = "
                       f"the MACD-cross week")
     rows = [["Rule", "Value"], ["Setup", setup]]
+    if s["type"] == "momentum_rotation":
+        k = c["costs"]
+        rows += [["Fills", "Rebalance on the first trading day of each month at the open, using closes up to the "
+                  "previous day; new positions sized at equity / top"],
+                 ["Costs", f"{k['broker'].capitalize()} {k['product']} fees + {k['slippage_pct']:g}% slippage per side"]]
+        if c["sizing"].get("cash"):
+            rows.append(["Idle cash", str(c["sizing"]["cash"])])
+        return [[a, Paragraph(b, SM)] for a, b in rows[1:]], rows[0]
     f = c.get("filters", {})
     if "trend_ema" in f:
         rows.append(["Trend", f"Close above EMA{f['trend_ema']['span']} on "
@@ -99,7 +115,8 @@ def rules(c):
           "sma_rising": lambda v: f"close above a rising {v.get('period', 40)}-candle average",
           "ichimoku": lambda v: "close above the Ichimoku cloud",
           "volume": lambda v: f"signal-candle volume above {v.get('mult', 1.5):g} x its {v.get('period', 20)}-candle average",
-          "obv_high": lambda v: f"on-balance volume at a {v.get('period', 26)}-candle high"}
+          "obv_high": lambda v: f"on-balance volume at a {v.get('period', 26)}-candle high",
+          "near_high": lambda v: f"close within {v.get('pct', 10)}% of the {v.get('period', 252)}-bar high"}
     for k, fn in FT.items():
         if k in f:
             rows.append(["Filter", f"{TF[f[k].get('timeframe', c['timeframe'])].capitalize()} " + fn(f[k])])
@@ -144,9 +161,15 @@ def rules(c):
                    f"Supertrend turns bearish)" if ex.get("supertrend_exit_when_no_target") else "no target (stop only)"))
     if ex.get("max_days"):
         xs.append(f"time exit after {ex['max_days']} days")
+    if ex.get("time_stop"):
+        xs.append(f"time stop: sold at the next open if the close is below +{ex['time_stop'].get('min_r', 0.5):g}R "
+                  f"{ex['time_stop']['days']} calendar days after entry")
+    if ex.get("pyramid"):
+        xs.append(f"pyramid: at +{ex['pyramid']['at_r']:g}R the stop moves to break-even and a second leg of "
+                  f"{ex['pyramid'].get('weight', 0.5):g}x risk is added (its stop at the first entry)")
     rows.append(["Exits", "; ".join(xs)])
     z = c["sizing"]
-    rows.append(["Sizing", f"{z['risk_pct']:g}% of starting capital at risk per trade; max {z['max_positions']} "
+    rows.append(["Sizing", f"{z['risk_pct']:g}% of {'current equity' if z.get('compound') else 'starting capital'} at risk per trade; max {z['max_positions']} "
                  f"open trades; " + (SCORE_TEXT.get(z["score"]["type"], z["score"]["type"])
                  + (", ties by 12-month return" if z["score"].get("tiebreak") == "mom12" else ", ties by tightest stop")
                  if z.get("score") else "tightest stop filled first")])
@@ -159,12 +182,25 @@ def rules(c):
                      f"trades for {d.get('pause_days', 21)} trading days on reaching {d.get('pause', 15)}%")
     rr = z.get("risk_rules", {})
     if "market_sma" in rr:
-        extra.append(f"x{rr['market_sma'].get('mult', 0.5):g} risk while NIFTY 50 is below its 200-day average")
+        extra.append(f"x{rr['market_sma'].get('mult', 0.5):g} risk while NIFTY 50 is below its "
+                     f"{rr['market_sma'].get('days', 200)}-day average")
     if "breadth" in rr:
         extra.append(f"x{rr['breadth'].get('mult', 0.5):g} risk while under {rr['breadth'].get('min', 40)}% of the "
                      f"universe is above its 200-day average")
     if "vix" in rr:
         extra.append(f"x{rr['vix'].get('mult', 0.5):g} risk while India VIX is above {rr['vix'].get('max', 25)}")
+    if z.get("cash"):
+        extra.append("idle cash earns " + (f"{z['cash'].get('rate', 6.5):g}% a year (liquid fund)" if z["cash"]["type"] == "liquid"
+                                           else "the NIFTY 50 price return (index ETF)"))
+    if z.get("sector_top"):
+        extra.append(f"only stocks in the {z['sector_top'].get('n', 4)} strongest sectors by "
+                     f"{z['sector_top'].get('months', 6)}-month median return")
+    if z.get("sector_cap"):
+        extra.append(f"at most {z['sector_cap']} open positions per sector")
+    if c.get("combine"):
+        extra.append("shares capital with " + ", ".join(x["config"].split("strategies/")[-1].replace(".json", "")
+                                                        + (f" ({x['target']} target)" if x.get("target") else "")
+                                                        for x in c["combine"]))
     if extra:
         rows.append(["Sizing rules", "; ".join(extra)])
     k = c["costs"]

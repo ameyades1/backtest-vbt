@@ -1,0 +1,758 @@
+[
+ {
+  "phase": "0-base",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_base.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_base"
+ },
+ {
+  "phase": "0-base",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_base.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_base"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr1.5_st10_2.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr1.5_st10_2"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr1.5_st10_3.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr1.5_st10_3"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr1.5_st14_3.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr1.5_st14_3"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2_st10_2.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2_st10_2"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2_st10_3.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2_st10_3"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2_st14_3.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2_st14_3"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2.5_st10_2.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2.5_st10_2"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2.5_st10_3.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2.5_st10_3"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2.5_st14_3.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr2.5_st14_3"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr3_st10_2.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr3_st10_2"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr3_st10_3.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr3_st10_3"
+ },
+ {
+  "phase": "A-combo",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr3_st14_3.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_atr3_st14_3"
+ },
+ {
+  "phase": "B-slots",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_slots6_r1.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_slots6_r1"
+ },
+ {
+  "phase": "B-slots",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_slots10_r1.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_slots10_r1"
+ },
+ {
+  "phase": "B-slots",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_slots8_r1.5.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_slots8_r1.5"
+ },
+ {
+  "phase": "B-slots",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_slots10_r1.5.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_slots10_r1.5"
+ },
+ {
+  "phase": "B-slots",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_slots12_r1.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_slots12_r1"
+ },
+ {
+  "phase": "B-cash",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_cash_liquid.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_cash_liquid"
+ },
+ {
+  "phase": "B-cash",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_cash_nifty.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_cash_nifty"
+ },
+ {
+  "phase": "B-pyramid",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_pyr1r.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_pyr1r"
+ },
+ {
+  "phase": "B-pyramid",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_pyr2r.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_pyr2r"
+ },
+ {
+  "phase": "B-slots",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots6_r1.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots6_r1"
+ },
+ {
+  "phase": "B-slots",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots10_r1.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots10_r1"
+ },
+ {
+  "phase": "B-slots",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots8_r1.5.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots8_r1.5"
+ },
+ {
+  "phase": "B-slots",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots10_r1.5.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots10_r1.5"
+ },
+ {
+  "phase": "B-slots",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots12_r1.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_slots12_r1"
+ },
+ {
+  "phase": "B-cash",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_cash_liquid.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_cash_liquid"
+ },
+ {
+  "phase": "B-cash",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_cash_nifty.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_cash_nifty"
+ },
+ {
+  "phase": "B-pyramid",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_pyr1r.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_pyr1r"
+ },
+ {
+  "phase": "B-pyramid",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_pyr2r.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_pyr2r"
+ },
+ {
+  "phase": "C-exit",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_chandelier3.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_chandelier3"
+ },
+ {
+  "phase": "C-time",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_tstop15.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_tstop15"
+ },
+ {
+  "phase": "C-time",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_tstop25.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_tstop25"
+ },
+ {
+  "phase": "C-time",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_tstop40.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_tstop40"
+ },
+ {
+  "phase": "C-exit",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_chandelier3.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_chandelier3"
+ },
+ {
+  "phase": "C-time",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_tstop15.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_tstop15"
+ },
+ {
+  "phase": "C-time",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_tstop25.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_tstop25"
+ },
+ {
+  "phase": "C-time",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_tstop40.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_tstop40"
+ },
+ {
+  "phase": "C-exit",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_p2r.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_p2r"
+ },
+ {
+  "phase": "D-rank",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_rank_mom6.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_rank_mom6"
+ },
+ {
+  "phase": "D-rank",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_rank_mom12.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_rank_mom12"
+ },
+ {
+  "phase": "D-rank",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_rank_rs_sector6.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_rank_rs_sector6"
+ },
+ {
+  "phase": "D-sector",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_sectop4.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_sectop4"
+ },
+ {
+  "phase": "D-sector",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_seccap2.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_seccap2"
+ },
+ {
+  "phase": "D-filter",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_near_high10.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_near_high10"
+ },
+ {
+  "phase": "D-filter",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_vol12.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_vol12"
+ },
+ {
+  "phase": "D-rank",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_rank_mom6.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_rank_mom6"
+ },
+ {
+  "phase": "D-rank",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_rank_mom12.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_rank_mom12"
+ },
+ {
+  "phase": "D-rank",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_rank_rs_sector6.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_rank_rs_sector6"
+ },
+ {
+  "phase": "D-sector",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_sectop4.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_sectop4"
+ },
+ {
+  "phase": "D-sector",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_seccap2.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_seccap2"
+ },
+ {
+  "phase": "D-filter",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_near_high10.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_near_high10"
+ },
+ {
+  "phase": "D-filter",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_vol12.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_vol12"
+ },
+ {
+  "phase": "E-regime",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_reg_sma50.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_reg_sma50"
+ },
+ {
+  "phase": "E-regime",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_reg_breadth50.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_reg_breadth50"
+ },
+ {
+  "phase": "E-regime",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_reg_vix25.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_reg_vix25"
+ },
+ {
+  "phase": "E-regime",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_reg_sma50.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_reg_sma50"
+ },
+ {
+  "phase": "E-regime",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_reg_breadth50.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_reg_breadth50"
+ },
+ {
+  "phase": "E-regime",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_reg_vix25.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_reg_vix25"
+ },
+ {
+  "phase": "F-combine",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_plus_brk2r.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_plus_brk2r"
+ },
+ {
+  "phase": "F-combine",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_plus_brk2r.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_plus_brk2r"
+ },
+ {
+  "phase": "F-combine",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_plus_st.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_plus_st"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10.json",
+  "universe": "NIFTY50",
+  "name": "rotation/momentum_top10"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10.json",
+  "universe": "NIFTY100",
+  "name": "rotation/momentum_top10"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10.json",
+  "universe": "NIFTY200",
+  "name": "rotation/momentum_top10"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10.json",
+  "universe": "NIFTY500",
+  "name": "rotation/momentum_top10"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top20.json",
+  "universe": "NIFTY50",
+  "name": "rotation/momentum_top20"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top20.json",
+  "universe": "NIFTY100",
+  "name": "rotation/momentum_top20"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top20.json",
+  "universe": "NIFTY200",
+  "name": "rotation/momentum_top20"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top20.json",
+  "universe": "NIFTY500",
+  "name": "rotation/momentum_top20"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10_6m.json",
+  "universe": "NIFTY50",
+  "name": "rotation/momentum_top10_6m"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10_6m.json",
+  "universe": "NIFTY100",
+  "name": "rotation/momentum_top10_6m"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10_6m.json",
+  "universe": "NIFTY200",
+  "name": "rotation/momentum_top10_6m"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10_6m.json",
+  "universe": "NIFTY500",
+  "name": "rotation/momentum_top10_6m"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10_nomkt.json",
+  "universe": "NIFTY50",
+  "name": "rotation/momentum_top10_nomkt"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10_nomkt.json",
+  "universe": "NIFTY100",
+  "name": "rotation/momentum_top10_nomkt"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10_nomkt.json",
+  "universe": "NIFTY200",
+  "name": "rotation/momentum_top10_nomkt"
+ },
+ {
+  "phase": "F-rotation",
+  "config": "strategies/rotation/momentum_top10_nomkt.json",
+  "universe": "NIFTY500",
+  "name": "rotation/momentum_top10_nomkt"
+ },
+ {
+  "phase": "G-stack",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack"
+ },
+ {
+  "phase": "G-stack",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs"
+ },
+ {
+  "phase": "G-stack",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_brk.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_brk"
+ },
+ {
+  "phase": "G-stack",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack"
+ },
+ {
+  "phase": "G-stack",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs"
+ },
+ {
+  "phase": "G-stack",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_brk.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_brk"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_compound.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_compound.json",
+  "universe": "NIFTY50",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_compound.json",
+  "universe": "NIFTY100",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_compound.json",
+  "universe": "MIDCAP150",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_compound.json",
+  "universe": "SMALLCAP250",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound.json",
+  "universe": "NIFTY50",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound.json",
+  "universe": "NIFTY100",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound.json",
+  "universe": "MIDCAP150",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound.json",
+  "universe": "SMALLCAP250",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound.json",
+  "universe": "NIFTY50",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound.json",
+  "universe": "NIFTY100",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound.json",
+  "universe": "MIDCAP150",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound.json",
+  "universe": "SMALLCAP250",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_rs_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_compound_r1.5.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_compound_r1.5"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_compound_r1.5.json",
+  "universe": "NIFTY50",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_compound_r1.5"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_compound_r1.5.json",
+  "universe": "NIFTY100",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_compound_r1.5"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_compound_r1.5.json",
+  "universe": "MIDCAP150",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_compound_r1.5"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_c18_compound_r1.5.json",
+  "universe": "SMALLCAP250",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_compound_r1.5"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound.json",
+  "universe": "NIFTY50",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound.json",
+  "universe": "NIFTY100",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound.json",
+  "universe": "MIDCAP150",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound.json",
+  "universe": "SMALLCAP250",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound.json",
+  "universe": "NIFTY50",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound.json",
+  "universe": "NIFTY100",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound.json",
+  "universe": "MIDCAP150",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound.json",
+  "universe": "SMALLCAP250",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound.json",
+  "universe": "NIFTY50",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound.json",
+  "universe": "NIFTY100",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound.json",
+  "universe": "MIDCAP150",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound.json",
+  "universe": "SMALLCAP250",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound_r1.5.json",
+  "universe": "NIFTY500",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound_r1.5"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound_r1.5.json",
+  "universe": "NIFTY50",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound_r1.5"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound_r1.5.json",
+  "universe": "NIFTY100",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound_r1.5"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound_r1.5.json",
+  "universe": "MIDCAP150",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound_r1.5"
+ },
+ {
+  "phase": "H-compound",
+  "config": "strategies/stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound_r1.5.json",
+  "universe": "SMALLCAP250",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_compound_r1.5"
+ }
+]

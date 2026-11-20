@@ -1,0 +1,35 @@
+{
+  "id": "S01a1f72a-69fa-7e05-84ea-5d1bcb841c0f",
+  "name": "rotation/momentum_top20",
+  "universe": "NIFTY200",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "exits": {
+    "targets_pct": [
+      null
+    ]
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 0,
+    "max_positions": 10,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  },
+  "description": "As momentum_top10 with 20 stocks.",
+  "setup": {
+    "type": "momentum_rotation",
+    "top": 20,
+    "lookback": 252,
+    "skip": 21,
+    "buffer": 2,
+    "sma": 200,
+    "market_sma": 200
+  }
+}

@@ -10,7 +10,7 @@ import argparse, copy, json, sys
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from lib import data, indices, engine, portfolio, market, scores, ids
+from lib import data, indices, engine, portfolio, market, scores, ids, rotation
 from lib.costs import fee_per_side
 
 ROOT = Path(__file__).resolve().parent
@@ -32,6 +32,9 @@ def engine_cfg(cfg, target):
     e["exits"] = {"target_pct": target / 100 if isinstance(target, (int, float)) else None,
                   "ema_close": ex.get("ema_close_when_no_target") if trend else None,
                   "max_days": ex.get("max_days")}
+    for k in ("time_stop", "pyramid"):
+        if ex.get(k):
+            e["exits"][k] = ex[k]
     if trend and ex.get("supertrend_exit_when_no_target"):
         e["exits"]["supertrend_exit"] = ex["supertrend_exit_when_no_target"]
     if isinstance(target, str) and target.startswith("P"):
@@ -79,6 +82,24 @@ def risk_mult(rules, closes):
 _TRADES = {}      # engine config + market filter + universe size -> trades; ranking variants reuse them
 
 
+def cash_return(spec, closes):
+    """sizing.cash: {"type": "liquid", "rate": 6.5} (annual %, daily accrual) or {"type": "nifty", "cost": 0.1}
+    (idle cash in a NIFTY 50 ETF: price return, less an annual cost %)."""
+    if spec["type"] == "liquid":
+        return pd.Series((1 + spec.get("rate", 6.5) / 100) ** (1 / 252) - 1, index=closes.index)
+    n = engine.nifty_close().reindex(closes.index, method="ffill")
+    return n.pct_change().fillna(0) - spec.get("cost", 0.1) / 100 / 252
+
+
+def _sim(ec, dailies, end):
+    mdays = ec.get("entry", {}).get("day_filters", {}).get("market_sma") or ec["stop"].get("market_sma")
+    mk = market.regime(mdays) if mdays else None
+    key = (json.dumps(ec, sort_keys=True), tuple(dailies), end)
+    if key not in _TRADES:
+        _TRADES[key] = [t for s, df in dailies.items() for t in engine.simulate(df, s, ec, mk)]
+    return _TRADES[key]
+
+
 def run(cfg, closes, dailies, out):
     siz, costs = cfg["sizing"], cfg["costs"]
     fee, slip = fee_per_side(costs["broker"], costs["product"]), costs["slippage_pct"] / 100
@@ -93,14 +114,29 @@ def run(cfg, closes, dailies, out):
     rows, curves = {}, {}
     score = scores.table(siz["score"], dailies) if "score" in siz else None
     rm = risk_mult(siz["risk_rules"], closes) if siz.get("risk_rules") else None
+    cr = cash_return(siz["cash"], closes) if siz.get("cash") else None
+    if siz.get("sector_top"):
+        top_sectors_tab = scores.top_sectors(dailies, siz["sector_top"].get("n", 4), siz["sector_top"].get("months", 6))
+    sec_of = scores.sector_map() if siz.get("sector_cap") else None
+    if cfg["setup"]["type"] == "momentum_rotation":
+        curve, fills, skipped = rotation.run(cfg, closes, dailies, siz["capital"], fee, slip, start, cr)
+        tab = pd.DataFrame({"No target": {"Signals filled": len(fills), "Median stop %": np.nan,
+                            **portfolio.summary(curve, fills, skipped, siz["capital"], cfg["setup"].get("top", 10))}}).T
+        tab.to_csv(out / "summary.csv")
+        pd.DataFrame({"No target": curve["equity"]}).to_csv(out / "equity.csv")
+        pd.DataFrame([vars(f) for f in fills]).to_csv(out / "fills_none.csv", index=False)
+        json.dump(cfg, open(out / "config.json", "w"), indent=2)
+        return tab
     for tg in cfg["exits"]["targets_pct"]:
         ec = engine_cfg(cfg, tg)
-        mdays = ec.get("entry", {}).get("day_filters", {}).get("market_sma") or ec["stop"].get("market_sma")
-        mk = market.regime(mdays) if mdays else None
-        key = (json.dumps(ec, sort_keys=True), tuple(dailies), end)
-        if key not in _TRADES:
-            _TRADES[key] = [t for s, df in dailies.items() for t in engine.simulate(df, s, ec, mk)]
-        trades = _TRADES[key]
+        trades = list(_sim(ec, dailies, end))
+        for sub in cfg.get("combine", []):              # another strategy's trades share this portfolio
+            sc = json.load(open(ROOT / sub["config"]))
+            trades += [t for t in _sim(engine_cfg(sc, sub.get("target")), dailies, end)]
+        if siz.get("sector_top"):
+            ok = top_sectors_tab
+            trades = [t for t in trades if t.entry_date in ok.index and t.symbol in ok.columns
+                      and bool(ok.at[t.entry_date, t.symbol])]
         trades = [t for t in trades if t.entry_date >= pd.Timestamp(start)]
         if siz.get("max_stop_pct"):
             trades = [t for t in trades if (t.entry - t.stop) / t.entry * 100 <= siz["max_stop_pct"]]
@@ -108,7 +144,8 @@ def run(cfg, closes, dailies, out):
         sd = np.array([(t.entry - t.stop) / t.entry * 100 for t in trades if t.stop is not None])
         curve, fills, skipped = portfolio.run(trades, closes, siz["capital"], siz["risk_pct"] / 100,
                                               siz["max_positions"], fee, slip, siz.get("rank", "tightest"), start,
-                                              score=score, risk_mult=rm, dd_rule=siz.get("dd_rule"))
+                                              score=score, risk_mult=rm, dd_rule=siz.get("dd_rule"),
+                                              cash_ret=cr, compound=siz.get("compound", False), sector_of=sec_of, sector_cap=siz.get("sector_cap"))
         rows[lbl] = {"Signals filled": len(trades), "Median stop %": np.median(sd) if len(sd) else np.nan,
                        **portfolio.summary(curve, fills, skipped, siz["capital"], siz["max_positions"])}
         curves[lbl] = curve["equity"]

@@ -1,0 +1,67 @@
+{
+  "id": "S01a1f732-8025-7ab1-80c6-dbea54d3a24f",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_stack_compound",
+  "description": "Monthly StochRSI pullback; stop at the previous week's low. [Stack (10 slots, liquid-fund cash, 25-day time stop) with compounding risk.]",
+  "universe": "NIFTY100",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "stochrsi_cross",
+    "rsi": 14,
+    "stoch": 14,
+    "k": 3,
+    "d": 3,
+    "oversold": 30
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M",
+        "W",
+        "D"
+      ]
+    },
+    "rsi_min": {
+      "period": 14,
+      "value": 50
+    }
+  },
+  "entry": {
+    "valid_bars": 1
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null
+    ],
+    "ema_close_when_no_target": {
+      "span": 61
+    },
+    "max_days": null,
+    "time_stop": {
+      "days": 25,
+      "min_r": 0.5
+    }
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 10,
+    "rank": "tightest",
+    "cash": {
+      "type": "liquid",
+      "rate": 6.5
+    },
+    "compound": true
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

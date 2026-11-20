@@ -1,0 +1,77 @@
+{
+  "id": "S01a1f732-802a-71a6-94db-c7891bb9f7b0",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_nifty200_exit_supertrend_c18_stack_rs_compound",
+  "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). [Trend exit swapped: weekly Supertrend(10,3) turns bearish instead of a monthly close below EMA61.] [Stack + RS ranking with compounding risk.]",
+  "universe": "NIFTY100",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "stochrsi_cross",
+    "rsi": 14,
+    "stoch": 14,
+    "k": 3,
+    "d": 3,
+    "oversold": 30
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M",
+        "W",
+        "D"
+      ]
+    },
+    "rsi_min": {
+      "period": 14,
+      "value": 50
+    }
+  },
+  "entry": {
+    "valid_bars": 1,
+    "day_filters": {
+      "market_sma": 200
+    }
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null
+    ],
+    "ema_close_when_no_target": null,
+    "max_days": null,
+    "supertrend_exit_when_no_target": {
+      "timeframe": "W",
+      "period": 10,
+      "mult": 3
+    },
+    "time_stop": {
+      "days": 25,
+      "min_r": 0.5
+    }
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 10,
+    "rank": "score_tightest",
+    "cash": {
+      "type": "liquid",
+      "rate": 6.5
+    },
+    "compound": true,
+    "score": {
+      "type": "rs_sector",
+      "months": 6
+    }
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

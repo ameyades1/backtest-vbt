@@ -7,6 +7,9 @@ Config: sizing.score = {"type": ..., "tiebreak": "mom12" (optional)}
   weekly_pattern  1 if a TA-Lib bullish pattern fired on any of the last `weeks` completed weekly candles
                   (patterns: CDLENGULFING, CDLHAMMER, CDLMORNINGSTAR, CDLPIERCING by default)
   macd_pattern    macd_turn + weekly_pattern (0..3)
+  mom             the stock's percentile rank of its `months`-month return (default 6) among the universe
+  rs_sector       0.5 x stock percentile of `months` return + 0.5 x its sector's percentile (sector = median
+                  stock return of the sector; sectors from NSE constituent lists)
   tiebreak mom12  adds 0.9 x the stock's percentile rank of 12-month return that day (ties broken by
                   relative strength; never outweighs one point)
 """
@@ -55,9 +58,43 @@ def table(cfg: dict, dailies: dict) -> pd.DataFrame:
     elif t == "macd_pattern":
         tab = pd.DataFrame({s: parts["macd_turn"](d).fillna(0) + parts["weekly_pattern"](d).fillna(0)
                             for s, d in dailies.items()})
+    elif t in ("mom", "rs_sector"):
+        n = int(21 * cfg.get("months", 6))
+        c = pd.DataFrame({s: d["Close"] for s, d in dailies.items()}).ffill()
+        r = (c / c.shift(n) - 1).shift(1)
+        tab = r.rank(axis=1, pct=True)
+        if t == "rs_sector":
+            sec = sector_map()
+            g = r.T.groupby(lambda s: sec.get(s, "?")).median().T
+            sr = g.rank(axis=1, pct=True)
+            tab = 0.5 * tab + 0.5 * pd.DataFrame({s: sr[sec.get(s, "?")] for s in r.columns})
     else:
         raise ValueError(f"unknown score {t}")
     if cfg.get("tiebreak") == "mom12":
         c = pd.DataFrame({s: d["Close"] for s, d in dailies.items()}).reindex(tab.index).ffill()
         tab = tab.fillna(0) + 0.9 * (c / c.shift(252) - 1).shift(1).rank(axis=1, pct=True).fillna(0)
     return tab
+
+
+def sector_map() -> dict:
+    """symbol.NS -> NSE industry, from every cached constituent list."""
+    from .indices import CACHE
+    m = {}
+    for f in sorted(CACHE.glob("*.csv")):
+        df = pd.read_csv(f)
+        if {"Symbol", "Industry"} <= set(df.columns):
+            for s, i in zip(df["Symbol"], df["Industry"]):
+                m.setdefault(f"{str(s).strip()}.NS", str(i).strip())
+    return m
+
+
+def top_sectors(dailies: dict, n_top=4, months=6) -> pd.DataFrame:
+    """day x symbol bool: the stock's sector is among the n_top sectors by median `months` return
+    (known before the day)."""
+    sec = sector_map()
+    c = pd.DataFrame({s: d["Close"] for s, d in dailies.items()}).ffill()
+    r = (c / c.shift(int(21 * months)) - 1).shift(1)
+    g = r.T.groupby(lambda s: sec.get(s, "?")).median().T.drop(columns="?", errors="ignore")
+    rk = g.rank(axis=1, ascending=False)
+    return pd.DataFrame({s: (rk[sec[s]] <= n_top) if sec.get(s) in rk.columns else False for s in r.columns},
+                        index=r.index)

@@ -1,0 +1,35 @@
+{
+  "id": "S01a1f72a-69f9-7654-be0c-01ba29186978",
+  "name": "rotation/momentum_top10_nomkt",
+  "universe": "NIFTY100",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "exits": {
+    "targets_pct": [
+      null
+    ]
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 0,
+    "max_positions": 10,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  },
+  "description": "As momentum_top10 without the NIFTY 200-DMA filter.",
+  "setup": {
+    "type": "momentum_rotation",
+    "top": 10,
+    "lookback": 252,
+    "skip": 21,
+    "buffer": 2,
+    "sma": 200,
+    "market_sma": null
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "id": "S01a1f72a-6a00-7e33-b240-02dffe33334b",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_plus_brk2r",
+  "description": "Monthly StochRSI pullback; stop at the previous week's low. [Shares capital with the weekly Donchian-55 breakout (2R target, 200-DMA filter); 10 slots.]",
+  "universe": "NIFTY500",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "stochrsi_cross",
+    "rsi": 14,
+    "stoch": 14,
+    "k": 3,
+    "d": 3,
+    "oversold": 30
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M",
+        "W",
+        "D"
+      ]
+    },
+    "rsi_min": {
+      "period": 14,
+      "value": 50
+    }
+  },
+  "entry": {
+    "valid_bars": 1
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null
+    ],
+    "ema_close_when_no_target": {
+      "span": 61
+    },
+    "max_days": null
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 10,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  },
+  "combine": [
+    {
+      "config": "strategies/breakout/weekly_donchian55_nifty200.json",
+      "target": "2R"
+    }
+  ]
+}

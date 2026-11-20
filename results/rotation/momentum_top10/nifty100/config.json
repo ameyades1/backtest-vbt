@@ -1,0 +1,35 @@
+{
+  "id": "S01a1f72a-69f7-78f9-9ce0-eb6cc84b59b8",
+  "name": "rotation/momentum_top10",
+  "universe": "NIFTY100",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "exits": {
+    "targets_pct": [
+      null
+    ]
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 0,
+    "max_positions": 10,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  },
+  "description": "Monthly rotation into the 10 strongest stocks by 12-1 month return, above their 200-day average; held while in the top 20; no new buys while NIFTY 50 is below its 200-day average.",
+  "setup": {
+    "type": "momentum_rotation",
+    "top": 10,
+    "lookback": 252,
+    "skip": 21,
+    "buffer": 2,
+    "sma": 200,
+    "market_sma": 200
+  }
+}

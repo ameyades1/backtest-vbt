@@ -173,6 +173,7 @@ head = "".join(f'<th title="{html.escape(t)}" data-num="{0 if f is None else 1}"
 opts = "".join(f'<option value="{f}">{f}</option>' for f in families)
 
 STUDY_TITLES = {"slot_ranking": "Slot ranking: which signals should fill the 8 slots",
+                "cagr18": "CAGR 18%: capital use, exits, selection, regime, rotation",
                 "market_filter": "NIFTY 200-day market filter on every strategy",
                 "market_tighten": "Tightening stops / exiting when NIFTY is below its 200-day average",
                 "overnight": "Overnight study: robustness, sizing, high win-rate fixes, new indicators",

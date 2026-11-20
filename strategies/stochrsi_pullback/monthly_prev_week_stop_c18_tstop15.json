@@ -1,0 +1,62 @@
+{
+  "id": "S01a1f72a-6a14-76c9-b4ee-e9a5a3b737b7",
+  "name": "stochrsi_pullback/monthly_prev_week_stop_c18_tstop15",
+  "description": "Monthly StochRSI pullback; stop at the previous week's low. [Time stop: out at the next open if not +0.5R after 15 calendar days.]",
+  "universe": "NIFTY500",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "stochrsi_cross",
+    "rsi": 14,
+    "stoch": 14,
+    "k": 3,
+    "d": 3,
+    "oversold": 30
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M",
+        "W",
+        "D"
+      ]
+    },
+    "rsi_min": {
+      "period": 14,
+      "value": 50
+    }
+  },
+  "entry": {
+    "valid_bars": 1
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null
+    ],
+    "ema_close_when_no_target": {
+      "span": 61
+    },
+    "max_days": null,
+    "time_stop": {
+      "days": 15,
+      "min_r": 0.5
+    }
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 8,
+    "rank": "tightest"
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

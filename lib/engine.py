@@ -40,7 +40,11 @@ Config (a dict, normally loaded from JSON):
 Also: setups rsi_pullback, williams_r, cci_cross, ema_touch, donchian, bb_squeeze, rs_high, candle_pattern;
 filters adx, supertrend, sma_rising, ichimoku, volume, obv_high (each {"timeframe": ...}); entry
 "delay_days"; exits "target_r" (multiple of initial risk), "partial" {"frac", "at_r"} (sell `frac` at
-at_r x risk, the rest by the other exits; returned as two Trades with weights), "supertrend_exit".
+at_r x risk, the rest by the other exits; returned as two Trades with weights), "supertrend_exit",
+"time_stop" {"days", "min_r"} (sell at the next open if, N calendar days after entry, the close is below
+entry + min_r x risk), "pyramid" {"at_r", "weight"} (once the price reaches entry + at_r x risk: stop to
+break-even and add a leg of `weight` x the normal risk, its stop at the first entry); filter near_high
+{"pct", "period"} (close within pct % of the period-bar high).
 Fill rules: gaps fill at Open; each day checks time, gap-stop, gap-target, EMA exit, stop, target
 in that order; the entry day checks only the Close. One open trade per stock.
 """
@@ -97,6 +101,8 @@ FILTERS = {   # name -> (cfg -> fn(bars) -> bool Series)
         sma(b["Close"], c.get("period", 40))),
     "ichimoku": lambda c: lambda b: ichimoku_above_cloud(b),
     "volume": lambda c: lambda b: b["Volume"] > c.get("mult", 1.5) * b["Volume"].shift().rolling(c.get("period", 20)).mean(),
+    "near_high": lambda c: lambda b: b["Close"] >= (1 - c.get("pct", 10) / 100) * b["High"].rolling(
+        c.get("period", 252), min_periods=c.get("period", 252) // 2).max(),
     "obv_high": lambda c: lambda b: (lambda o: o >= o.rolling(c.get("period", 26)).max())(obv(b)),
 }
 
@@ -236,6 +242,8 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
     part = ex.get("partial")                              # {"frac": 0.5, "at_r": 1.5}
     target = ex.get("target_pct")
     max_days = ex.get("max_days")
+    tstop = ex.get("time_stop")                           # {"days": 25, "min_r": 0.5}
+    pyr = ex.get("pyramid")                               # {"at_r": 1.0, "weight": 0.5}
     ema_exit = set()
     if ex.get("ema_close"):
         etf = ex["ema_close"].get("timeframe", tf)
@@ -302,6 +310,8 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
             tgt = entry + ex["target_r"] * risk
         ptgt = entry + part["at_r"] * risk if part else np.inf
         p_px = p_day = None
+        a_px = a_day = None
+        a_lvl = entry + pyr["at_r"] * risk if pyr else np.inf
         exit_px = exit_day = None
         reason = "open"
         c = d[k, 3]
@@ -325,6 +335,10 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
                     exit_px, exit_day, reason = o, j, "market"; break
                 if max_days is not None and (days[j] - days[k]).days >= max_days:
                     exit_px, exit_day, reason = o, j, "time"; break
+                if tstop and a_px is None and (days[j] - days[k]).days >= tstop["days"] \
+                        and (days[j - 1] - days[k]).days < tstop["days"] \
+                        and d[j - 1, 3] < entry + tstop.get("min_r", 0.5) * risk:
+                    exit_px, exit_day, reason = o, j, "time-stop"; break
                 if o <= stop:
                     exit_px, exit_day, reason = o, j, "stop-gap"; break
                 if o >= tgt:
@@ -339,7 +353,14 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
                     exit_px, exit_day, reason = tgt, j, "target"; break
                 if p_px is None and h >= ptgt:
                     p_px, p_day = ptgt, j
+                if a_px is None and pyr and h >= a_lvl and j > k:
+                    a_px, a_day = max(a_lvl, o), j            # add at the level (gap: at the open)
+                    stop = max(stop, entry)                   # stop to break-even before adding
                 hh = max(hh, h)
+        if a_px is not None and (exit_day is None or exit_day > a_day):
+            trades.append(Trade(symbol, bars.index[b], days[a_day], a_px,
+                                days[exit_day] if exit_day is not None else None, exit_px, reason, entry,
+                                pyr.get("weight", 0.5), "a"))
         if p_px is not None:                              # partial profit taken: two legs
             trades.append(Trade(symbol, bars.index[b], days[k], entry, days[p_day], p_px, "partial", init_stop,
                                 part["frac"], "p"))
