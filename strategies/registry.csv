@@ -277,3 +277,6 @@ S01a1fa37-4481-715a-ae95-2743f194284d,Sf194284d,longshort/L_cap20_dd_liq5,strate
 S01a1fa37-4482-7b23-8dfb-0e7d53a46ded,S53a46ded,longshort/L_cap20_dd_liq5_mslip05,strategies/longshort/L_cap20_dd_liq5_mslip05.json,2026-11-20,active
 S01a1fa37-4483-73f8-b9e7-a020d891200a,Sd891200a,longshort/L_cap20_dd_mslip05,strategies/longshort/L_cap20_dd_mslip05.json,2026-11-20,active
 S01a1fa37-4484-7c76-8817-090f4c842bbf,S4c842bbf,longshort/L_cap20_dd_mslip10,strategies/longshort/L_cap20_dd_mslip10.json,2026-11-20,active
+S01a1fa4f-8ca5-7ed9-830c-10e7f9f707ff,Sf9f707ff,longshort/L_cap20_dd_liqtop40,strategies/longshort/L_cap20_dd_liqtop40.json,2026-11-20,active
+S01a1fa4f-8ca6-7627-bf76-d6d65ab50d31,S5ab50d31,longshort/L_cap20_dd_liqtop60,strategies/longshort/L_cap20_dd_liqtop60.json,2026-11-20,active
+S01a1fa4f-8ca7-79ba-93bb-25251cbd651e,S1cbd651e,longshort/L_cap20_dd_liqtop80,strategies/longshort/L_cap20_dd_liqtop80.json,2026-11-20,active

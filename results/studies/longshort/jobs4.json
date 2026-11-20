@@ -40,5 +40,41 @@
   "config": "strategies/longshort/L_cap20_dd_liq5_mslip05.json",
   "universe": "NIFTY750",
   "name": "longshort/L_cap20_dd_liq5_mslip05"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liqtop80.json",
+  "universe": "NIFTY750",
+  "name": "longshort/L_cap20_dd_liqtop80"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liqtop80.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_liqtop80"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liqtop60.json",
+  "universe": "NIFTY750",
+  "name": "longshort/L_cap20_dd_liqtop60"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liqtop60.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_liqtop60"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liqtop40.json",
+  "universe": "NIFTY750",
+  "name": "longshort/L_cap20_dd_liqtop40"
+ },
+ {
+  "phase": "4-stress",
+  "config": "strategies/longshort/L_cap20_dd_liqtop40.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_liqtop40"
  }
 ]

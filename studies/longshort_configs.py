@@ -131,7 +131,13 @@ def part4():
             ("liq5", "Only stocks with a 60-day median traded value of at least Rs 5 crore.", None,
              {"min_turnover_cr": 5}, ("NIFTY750", "NIFTY500")),
             ("liq5_mslip05", "Rs 5 crore liquidity floor + 0.5% microcap slippage.", {"universe": "MICROCAP250", "pct": 0.5},
-             {"min_turnover_cr": 5}, ("NIFTY750",))]:
+             {"min_turnover_cr": 5}, ("NIFTY750",)),
+            ("liqtop80", "Only stocks in the top 80% of the universe by 60-day median traded value that day.", None,
+             {"liq_top_pct": 80}, ("NIFTY750", "NIFTY500")),
+            ("liqtop60", "Only stocks in the top 60% of the universe by 60-day median traded value that day.", None,
+             {"liq_top_pct": 60}, ("NIFTY750", "NIFTY500")),
+            ("liqtop40", "Only stocks in the top 40% of the universe by 60-day median traded value that day.", None,
+             {"liq_top_pct": 40}, ("NIFTY750", "NIFTY500"))]:
         c = copy.deepcopy(base); c.pop("id", None)
         c["name"] = f"longshort/L_cap20_dd_{suf}"; c["description"] = base["description"] + f" [{desc}]"
         c["universe"] = "NIFTY750"

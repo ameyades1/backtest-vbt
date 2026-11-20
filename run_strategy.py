@@ -139,6 +139,9 @@ def run(cfg, closes, dailies, out):
     if siz.get("sector_top"):
         top_sectors_tab = scores.top_sectors(dailies, siz["sector_top"].get("n", 4), siz["sector_top"].get("months", 6))
     sec_of = scores.sector_map() if siz.get("sector_cap") else None
+    if siz.get("liq_top_pct"):
+        liq_rank = pd.DataFrame({s: (d["Close"] * d["Volume"]).rolling(60, min_periods=20).median().shift(1)
+                                 for s, d in dailies.items()}).rank(axis=1, pct=True)
     if siz.get("min_turnover_cr"):
         turnover = pd.DataFrame({s: (d["Close"] * d["Volume"]).rolling(60, min_periods=20).median().shift(1)
                                  for s, d in dailies.items()})
@@ -177,6 +180,10 @@ def run(cfg, closes, dailies, out):
             tv = turnover
             trades = [t for t in trades if t.entry_date in tv.index and t.symbol in tv.columns
                       and tv.at[t.entry_date, t.symbol] >= siz["min_turnover_cr"] * 1e7]
+        if siz.get("liq_top_pct"):                      # liquidity relative to the universe that day
+            lr = liq_rank
+            trades = [t for t in trades if t.entry_date in lr.index and t.symbol in lr.columns
+                      and lr.at[t.entry_date, t.symbol] >= 1 - siz["liq_top_pct"] / 100]
         if siz.get("sector_top"):
             ok = top_sectors_tab
             trades = [t for t in trades if t.entry_date in ok.index and t.symbol in ok.columns

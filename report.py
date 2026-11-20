@@ -206,6 +206,8 @@ def rules(c):
                      f"{z['sector_top'].get('months', 6)}-month median return")
     if z.get("min_turnover_cr"):
         extra.append(f"only stocks with a 60-day median traded value of at least Rs {z['min_turnover_cr']:g} crore")
+    if z.get("liq_top_pct"):
+        extra.append(f"only stocks in the top {z['liq_top_pct']:g}% of the universe by 60-day median traded value that day")
     if c["costs"].get("slippage_extra"):
         x = c["costs"]["slippage_extra"]
         extra.append(f"{x['universe']} trades pay {x['pct']:g}% slippage per side")
