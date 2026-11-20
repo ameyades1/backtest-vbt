@@ -149,8 +149,21 @@ def part4():
     print(len(jobs), "jobs")
 
 
+def part5():
+    """RS ranking (stock + sector 6-month strength, as in Scaa0a5e0) on S150d745e (0.5%) and Sde394f26 (1%)."""
+    jobs = []
+    for base, suf in [("longshort/L_cap20_dd_r050", "L_cap20_dd_r050_rs"), ("longshort/L_cap20_dd", "L_cap20_dd_rs")]:
+        c = load(base); c.pop("id", None)
+        c["name"] = f"longshort/{suf}"
+        c["description"] += " [Same-day signals ranked by stock + sector relative strength (6 months), then tightest stop.]"
+        c["sizing"].update(rank="score_tightest", score={"type": "rs_sector", "months": 6})
+        write(c, "5-rs", ("NIFTY500_PIT",) + UNI5, jobs)
+    json.dump(jobs, open(OUT / "jobs5.json", "w"), indent=1)
+    print(len(jobs), "jobs")
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--stage", type=int, default=12)
     ap.add_argument("--long"); ap.add_argument("--short", nargs="*")
     a = ap.parse_args()
-    part12() if a.stage == 12 else part4() if a.stage == 4 else part3(a.long, a.short)
+    {12: part12, 4: part4, 5: part5}.get(a.stage, lambda: part3(a.long, a.short))()

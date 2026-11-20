@@ -100,5 +100,17 @@
   "config": "strategies/rotation/momentum_top10_nomkt.json",
   "universe": "NIFTY500_PIT",
   "name": "rotation/momentum_top10_nomkt"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/longshort/L_cap20_dd_r050_rs.json",
+  "universe": "NIFTY500_PIT",
+  "name": "longshort/L_cap20_dd_r050_rs"
+ },
+ {
+  "phase": "pit",
+  "config": "strategies/longshort/L_cap20_dd_rs.json",
+  "universe": "NIFTY500_PIT",
+  "name": "longshort/L_cap20_dd_rs"
  }
 ]

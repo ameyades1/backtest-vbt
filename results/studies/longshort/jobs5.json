@@ -1,0 +1,74 @@
+[
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_r050_rs.json",
+  "universe": "NIFTY500_PIT",
+  "name": "longshort/L_cap20_dd_r050_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_r050_rs.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_r050_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_r050_rs.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap20_dd_r050_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_r050_rs.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap20_dd_r050_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_r050_rs.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap20_dd_r050_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_r050_rs.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap20_dd_r050_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_rs.json",
+  "universe": "NIFTY500_PIT",
+  "name": "longshort/L_cap20_dd_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_rs.json",
+  "universe": "NIFTY500",
+  "name": "longshort/L_cap20_dd_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_rs.json",
+  "universe": "NIFTY50",
+  "name": "longshort/L_cap20_dd_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_rs.json",
+  "universe": "NIFTY100",
+  "name": "longshort/L_cap20_dd_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_rs.json",
+  "universe": "MIDCAP150",
+  "name": "longshort/L_cap20_dd_rs"
+ },
+ {
+  "phase": "5-rs",
+  "config": "strategies/longshort/L_cap20_dd_rs.json",
+  "universe": "SMALLCAP250",
+  "name": "longshort/L_cap20_dd_rs"
+ }
+]

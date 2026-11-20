@@ -12,7 +12,8 @@ MAIN = [SP, SP + "_nifty200", SP + "_nifty200_exit_supertrend", SP + "_nifty200_
         SP + "_nifty200_exit_supertrend_c18_stack_compound", SP + "_nifty200_exit_supertrend_c18_stack_rs_compound",
         SP + "_c18_stack_rs_compound", "longshort/L_dd", "longshort/L_cap20_dd", "longshort/L_cap20_dd_r075",
         "longshort/L_cap20_dd_r050", "longshort/L_cap20_dd_r025", "longshort/LS_short_w_st10_2",
-        "rotation/momentum_top10", "rotation/momentum_top10_nomkt"]
+        "rotation/momentum_top10", "rotation/momentum_top10_nomkt",
+        "longshort/L_cap20_dd_r050_rs", "longshort/L_cap20_dd_rs"]
 if __name__ == "__main__":
     jobs = [{"phase": "pit", "config": f"strategies/{n}.json", "universe": "NIFTY500_PIT", "name": n} for n in MAIN]
     json.dump(jobs, open(O.OUT / "jobs.json", "w"), indent=1)
