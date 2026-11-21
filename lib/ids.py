@@ -108,6 +108,7 @@ if __name__ == "__main__":
 
 def pdf_section(names, h2_style, fs=7.2):
     """ReportLab flowables for a study PDF: heading + table of short ID, full ID and name for each strategy."""
+    from . import pdffont  # noqa: F401  (DejaVu glyphs for ₹ and −)
     from reportlab.lib import colors
     from reportlab.lib.units import mm
     from reportlab.platypus import Paragraph, Table, TableStyle, KeepTogether

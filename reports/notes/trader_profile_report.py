@@ -1,5 +1,9 @@
 """Build reports/notes/trader_profile.pdf: profile of a veteran Indian-markets technical trader."""
 from pathlib import Path
+import sys as _sys
+from pathlib import Path as _P
+_sys.path.insert(0, str(_P(__file__).resolve().parents[2]))
+import lib.pdffont  # noqa: F401  (DejaVu glyphs for ₹ and −)
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
