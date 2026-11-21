@@ -9,7 +9,7 @@ summary.csv, equity.csv and fills_*.csv; nothing is written by hand.
 import json, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib import ids
+from lib import ids, portfolio
 _IDS = ids.by_name()
 import matplotlib
 matplotlib.use("Agg")
@@ -171,7 +171,8 @@ def rules(c):
         xs.append(f"no target (exit on {TF[ex['ema_close_when_no_target'].get('timeframe', c['timeframe'])]} close below EMA{ex['ema_close_when_no_target']['span']})"
                   if ex.get("ema_close_when_no_target") else
                   (f"no target (exit when the {TF[ex['supertrend_exit_when_no_target'].get('timeframe', 'W')]} "
-                   f"Supertrend turns bearish)" if ex.get("supertrend_exit_when_no_target") else "no target (stop only)"))
+                   f"Supertrend is bearish at a candle close, sold at the next open; this includes a trade bought while it "
+                   f"was already bearish, which is sold after its first candle)" if ex.get("supertrend_exit_when_no_target") else "no target (stop only)"))
     if ex.get("max_days"):
         xs.append(f"time exit after {ex['max_days']} days")
     if ex.get("time_stop"):
@@ -273,9 +274,9 @@ def build(run: Path):
     wl = [["Exit", "Closed trades", "Win %", "Avg net win %", "Avg net loss %", "Med days win", "Med days loss", "Net P&L (Rs)"]]
     for col in S.index:
         tag = "none" if col == "No target" else col.split()[1].rstrip("%")
-        f = pd.read_csv(run / f"fills_{tag}.csv")
-        f = f.dropna(subset=["exit_date"])
-        r = (f.proceeds / f.cost - 1) * 100
+        f = portfolio.trades(pd.read_csv(run / f"fills_{tag}.csv"))
+        f = f[~f.open]
+        r = f.ret
         held = (pd.to_datetime(f.exit_date) - pd.to_datetime(f.entry_date)).dt.days
         wl.append([col, f"{len(f):,}", f"{(r > 0).mean() * 100:.0f}",
                    f"{r[r > 0].mean():.1f}", f"{r[r <= 0].mean():.1f}",
@@ -291,7 +292,8 @@ def build(run: Path):
                        f"{c['sizing']['max_positions']} open trades · {c['universe']} · from {c['period']['start']} · "
                        f"{eq.index[-1]:%d %b %Y}", SUB),
              Paragraph("Data: actual traded prices (split/bonus adjusted, not dividend adjusted; dividends not counted). "
-                       "Today's index members only (survivorship bias).", SM),
+                       + ("Historical (point-in-time) index membership: a trade needs the stock in the index on its entry day."
+                          if c["universe"].endswith("_PIT") else "Today's index members only (survivorship bias)."), SM),
              Spacer(1, 6), Paragraph(c.get("description", ""), P),
              Paragraph("Result", H2),
              Paragraph(f"Best exit: <b>{best}</b> at <b>{b['CAGR %']:.1f}% CAGR</b> with a {b['Max DD %']:.0f}% maximum "
@@ -304,16 +306,17 @@ def build(run: Path):
     cols = [("CAGR %", "{:.1f}"), ("Max DD %", "{:.1f}"), ("Final equity (Rs)", "{:,.0f}"), ("Trades taken", "{:,.0f}"),
             ("Signals skipped", "{:,.0f}"), ("Win %", "{:.1f}"), ("Median trade %", "{:.1f}"),
             ("Median hold days", "{:.0f}"), ("Median stop %", "{:.1f}"), ("Avg deployed %", "{:.0f}"),
-            ("Worst trade % of capital", "{:.1f}")]
+            ("Worst trade % of equity", "{:.1f}")]
     hdr2 = ["Exit", "CAGR %", "Max DD %", "Final equity", "Trades", "Skipped", "Win %", "Median %", "Med hold d",
             "Stop %", "Deployed %", "Worst %"]
     rows = [hdr2] + [[i.replace("Target ", "")] + [f.format(r[k]) for k, f in cols] for i, r in S.iterrows()]
     story += [KeepTogether([Paragraph("Full results", H2),
                             table(rows, [17 * mm, 13 * mm, 15 * mm, 18 * mm, 12 * mm, 13 * mm, 11 * mm, 14 * mm,
                                          15 * mm, 12 * mm, 16 * mm, 13 * mm]),
-                            Paragraph("Median % = median net trade return. Stop % = median stop distance below entry. "
+                            Paragraph("Median % = median net trade return. Stop % = median stop distance below entry, across all signals filled. "
                                       "Deployed % = open positions / equity, averaged over all days. Worst % = worst "
-                                      "trade as a share of starting capital.", SM)]),
+                                      "trade as a share of equity on its entry day. A trade counts once: month-end trims for the "
+                                      "position cap are part of their trade.", SM)]),
               KeepTogether([Paragraph("Wins and losses (closed trades, after costs)", H2),
                             table(wl, [24 * mm, 22 * mm, 14 * mm, 22 * mm, 22 * mm, 22 * mm, 22 * mm, 26 * mm])]),
               Paragraph("Reproduce", H2),

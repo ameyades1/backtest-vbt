@@ -29,7 +29,7 @@ REC = {
          "notes": ["Entry: monthly StochRSI pullback; close above EMA 61 on monthly, weekly and daily; RSI above 50; "
                    "NIFTY 500 index above its 200-day average (previous close).",
                    "Exits: stop at the previous week's low; sell at the next open if the trade is not 0.25R up 25 days "
-                   "after entry; otherwise hold until the weekly Supertrend(10, 3) turns bearish. No holding cap.",
+                   "after entry; otherwise hold until a week closes with the weekly Supertrend(10, 3) bearish (sold at the next open; a trade bought while it is already bearish is sold after its first week). No holding cap.",
                    "Sizing: 1% risk per trade on current equity, 10 slots, 20% position cap; halve size at a 10% drawdown, "
                    "pause 21 days at 15%. Idle cash in a liquid fund. No NIFTY futures hedges.",
                    "The worst drawdown (May–June 2006 crash) can't be cut by an entry filter; plan for about −27% to −30%."]},

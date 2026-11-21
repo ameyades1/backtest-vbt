@@ -254,23 +254,21 @@ def summary(curve: pd.DataFrame, fills: list[Fill], skipped: int, capital: float
             max_positions: int) -> dict:
     eq = curve["equity"]
     yrs = (eq.index[-1] - eq.index[0]).days / 365.25
-    pnl = np.array([f.proceeds - f.cost for f in fills])
-    ret = np.array([f.proceeds / f.cost - 1 for f in fills]) * 100
-    last = curve.index[-1]
-    held = np.array([((f.exit_date or last) - f.entry_date).days for f in fills])
-    val = np.array([f.cost for f in fills])
+    fdf = pd.DataFrame([{"symbol": f.symbol, "entry_date": f.entry_date, "exit_date": f.exit_date, "cost": f.cost,
+                         "proceeds": f.proceeds, "side": getattr(f, "side", 1)} for f in fills])
+    ts = trade_stats(fdf, eq)
     return {
         "Final equity (Rs)": eq.iloc[-1],
         "CAGR %": ((eq.iloc[-1] / capital) ** (1 / yrs) - 1) * 100,
         "Max DD %": (eq / eq.cummax() - 1).min() * 100,
-        "Trades taken": len(fills),
+        "Trades taken": ts["Trades taken"],
         "Signals skipped": skipped,
-        "Win %": (pnl > 0).mean() * 100,
-        "Avg trade %": ret.mean(),
-        "Median trade %": float(np.median(ret)),
-        "Avg hold days": held.mean(),
-        "Median hold days": float(np.median(held)),
-        "Avg position (Rs)": val.mean(),
+        "Win %": ts["Win %"],
+        "Avg trade %": ts["Avg trade %"],
+        "Median trade %": ts["Median trade %"],
+        "Avg hold days": ts["Avg hold days"],
+        "Median hold days": ts["Median hold days"],
+        "Avg position (Rs)": ts["Avg position (Rs)"],
         "Avg deployed %": curve["deployed"].mean() * 100,
         "Median deployed %": curve["deployed"].median() * 100,
         "Max deployed %": curve["deployed"].max() * 100,
@@ -278,6 +276,42 @@ def summary(curve: pd.DataFrame, fills: list[Fill], skipped: int, capital: float
         "Days all slots full %": (curve["positions"] >= max_positions).mean() * 100,
         "Avg open positions": curve["positions"].mean(),
         "Cash-capped entries %": np.mean([f.capped for f in fills]) * 100,
-        "Worst trade (Rs)": pnl.min(),
-        "Worst trade % of capital": pnl.min() / capital * 100,
+        "Worst trade (Rs)": ts["Worst trade (Rs)"],
+        "Worst trade % of equity": ts["Worst trade % of equity"],
     }
+
+
+TRADE_KEYS = ["symbol", "entry_date", "side"]
+
+
+def trades(fdf: pd.DataFrame) -> pd.DataFrame:
+    """One row per trade from fill rows: month-end position-cap trims and partial-profit legs of the same entry are
+    summed back into their trade (they are booked as separate fills). Open trades are marked to market."""
+    f = fdf.copy()
+    if "side" not in f:
+        f["side"] = 1
+    f["side"] = f["side"].fillna(1)
+    f["entry_date"] = pd.to_datetime(f["entry_date"])
+    f["exit_date"] = pd.to_datetime(f["exit_date"])
+    g = f.groupby(TRADE_KEYS, sort=False)
+    t = g.agg(cost=("cost", "sum"), proceeds=("proceeds", "sum"), exit_date=("exit_date", "max"),
+              legs=("cost", "size")).reset_index()
+    t["open"] = g["exit_date"].apply(lambda x: x.isna().any()).to_numpy()
+    t.loc[t.open, "exit_date"] = pd.NaT
+    t["pnl"] = t.proceeds - t.cost
+    t["ret"] = (t.proceeds / t.cost - 1) * 100
+    return t
+
+
+def trade_stats(fdf: pd.DataFrame, equity: pd.Series) -> dict:
+    """Per-trade statistics (not per fill row). Worst trade is shown against equity on its entry day."""
+    t = trades(fdf)
+    last = equity.index[-1]
+    held = (t.exit_date.fillna(last) - t.entry_date).dt.days
+    i = t.pnl.idxmin()
+    eq_in = equity[:t.entry_date[i]]
+    eq_in = eq_in.iloc[-1] if len(eq_in) else equity.iloc[0]
+    return {"Trades taken": len(t), "Win %": (t.pnl > 0).mean() * 100, "Avg trade %": t.ret.mean(),
+            "Median trade %": float(t.ret.median()), "Avg hold days": held.mean(),
+            "Median hold days": float(held.median()), "Avg position (Rs)": t.cost.mean(),
+            "Worst trade (Rs)": t.pnl[i], "Worst trade % of equity": t.pnl[i] / eq_in * 100}

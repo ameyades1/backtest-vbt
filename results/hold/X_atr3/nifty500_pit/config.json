@@ -1,7 +1,7 @@
 {
   "id": "S01a1fd96-6fc8-7914-bb21-8eb66cead4a4",
   "name": "hold/X_atr3",
-  "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while the NIFTY 500 index is below its 200-day average (NIFTY 50 / Sensex before 2005). [Trend exit swapped: weekly Supertrend(10,3) turns bearish instead of a monthly close below EMA61.] [Stack (10 slots, liquid-fund cash, 25-day time stop) with compounding risk.] [20% position cap + drawdown rule.] [Entry filter: NIFTY 500 index above its 200-day average instead of NIFTY 50 above its 200-day.] [Plus a trailing stop at the highest high since entry minus 3 x ATR(14).]",
+  "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while the NIFTY 500 index is below its 200-day average (NIFTY 50 / Sensex before mid-2006, when its 200-day average starts). [Trend exit swapped: weekly Supertrend(10,3) turns bearish instead of a monthly close below EMA61.] [Stack (10 slots, liquid-fund cash, 25-day time stop) with compounding risk.] [20% position cap + drawdown rule.] [Entry filter: NIFTY 500 index above its 200-day average instead of NIFTY 50 above its 200-day.] [Plus a trailing stop at the highest high since entry minus 3 x ATR(14).]",
   "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"

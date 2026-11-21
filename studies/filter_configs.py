@@ -23,7 +23,7 @@ def var(name, desc, phase, jobs, idx=None, nifty=None, breadth=None):
         df["market_sma"], df["market_index"] = idx, "^CRSLDX"
         c["description"] = c["description"].replace(
             "No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008).",
-            f"No new entries while the NIFTY 500 index is below its {idx}-day average (NIFTY 50 / Sensex before 2005).")
+            f"No new entries while the NIFTY 500 index is below its {idx}-day average (NIFTY 50 / Sensex before mid-2006, when its 200-day average starts).")
     if nifty:
         df["market_sma"] = nifty
     if breadth:

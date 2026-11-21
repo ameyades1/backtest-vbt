@@ -1,7 +1,7 @@
 {
   "id": "S01a1fd84-78d0-7eca-be22-c3b49ed373f3",
   "name": "filter/C_i150_steps",
-  "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while the NIFTY 500 index is below its 150-day average (NIFTY 50 / Sensex before 2005). [Trend exit swapped: weekly Supertrend(10,3) turns bearish instead of a monthly close below EMA61.] [Stack (10 slots, liquid-fund cash, 25-day time stop) with compounding risk.] [20% position cap + drawdown rule.] [NIFTY 500 index above its 150-day average; half risk below 50% breadth, none below 30%.]",
+  "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while the NIFTY 500 index is below its 150-day average (NIFTY 50 / Sensex before mid-2006, when its 200-day average starts). [Trend exit swapped: weekly Supertrend(10,3) turns bearish instead of a monthly close below EMA61.] [Stack (10 slots, liquid-fund cash, 25-day time stop) with compounding risk.] [20% position cap + drawdown rule.] [NIFTY 500 index above its 150-day average; half risk below 50% breadth, none below 30%.]",
   "universe": "NIFTY500_PIT",
   "period": {
     "start": "2000-01-01"
