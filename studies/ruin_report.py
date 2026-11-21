@@ -104,7 +104,7 @@ fig, ax = plt.subplots(figsize=(7.4, 2.8))
 ax.hist(dd * 100, bins=60, color="#b45309"); ax.set_xlabel("Worst drawdown over a simulated 20 years (%)")
 ax.set_title("S63387f09: 20,000 resampled 20-year histories", fontsize=9); ax.grid(alpha=.3)
 fig.tight_layout(); fig.savefig(OUT / "dd_hist.png", dpi=160); plt.close(fig)
-story = [Paragraph("Risk of ruin and ₹10 lakh outcomes: S63387f09 (your choice)", H1),
+story = [Paragraph("Risk of ruin and ₹10 lakh outcomes: S63387f09 (an earlier choice)", H1),
          Paragraph("1% risk, long only, no hedges, point-in-time NIFTY 500, costs included. Monthly returns resampled in "
                    "12-month blocks.", SUB), Paragraph("Verdict", H2)] + bl([
     "<b>Going bust is effectively impossible if the rules are followed:</b> 1% risk per trade, 20% position cap, size "

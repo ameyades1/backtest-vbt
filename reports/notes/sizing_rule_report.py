@@ -1,5 +1,5 @@
-"""Build reports/notes/sizing_rule.pdf: how Sf5b94362 sizes trades (1% of equity + drawdown rule), with how often
-the rule triggered, computed from results/stexit/A_flip/nifty500_pit/equity.csv."""
+"""Build reports/notes/sizing_rule.pdf: how S44984096 sizes trades (1% of equity + drawdown rule), with how often
+the rule triggered, computed from results/stexit/A_flip_capentry/nifty500_pit/equity.csv."""
 import sys
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
@@ -33,7 +33,7 @@ def table(rows, widths):
 
 
 # replay the rule on the saved equity curve (same logic as lib/portfolio.py, previous close)
-e = pd.read_csv(ROOT / "results/stexit/A_flip/nifty500_pit/equity.csv", index_col=0, parse_dates=True).iloc[:, 0].dropna()
+e = pd.read_csv(ROOT / "results/stexit/A_flip_capentry/nifty500_pit/equity.csv", index_col=0, parse_dates=True).iloc[:, 0].dropna()
 prev = e.shift(1).dropna()
 pk, halved, used, left, nh, npz, hs, ps = 0, False, False, 0, 0, 0, [], []
 for d, v in prev.items():
@@ -50,14 +50,14 @@ for d, v in prev.items():
         nh += 1
 
 story = [Paragraph("Position sizing and the drawdown rule", H1),
-         Paragraph("Sf5b94362 (your choice): 1% risk, 10 slots, 20% position cap, halve at −10%, pause 21 days at −15%. "
+         Paragraph("S44984096 (your choice): 1% risk, 10 slots, 20% position cap (at entry and at month end), halve at −10%, pause 21 days at −15%. "
                    "Logic as coded in lib/portfolio.py.", SUB),
          Paragraph("Part 1: normal sizing, 1% of current equity", H2)] + bl([
     "Each new trade risks <b>1% of the account value at the previous day's close</b>, open positions marked to market.",
     "Quantity = risk ÷ (entry − stop). ₹10 lakh account, stock at ₹500 with stop ₹460: risk ₹10,000, so "
     "₹10,000 ÷ ₹40 = 250 shares (₹1.25 lakh).",
     "Because it is a share of <i>current</i> equity, risk shrinks as the account falls (₹9 lakh → ₹9,000).",
-    "If the stop is very close, the position can be large: it is capped by available cash, and at each month-end "
+    "If the stop is very close, the position would be large: it is limited to 20% of equity when bought (and by cash), and at each month-end "
     "a position worth more than 20% of equity is trimmed back to 20%."])
 story += [Paragraph("Part 2: the drawdown rule", H2)] + bl([
     "<b>Equity high (peak)</b>: the highest closing value the account has reached.",

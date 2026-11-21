@@ -1,4 +1,4 @@
-"""Year-by-year table for your choice Sf5b94362 (stexit/A_flip) -> results/studies/yearly/report.pdf
+"""Year-by-year table for your choice S44984096 (stexit/A_flip_capentry) -> results/studies/yearly/report.pdf
 ₹10 lakh at the start of 2000 in the strategy vs ₹10 lakh in the index (NIFTY 50; BSE Sensex before 2008, as NIFTY's
 Yahoo history starts Sept 2007). Index is price only: dividends (about 1-1.5% a year) not included.
 """
@@ -20,7 +20,7 @@ from lib import ids, portfolio, data
 
 OUT = ROOT / "results" / "studies" / "yearly"
 OUT.mkdir(parents=True, exist_ok=True)
-NAME = "stexit/A_flip"
+NAME = "stexit/A_flip_capentry"
 D = ROOT / "results" / NAME / "nifty500_pit"
 e = pd.read_csv(D / "equity.csv", index_col=0, parse_dates=True).iloc[:, 0].dropna()
 e = e / e.iloc[0] * 10                                    # ₹ lakh
@@ -68,10 +68,10 @@ st = [("FONT", (0, 0), (-1, 0), "Helvetica-Bold", 7.6), ("FONT", (0, 1), (-1, -1
 st += [("TEXTCOLOR", (3, i), (3, i), colors.HexColor("#dc2626")) for i, r_ in enumerate(rows) if i and r_[3].startswith("-")]
 tb.setStyle(TableStyle(st))
 fig, ax = plt.subplots(figsize=(7.4, 3.0))
-ax.plot(e, lw=1.2, color="#b45309", label="Sf5b94362"); ax.plot(ix, lw=1, color="#64748b", label="NIFTY 50 (Sensex before 2008)")
+ax.plot(e, lw=1.2, color="#b45309", label="S44984096"); ax.plot(ix, lw=1, color="#64748b", label="NIFTY 50 (Sensex before 2008)")
 ax.set_yscale("log"); ax.yaxis.set_major_formatter(lambda v, _: f"₹{v:g} L"); ax.grid(alpha=.3); ax.legend(fontsize=7)
 ax.set_title("₹10 lakh from Jan 2000 (log scale)", fontsize=9); fig.tight_layout(); fig.savefig(OUT / "equity.png", dpi=160); plt.close(fig)
-story = [Paragraph("Year by year: Sf5b94362 (your choice) vs the index", H1),
+story = [Paragraph("Year by year: S44984096 (your choice) vs the index", H1),
          Paragraph("₹10 lakh at the start of 2000. Point-in-time NIFTY 500, 1% risk, costs included, before tax. Index: "
                    "NIFTY 50, BSE Sensex before 2008; price only, dividends (about 1–1.5% a year) not included.", SM),
          Paragraph("Summary", H2)] + bl([

@@ -1,4 +1,4 @@
-"""Month-by-month replay workbook for Sf5b94362 (your choice), for paper-trading practice.
+"""Month-by-month replay workbook for S44984096 (your choice), for paper-trading practice.
 
     python studies/replay.py 2016                 # workbook for 2016 (runs the backtest from 2016 once, cached)
     python studies/replay.py 2017 --start 2016    # later years continue the same run
@@ -27,7 +27,7 @@ from lib import ids, membership, market, portfolio
 from lib.engine import _signal_mask
 from lib.indicators import resample, ema, rsi, stoch_rsi, supertrend
 
-NAME = "stexit/A_flip"
+NAME = "stexit/A_flip_capentry"
 CFG = ROOT / "strategies" / f"{NAME}.json"
 
 ap = argparse.ArgumentParser()
@@ -145,13 +145,13 @@ def open_book(day):
 
 
 eq_y = eq[str(a.year)]
-story = [Paragraph(f"Replay workbook {a.year}: Sf5b94362 (your choice)", H1),
+story = [Paragraph(f"Replay workbook {a.year}: S44984096 (your choice)", H1),
          Paragraph(f"A fresh run started 1 Jan {START} with {L(a.capital)}; point-in-time NIFTY 500, 1% risk, 10 slots, costs "
                    f"included (Sharekhan delivery + 0.1% slippage). {a.year}: {L(eq_y.iloc[0])} → {L(eq_y.iloc[-1])} "
                    f"({(eq_y.iloc[-1] / prev[eq_y.index[0]] - 1) * 100:+.1f}%).", SM),
          Paragraph("How to use this workbook", H2)] + bl([
     "This workbook has three parts: the <b>trading guide</b> (every rule, step by step), the <b>strategy report</b> "
-    "(the full backtest of Sf5b94362 from 2000), and the <b>month-by-month replay</b> that follows.",
+    "(the full backtest of S44984096 from 2000), and the <b>month-by-month replay</b> that follows.",
     "Each month has two pages. Work through <b>Your turn</b> first: check the portfolio and the drawdown status, read "
     "the setups from last month's candle, and write down which buy-stops you would place, your stop and how many "
     "shares. Then turn the page to <b>What happened</b>: fills (with the sizing worked out), skipped signals and why, "

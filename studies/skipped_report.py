@@ -19,7 +19,7 @@ from lib import ids
 OUT = ROOT / "results" / "studies" / "skipped"
 IDS = ids.by_name()
 BASES = {"Y": "hold/T25_r025", "A": "stexit/A_flip", "E": "stexit/A_flip_capentry", "D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth"}
-NAME = {"Y": "S63387f09", "A": "Sf5b94362 (your choice)", "E": "S44984096 (20% cap at entry)", "D": "Sde394f26", "C": "Sa016f4eb"}
+NAME = {"Y": "S63387f09", "A": "Sf5b94362", "E": "S44984096 (your choice: 20% cap at entry)", "D": "Sde394f26", "C": "Sa016f4eb"}
 SN = {"Y": "S63387f09", "A": "Sf5b94362", "E": "S44984096", "D": "Sde394f26", "C": "Sa016f4eb"}
 WHY = {"taken": "Taken", "held": "Stock already held", "slots": "All slots full", "paused": "Drawdown pause",
        "cash": "Not enough cash", "too-small": "Risk buys < 1 share", "open-risk": "Open-risk cap",
@@ -101,7 +101,7 @@ def table(rows, widths, fs=7.2):
 notes = json.load(open(OUT / "notes.json"))
 rnd = pd.read_csv(OUT / "random.csv")
 story = [Paragraph("Skipped signals: what if we had traded them?", H1),
-         Paragraph("S63387f09 (your choice), Sf5b94362 (Supertrend turn exit), Sde394f26 and Sa016f4eb (hedged), point-in-time NIFTY 500 from 2000, costs included. Every signal "
+         Paragraph("S44984096 (your choice), Sf5b94362, S63387f09, Sde394f26 and Sa016f4eb (hedged), point-in-time NIFTY 500 from 2000, costs included. Every signal "
                    "is played out in full by the engine whether or not the portfolio takes it.", SUB),
          Paragraph("Verdict", H2)] + bl(notes["verdict"])
 base = {}

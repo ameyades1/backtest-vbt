@@ -22,8 +22,10 @@ REC = {
     "sections": [
         {"title": "Your choice", "mine": True,
          "head": ["ID", "Strategy", "CAGR", "Max DD", "Status"],
-         "rows": [["Sf5b94362", "S63387f09 with the weekly Supertrend exit taken only on a turn from bullish to bearish "
-                                "after entry", "17.0%", "−28.4%", "Your strategy (adopted 21 Nov 2026); random-pick median 16.3%"],
+         "rows": [["S44984096", "Sf5b94362 with the 20% position cap also applied when a position is bought", "15.9%",
+                   "−24.2%", "Your strategy (adopted 22 Nov 2026); random-pick median 16.4%"],
+                  ["Sf5b94362", "S63387f09 with the weekly Supertrend exit taken only on a turn from bullish to bearish "
+                                "after entry", "17.0%", "−28.4%", "Previous choice; random-pick median 16.3%"],
                   ["S63387f09", "Sde394f26 at 1% risk, long only, no hedges; NIFTY 500 index market filter; time stop "
                                 "needs 0.25R at day 25", "15.8%", "−26.5%", "Previous choice"],
                   ["S1704ed9f", "Same with the original 0.5R time stop", "14.9%", "−26.5%", "Earlier choice"],
@@ -33,9 +35,9 @@ REC = {
                    "NIFTY 500 index above its 200-day average (previous close).",
                    "Exits: stop at the previous week's low; sell at the next open if the trade is not 0.25R up 25 days "
                    "after entry; otherwise hold until the weekly Supertrend(10, 3) turns from bullish to bearish after entry (sold at the next open). A trade bought while it is already bearish is held until it turns bullish and then bearish, or until the stop or time stop. No holding cap.",
-                   "Sizing: 1% risk per trade on current equity, 10 slots, 20% position cap; halve size at a 10% drawdown, "
+                   "Sizing: 1% risk per trade on current equity, 10 slots; no position above 20% of equity when bought, and trimmed to 20% at month end; halve size at a 10% drawdown, "
                    "pause 21 days at 15%. Idle cash in a liquid fund. No NIFTY futures hedges.",
-                   "The worst drawdown (May–June 2006 crash) can't be cut by an entry filter; plan for about −28% to −30%. Expect long losing streaks (31 in a row in the backtest): about a quarter of trades win."]},
+                   "The worst drawdown (May–June 2006 crash) can't be cut by an entry filter; plan for about −25% to −30%. Expect long losing streaks (29 in a row in the backtest): about 1 trade in 4 wins."]},
         {"title": "Recommended",
          "head": ["Rank", "ID", "Strategy", "CAGR", "Max DD", "Best for"],
          "rows": [["1", "S150d745e", "Sde394f26 at 0.5% risk, long only", "11.1%", "−20%",

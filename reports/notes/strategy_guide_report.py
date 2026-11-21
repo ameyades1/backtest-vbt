@@ -1,4 +1,4 @@
-"""Build reports/notes/strategy_guide.pdf: step-by-step trading guide for Sf5b94362 (your choice).
+"""Build reports/notes/strategy_guide.pdf: step-by-step trading guide for S44984096 (your choice).
 
 Every rule here is written from the code that ran the backtest (lib/engine.py, lib/portfolio.py, run_strategy.py,
 strategies/stexit/A_flip.json). Also bundled at the front of each replay workbook (studies/replay.py).
@@ -43,10 +43,10 @@ buy, sell = costs.side_costs("sharekhan", "delivery")
 
 
 def build(path=OUT):
-    s = [Paragraph("Sf5b94362 trading guide", H1),
+    s = [Paragraph("S44984096 trading guide", H1),
          Paragraph("Your strategy, step by step: entry, stop, exits, risk, drawdown and money management. Written from the "
-                   "code that produced the backtest (17.0% CAGR / −28.4% max drawdown, point-in-time NIFTY 500, 2000–2026; "
-                   "random-pick median 16.3%). Research and education only, not investment advice.", SUB),
+                   "code that produced the backtest (15.9% CAGR / −24.2% max drawdown, point-in-time NIFTY 500, 2000–2026; "
+                   "random-pick median 16.4%). Research and education only, not investment advice.", SUB),
          Paragraph("The strategy in one paragraph", H2),
          Paragraph("Buy NIFTY 500 stocks in a long-term uptrend when their monthly momentum turns up after a pullback, but only "
                    "while the broad market (NIFTY 500 index) is above its 200-day average. Risk 1% of the account per trade "
@@ -98,13 +98,13 @@ def build(path=OUT):
         "Maximum <b>10 positions</b>. A buy-stop that triggers while all 10 are held is skipped and not retried that month; "
         "the other buy-stops stay live and can fill later in the month if a slot frees up.",
         "If the stock closes at or below the stop on the fill day itself, sell at that close.",
-        "<b>Caution: the 20% cap is not applied at entry.</b> A very tight stop gives a very large position: in the "
-        "backtest 13 of 414 entries were above 20% of the account and one was 80%, until trimmed at month end. That is "
-        "what was tested; capping each entry at 20% is safer for gap risk but has not been tested yet."]) + [
+        "<b>Position cap at entry</b>: no new position may cost more than <b>20% of yesterday's equity</b>. If the shares from "
+        "the risk budget would cost more, buy only 20% worth (a very tight stop would otherwise put most of the account in "
+        "one stock)."]) + [
         KeepTogether([Paragraph("Worked example", H3),
                       Paragraph("Equity yesterday ₹10,00,000, full risk. Setup month high ₹500 → buy-stop ₹500. Last week's low "
                                 "₹460 → stop ₹460. Risk ₹10,000; distance ₹40; shares = 10,000 ÷ 40 = <b>250</b> (₹1.25 lakh, "
-                                "12.5% of the account). If the stock gaps open at ₹510: distance ₹50 → 200 shares.", P)])]
+                                "12.5% of the account, under the 20% cap). With a ₹480 stop (₹20 distance) the risk budget would buy 500 shares = ₹2.5 lakh, above the cap, so you buy only ₹2,00,000 ÷ ₹500 = <b>400</b>. If the stock gaps open at ₹510: distance ₹50 → 200 shares.", P)])]
 
     s += [PageBreak(), Paragraph("Step 4: the 25-day time stop", H2)] + num([
         "Mark the date <b>25 calendar days after entry</b>.",
@@ -140,8 +140,8 @@ def build(path=OUT):
                ["₹17.0 L (−15%)", "Paused 21 trading days", "none"], ["₹19.5 L (−2.5%)", "Still half risk", "0.5% = ₹9,750"],
                ["₹20.1 L (new high)", "Full risk again", "1% = ₹20,100"]], [55 * mm, 60 * mm, 60 * mm]),
         Paragraph("Step 7: money management", H2)] + bl([
-        "<b>Position cap</b>: on the last trading day of each month, any position worth more than <b>20% of equity</b> "
-        "is trimmed back to 20% at the close. The rest of it keeps its stop and exits.",
+        "<b>Position cap</b>: at most 20% of equity when bought (Step 3); and on the last trading day of each month, any "
+        "position worth more than <b>20% of equity</b> is trimmed back to 20% at the close. The rest of it keeps its stop and exits.",
         "<b>Idle cash</b> sits in a liquid fund (the backtest assumes 6.5% a year).",
         "<b>No leverage, no margin, no shorts, no F&O hedges.</b>",
         f"<b>Costs in the backtest</b>: Sharekhan delivery brokerage 0.3%, STT 0.1% each side, stamp duty, exchange and "
@@ -150,14 +150,15 @@ def build(path=OUT):
         "<b>Tax</b> is not in the backtest: short-term gains (under a year) 20%, long-term 12.5% above the exemption.",
         "Keep a journal: every setup, fill, skip, stop and exit, with the reason."]) + [
         Paragraph("What to expect", H2)] + bl([
-        "About <b>25% of trades win</b>; the average loss is about −6.6%, the average win about +82%. Losing streaks of "
-        "20–30 trades happen.",
-        "The top 10 trades in 26 years made all of the net profit; never cut a big winner early.",
-        "Drawdowns of −25% to −30% happen; the account was at half risk about half of the time.",
-        "Calendar years from −21% (2008) to +105% (2014); flat or slightly negative years are common."]) + [
+        "About <b>23% of trades win</b>; the average loss is about −6.7%, the average win about +81%. Losing streaks of "
+        "20–30 trades happen (29 in a row in the backtest).",
+        "The top 10 trades in 26 years made more than all of the net profit; never cut a big winner early.",
+        "Drawdowns of −20% to −30% happen (worst −24% in the backtest, −27% median across random picks); the account "
+        "spends long stretches at half risk.",
+        "Calendar years from about −14% to +105%; flat or slightly negative years are common."]) + [
         Paragraph("Research and education only, not investment advice.", SM)]
     SimpleDocTemplate(str(path), pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm, topMargin=14 * mm,
-                      bottomMargin=14 * mm, title="Sf5b94362 trading guide").build(s)
+                      bottomMargin=14 * mm, title="S44984096 trading guide").build(s)
     return path
 
 
