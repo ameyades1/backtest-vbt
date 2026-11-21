@@ -310,3 +310,5 @@ S01a1fd5c-dc47-796c-82d0-e3e3da38b850,Sda38b850,skipped/Sa016f4eb_slotsall,strat
 S01a1fd5c-dc48-75bc-bd8c-ca530d49bf0e,S0d49bf0e,skipped/Sde394f26_slots15,strategies/skipped/Sde394f26_slots15.json,2026-11-21,active
 S01a1fd5c-dc49-7000-90e6-5720efc4987b,Sefc4987b,skipped/Sde394f26_slots20,strategies/skipped/Sde394f26_slots20.json,2026-11-21,active
 S01a1fd5c-dc4a-70bf-9126-cbe137bfc528,S37bfc528,skipped/Sde394f26_slotsall,strategies/skipped/Sde394f26_slotsall.json,2026-11-21,active
+S01a1fd76-d12b-75c5-b0c1-b793658bfa09,S658bfa09,ddcut/T_halfrisk_i50_r050,strategies/ddcut/T_halfrisk_i50_r050.json,2026-11-21,active
+S01a1fd76-d12c-74db-88a1-835896bc3769,S96bc3769,ddcut/T_halfrisk_i50_r075,strategies/ddcut/T_halfrisk_i50_r075.json,2026-11-21,active
