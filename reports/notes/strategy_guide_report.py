@@ -54,19 +54,39 @@ def build(path=OUT):
                    "weekly Supertrend turns bearish, which can be years. Hold at most 10 stocks, no stock above 20% of the "
                    "account, and cut risk in half when the account is 10% below its high. About 1 trade in 4 wins; a few "
                    "multi-year winners pay for everything.", P),
-         Paragraph("Your calendar", H2),
-         table([["When", "What you do"],
-                ["Last trading day of the month, after the close",
-                 "Scan for setups (Step 1). Trim any position above 20% of equity (Step 7). Update the equity high and the "
-                 "drawdown status (Step 6)."],
-                ["Before the first trading day of the month", "Place buy-stop orders for every setup (Step 2)."],
+         Paragraph("Your monitoring routine", H2),
+         Paragraph("Month end alone is not enough: stops act intraday, the time stop is checked daily and the Supertrend "
+                   "exit weekly. Most of it can be left to standing orders with your broker.", P),
+         table([["When", "What you check", "What you do", "Time"],
+                ["Intraday", "Nothing, if GTT stop orders are in place", "A GTT stop-loss at each stop sells automatically.", "0"],
                 ["Every trading day, after the close",
-                 "Check the market filter for tomorrow. Note fills; record each new trade's stop and its 25-day date. Check "
-                 "any trade that reaches its 25-day date (Step 4)."],
-                ["Every Friday, after the close", "Update the weekly Supertrend of each open position (Step 5). Note the "
-                 "week's low (it becomes the stop for any fill next week)."],
-                ["Every Monday open", "Sell any position whose weekly Supertrend turned bearish on Friday."]],
-               [52 * mm, 126 * mm])]
+                 "1. Did the NIFTY 500 index close above or below its 200-day average?<br/>2. Any new fills today?<br/>"
+                 "3. Any trade at its 25-day date?",
+                 "1. Above: keep buy-stops live for tomorrow. Below: cancel or pause them.<br/>2. Place the GTT stop at last "
+                 "week's low; note the 25-day date.<br/>3. If yesterday's close is below entry + 0.25R, sell at tomorrow's open.",
+                 "10–15 min"],
+                ["Friday, after the close", "The weekly Supertrend(10, 3) of each open position",
+                 "If it <b>turned</b> from bullish to bearish this week, sell at Monday's open. Note each stock's weekly low "
+                 "(the stop for any fill next week).", "20–30 min"],
+                ["Last trading day of the month, after the close", "New setups; position sizes; equity high",
+                 "Place next month's buy-stops (Step 2). Trim any position above 20% of equity. Update the equity high and "
+                 "the drawdown status (Step 6).", "1–2 hours"]],
+               [30 * mm, 46 * mm, 82 * mm, 20 * mm]),
+         Paragraph("What each exit needs from you", H3)] + bl([
+        "<b>Stop loss: nothing.</b> The GTT stop sells automatically; record it when it is hit.",
+        "<b>Time stop: one check per trade</b>, on the first trading day on or after day 25. Decided on the previous close, "
+        "executed at the open. After that day the time stop no longer applies to that trade.",
+        "<b>Supertrend exit: once a week, on Friday.</b> Only the completed weekly candle counts; a mid-week dip below "
+        "the line means nothing. Weeks without a flip need no action."]) + [
+        Paragraph("Practical tips for Indian brokers", H3)] + bl([
+        "<b>Stops</b>: GTT stop orders stay valid for a year. Use a stop-limit with a small buffer, or a stop-market if your "
+        "broker allows it, so a gap down does not leave you unfilled.",
+        "<b>Buy-stops</b>: a GTT buy triggered above the setup month's high. On days the NIFTY 500 index closed below its "
+        "200-day average you must pause these yourself: the one rule a broker cannot automate.",
+        "<b>Supertrend</b>: add Supertrend(10, 3) to each stock's weekly chart (TradingView or your broker) and look after "
+        "Friday's close. Broker data can differ slightly from the backtest's Yahoo data, so a flip may occasionally come a "
+        "week apart.",
+        "<b>The 25-day date</b>: set a calendar reminder for each trade on the day you buy it."])
 
     s += [PageBreak(), Paragraph("Step 1: find setups (month end)", H2),
           Paragraph("On the last trading day of the month, after the close, check each stock that is in the NIFTY 500. A stock is "
