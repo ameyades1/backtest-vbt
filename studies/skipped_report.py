@@ -17,9 +17,9 @@ from lib import ids
 
 OUT = ROOT / "results" / "studies" / "skipped"
 IDS = ids.by_name()
-BASES = {"Y": "hold/T25_r025", "D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth"}
-NAME = {"Y": "S63387f09 (your choice)", "D": "Sde394f26", "C": "Sa016f4eb"}
-SN = {"Y": "S63387f09", "D": "Sde394f26", "C": "Sa016f4eb"}
+BASES = {"Y": "hold/T25_r025", "A": "stexit/A_flip", "D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth"}
+NAME = {"Y": "S63387f09 (your choice)", "A": "Sf5b94362 (Supertrend turn exit)", "D": "Sde394f26", "C": "Sa016f4eb"}
+SN = {"Y": "S63387f09", "A": "Sf5b94362", "D": "Sde394f26", "C": "Sa016f4eb"}
 WHY = {"taken": "Taken", "held": "Stock already held", "slots": "All slots full", "paused": "Drawdown pause",
        "cash": "Not enough cash", "too-small": "Risk buys < 1 share", "open-risk": "Open-risk cap",
        "sector": "Sector cap", "short-max": "Short limit"}
@@ -100,7 +100,7 @@ def table(rows, widths, fs=7.2):
 notes = json.load(open(OUT / "notes.json"))
 rnd = pd.read_csv(OUT / "random.csv")
 story = [Paragraph("Skipped signals: what if we had traded them?", H1),
-         Paragraph("S63387f09 (your choice), Sde394f26 and Sa016f4eb (hedged), point-in-time NIFTY 500 from 2000, costs included. Every signal "
+         Paragraph("S63387f09 (your choice), Sf5b94362 (Supertrend turn exit), Sde394f26 and Sa016f4eb (hedged), point-in-time NIFTY 500 from 2000, costs included. Every signal "
                    "is played out in full by the engine whether or not the portfolio takes it.", SUB),
          Paragraph("Verdict", H2)] + bl(notes["verdict"])
 base = {}
@@ -118,7 +118,7 @@ story += [Paragraph("Taken vs skipped by period (S63387f09)", H2),
 story += [Paragraph("Trading more of them: 15, 20 and unlimited slots", H2),
           table(slots_table(), [15 * mm, 22 * mm, 15 * mm, 12 * mm, 14 * mm, 14 * mm, 15 * mm, 20 * mm, 20 * mm, 26 * mm])]
 story.append(Paragraph("Same 1% risk per trade on current equity; with more slots, cash, not slots, becomes the limit.", SM))
-fig, axs = plt.subplots(1, 3, figsize=(7.4, 2.6))
+fig, axs = plt.subplots(1, len(BASES), figsize=(7.4, 2.6))
 rr = [["Strategy", "Actual (tightest stop first)", "Random: median", "5th – 95th pct", "Actual's percentile",
        "Random DD median", "DD 5th – 95th"]]
 for ax, tag in zip(axs, BASES):

@@ -1,5 +1,8 @@
 {
  "verdict": [
+  "<b>Sf5b94362 (Supertrend turn exit) random-pick check:</b> 200 runs with random signal choice give a median of 16.3% CAGR (5th–95th percentile 14.7–17.6%); the actual 17.0% sits at the 79th percentile. Drawdown median −27.3% (−29.0% to −24.4%).",
+  "<b>Sf5b94362 vs S63387f09:</b> the random median rises from 15.3% to 16.3%, and a random Sf5b94362 run beats a random S63387f09 run 76% of the time. The turn exit adds about 1 point a year, for about 1 point more drawdown at the median. A real but modest edge, not luck alone.",
+  "Sf5b94362 taken trades average +3.14R against +1.25R for those skipped (slots full or no cash).",
   "<b>S63387f09 (your choice): the result holds up.</b> Over 200 runs with random signal picks its CAGR ranges 14.1–16.7% (5th–95th percentile, median 15.3%); the actual 15.8% sits at the 69th percentile. The drawdown is about −26.5% in almost every run (the 2006 crash sets it).",
   "<b>Your upgrades are real, not selection luck:</b> 199 of 200 random S63387f09 runs beat the median random Sde394f26 run (13.5%); the typical gain is about 1.8 points.",
   "<b>For S63387f09 the taken trades are clearly better than the skipped ones:</b> +1.70R per trade vs +0.97R, with 8.8% vs 6.3% big (≥ 5R) winners. 531 signals were skipped because the 10 slots were full, 54 for lack of cash.",
