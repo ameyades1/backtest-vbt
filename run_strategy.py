@@ -205,18 +205,23 @@ def run(cfg, closes, dailies, out):
         if siz.get("max_stop_pct"):
             trades = [t for t in trades if abs(t.entry - t.stop) / t.entry * 100 <= siz["max_stop_pct"]]
         lbl = label(tg)
+        skips = [] if cfg.get("log_skips") else None
         sd = np.array([abs(t.entry - t.stop) / t.entry * 100 for t in trades if t.stop is not None])
         curve, fills, skipped = portfolio.run(trades, closes, siz["capital"], siz["risk_pct"] / 100,
                                               siz["max_positions"], fee, slip, siz.get("rank", "tightest"), start,
                                               score=score, risk_mult=rm, dd_rule=siz.get("dd_rule"),
                                               cash_ret=cr, compound=siz.get("compound", False),
                                               pos_cap=siz.get("pos_cap"), max_open_risk=siz.get("max_open_risk"),
-                                              short=short_spec, hedge=hedge_spec, slip_of=slip_of, sector_of=sec_of, sector_cap=siz.get("sector_cap"))
+                                              short=short_spec, hedge=hedge_spec, slip_of=slip_of, sector_of=sec_of, sector_cap=siz.get("sector_cap"),
+                                              seed=siz.get("seed"), skip_log=skips)
         rows[lbl] = {"Signals filled": len(trades), "Median stop %": np.median(sd) if len(sd) else np.nan,
                        **portfolio.summary(curve, fills, skipped, siz["capital"], siz["max_positions"])}
         curves[lbl] = curve["equity"]
         pd.DataFrame([vars(f) for f in fills]).to_csv(out / f"fills_{fid(tg)}.csv",
                                                       index=False)
+        if skips is not None:                           # every signal, taken or not, with its full (would-be) trade
+            pd.DataFrame([{**vars(t), "day": d, "taken": why} for d, t, why in skips]) \
+                .to_csv(out / f"signals_{fid(tg)}.csv", index=False)
     tab = pd.DataFrame(rows).T
     tab.to_csv(out / "summary.csv")
     pd.DataFrame(curves).to_csv(out / "equity.csv")

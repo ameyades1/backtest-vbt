@@ -1,0 +1,38 @@
+[
+ {
+  "phase": "slots",
+  "config": "strategies/skipped/Sde394f26_slots15.json",
+  "universe": "NIFTY500_PIT",
+  "name": "skipped/Sde394f26_slots15"
+ },
+ {
+  "phase": "slots",
+  "config": "strategies/skipped/Sde394f26_slots20.json",
+  "universe": "NIFTY500_PIT",
+  "name": "skipped/Sde394f26_slots20"
+ },
+ {
+  "phase": "slots",
+  "config": "strategies/skipped/Sde394f26_slotsall.json",
+  "universe": "NIFTY500_PIT",
+  "name": "skipped/Sde394f26_slotsall"
+ },
+ {
+  "phase": "slots",
+  "config": "strategies/skipped/Sa016f4eb_slots15.json",
+  "universe": "NIFTY500_PIT",
+  "name": "skipped/Sa016f4eb_slots15"
+ },
+ {
+  "phase": "slots",
+  "config": "strategies/skipped/Sa016f4eb_slots20.json",
+  "universe": "NIFTY500_PIT",
+  "name": "skipped/Sa016f4eb_slots20"
+ },
+ {
+  "phase": "slots",
+  "config": "strategies/skipped/Sa016f4eb_slotsall.json",
+  "universe": "NIFTY500_PIT",
+  "name": "skipped/Sa016f4eb_slotsall"
+ }
+]

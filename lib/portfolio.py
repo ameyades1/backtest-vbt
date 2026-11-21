@@ -34,7 +34,8 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
         seed: int | None = None, sector_of: dict | None = None, sector_cap: int | None = None,
         risk_mult: pd.Series | None = None, dd_rule: dict | None = None,
         cash_ret: pd.Series | None = None, compound: bool = False, pos_cap: float | None = None,
-        short: dict | None = None, max_open_risk: float | None = None, hedge: dict | None = None, slip_of: dict | None = None):
+        short: dict | None = None, max_open_risk: float | None = None, hedge: dict | None = None, slip_of: dict | None = None,
+        skip_log: list | None = None):
     """rank: order of same-day signals when slots are scarce.
          'tightest' smallest stop % first (default) | 'widest' largest stop % first
          'random'   shuffled with `seed`
@@ -59,6 +60,8 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
        hedge:     {"ratio": 1.0, "fee": per side, "regime": bool day series (True = hedge on, known before the day)}:
                   short NIFTY futures worth ratio x the long book while on; daily P&L = -notional x NIFTY return
        slip_of:   symbol -> slippage per side, overriding `slip` (e.g. heavier for microcaps)
+       skip_log:  if a list, (day, trade, reason) is appended for every signal: taken, or skipped as held (same
+                  stock already open), slots, short-max, paused (drawdown pause / zero risk), sector, open-risk, cash, too-small (risk buys < 1 share)
        sector_cap: at most this many open positions per sector (sector_of: symbol -> sector);
                    signals over the cap count as skipped."""
     risk_amt = capital * risk_pct
@@ -159,30 +162,33 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
         open_risk = sum(f.qty * abs(f.entry - f.stop) for _, f in open_.values())
         for t in cands:
             key = f"{t.symbol}|{t.leg}"
+            note = (lambda why: skip_log.append((day, t, why))) if skip_log is not None else (lambda why: None)
             if key in open_:
-                continue
+                note("held"); continue
             if t.symbol not in held and len(held) >= max_positions:
-                skipped += 1
+                skipped += 1; note("slots")
                 continue
             if side(t) < 0 and t.symbol not in held and \
                     sum(1 for tt, _ in open_.values() if side(tt) < 0) >= sh["max"]:
-                skipped += 1
+                skipped += 1; note("short-max")
                 continue
             if mult <= 0:
-                skipped += 1
+                skipped += 1; note("paused")
                 continue
             if sector_cap is not None:
                 sec = sector_of.get(t.symbol)
                 if sec is not None and sum(sector_of.get(s) == sec for s in held) >= sector_cap:
-                    skipped += 1
+                    skipped += 1; note("sector")
                     continue
             base = prev_eq * risk_pct if compound else risk_amt
             if side(t) < 0 and sh.get("risk_mult"):          # shorts sized smaller, e.g. 0.5 x the long risk
                 base *= sh["risk_mult"]
             qty = int(base * mult * t.weight // dist(t))
+            risk_cut = False
             if max_open_risk is not None:
                 room = max_open_risk * prev_eq - open_risk
-                qty = min(qty, int(max(room, 0) // dist(t)))
+                q2 = min(qty, int(max(room, 0) // dist(t)))
+                risk_cut, qty = q2 < qty, q2
             capped = False
             if side(t) > 0:
                 px = t.entry * (1 + sl(t.symbol)) * (1 + fee)
@@ -194,13 +200,14 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                 if qty * unit > cash:
                     qty, capped = int(cash // unit), True
             if qty < 1:
-                skipped += 1
+                skipped += 1; note("open-risk" if risk_cut else "cash" if capped else "too-small")
                 continue
             cost = qty * unit
             cash -= cost
             f = Fill(t.symbol, day, None, qty, t.entry, None, t.stop, cost, 0.0, capped)
             f.side = side(t)
             open_[key] = (t, f)
+            note("taken")
             held.add(t.symbol)
             open_risk += qty * dist(t)
             if t.exit_date == day:                       # same-day stop/target

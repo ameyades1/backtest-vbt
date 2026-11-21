@@ -304,3 +304,9 @@ S01a1fd31-7573-71e6-acb0-12ff4371b71f,S4371b71f,ddcut/T_halfrisk_n50,strategies/
 S01a1fd31-7574-7a6f-9e60-9e398e2eaf6c,S8e2eaf6c,ddcut/T_wl_i50,strategies/ddcut/T_wl_i50.json,2026-11-21,active
 S01a1fd31-7575-7a83-b11b-7e5a44d46151,S44d46151,ddcut/T_wl_n50,strategies/ddcut/T_wl_n50.json,2026-11-21,active
 S01a1fd40-f496-77ea-a2be-5877a016f4eb,Sa016f4eb,ddcut/C_hedge_i50_breadth,strategies/ddcut/C_hedge_i50_breadth.json,2026-11-21,active
+S01a1fd5c-dc45-77f9-b70d-110e5b420129,S5b420129,skipped/Sa016f4eb_slots15,strategies/skipped/Sa016f4eb_slots15.json,2026-11-21,active
+S01a1fd5c-dc46-74fd-9623-66dc07f3024c,S07f3024c,skipped/Sa016f4eb_slots20,strategies/skipped/Sa016f4eb_slots20.json,2026-11-21,active
+S01a1fd5c-dc47-796c-82d0-e3e3da38b850,Sda38b850,skipped/Sa016f4eb_slotsall,strategies/skipped/Sa016f4eb_slotsall.json,2026-11-21,active
+S01a1fd5c-dc48-75bc-bd8c-ca530d49bf0e,S0d49bf0e,skipped/Sde394f26_slots15,strategies/skipped/Sde394f26_slots15.json,2026-11-21,active
+S01a1fd5c-dc49-7000-90e6-5720efc4987b,Sefc4987b,skipped/Sde394f26_slots20,strategies/skipped/Sde394f26_slots20.json,2026-11-21,active
+S01a1fd5c-dc4a-70bf-9126-cbe137bfc528,S37bfc528,skipped/Sde394f26_slotsall,strategies/skipped/Sde394f26_slotsall.json,2026-11-21,active
