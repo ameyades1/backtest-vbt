@@ -151,7 +151,7 @@ if RP.exists():
     fig, ax = plt.subplots(figsize=(7.6, 3.0))
     data_ = [rnd[rnd.tag == t].CAGR for t in TAGS if (rnd.tag == t).sum() >= 150]
     labs = [sid(TAGS[t]) for t in TAGS if (rnd.tag == t).sum() >= 150]
-    ax.boxplot(data_, labels=labs, showfliers=False); ax.tick_params(labelsize=6.5); ax.grid(alpha=.3)
+    ax.boxplot(data_, tick_labels=labs, showfliers=False); ax.tick_params(labelsize=6.5); ax.grid(alpha=.3)
     ax.set_ylabel("CAGR % (200 random-pick runs)", fontsize=7.5)
     fig.tight_layout(); fig.savefig(OUT / "random.png", dpi=170); plt.close(fig)
     story.append(Image(str(OUT / "random.png"), width=186 * mm, height=73 * mm))
