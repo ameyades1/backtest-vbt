@@ -67,7 +67,22 @@ q = np.percentile(roll, [0, 10, 50, 90, 100])
 rollrows = [["Any start day (" + f"{len(roll):,} windows)", "Value of ₹10 L after 5 years"]] + \
            [[l, lak(v)] for l, v in zip(["Worst", "10th percentile", "Median", "90th percentile", "Best"], q)] + \
            [["Windows ending below ₹10 L", f"{(roll < CAP).mean() * 100:.1f}%"]]
-json.dump({"dd": ddrows, "win": win, "roll": rollrows, "facts": facts}, open(OUT / "ruin.json", "w"), indent=1, ensure_ascii=False)
+# ---- comparison with Sde394f26 ----
+o = pd.read_csv(ROOT / "results" / "longshort/L_cap20_dd" / "nifty500_pit" / "equity.csv", index_col=0, parse_dates=True).iloc[:, 0].dropna()
+cmp = [["Period", "Sde394f26", "CAGR", "S63387f09", "CAGR", "Ahead by"]]
+for row in win[1:]:
+    y = int(row[0].split()[1]); x = o[f"{y}-01-01":f"{y + 4}-12-31"]; v = CAP * x.iloc[-1] / x.iloc[0]
+    mine = float(row[2].strip("₹ L").replace(",", "")) * 1e5
+    cmp.append([row[0], lak(v), f"{((v / CAP) ** .2 - 1) * 100:.1f}%", row[2], row[3], f"+{(mine - v) / 1e5:.1f} L" if mine >= v else f"{(mine - v) / 1e5:.1f} L"])
+def rollq(x):
+    en = x.reindex(x.index + pd.Timedelta(days=n5), method="ffill").values
+    v = (en / x.values)[x.index + pd.Timedelta(days=n5) <= x.index[-1]] * CAP
+    return list(np.percentile(v, [0, 10, 50, 90, 100])) + [(v < CAP).mean()]
+qo, qm = rollq(o), rollq(e)
+cmproll = [["₹10 L after 5 years, any start day", "Sde394f26", "S63387f09"]] + \
+          [[l, lak(a), lak(b)] for l, a, b in zip(["Worst", "10th percentile", "Median", "90th percentile", "Best"], qo, qm)] + \
+          [["Windows ending below ₹10 L", f"{qo[-1] * 100:.1f}%", f"{qm[-1] * 100:.1f}%"]]
+json.dump({"cmp": cmp, "cmproll": cmproll, "dd": ddrows, "win": win, "roll": rollrows, "facts": facts}, open(OUT / "ruin.json", "w"), indent=1, ensure_ascii=False)
 
 # ---- PDF ----
 ss = getSampleStyleSheet(); DARK, GREY = "#0f172a", "#64748b"
@@ -101,8 +116,14 @@ story += [Paragraph("Drawdown probabilities", H2), table(ddrows, [70 * mm, 30 * 
           Image(str(OUT / "dd_hist.png"), width=180 * mm, height=68 * mm),
           Paragraph("₹10 lakh over each calendar 5-year period", H2), table(win, [45 * mm, 25 * mm, 28 * mm, 20 * mm, 32 * mm]),
           Paragraph("₹10 lakh over any 5-year window", H2), table(rollrows, [70 * mm, 45 * mm]),
+          Paragraph("Compared with Sde394f26 (the original), ₹10 lakh per calendar 5-year period", H2)] + bl([
+    "S63387f09 ends ahead in every period. The gap is small before 2009 (same 2006–08 drawdowns) and large from 2009 "
+    "and after 2017, when the NIFTY 500 filter helped most. Losing 5-year windows fall from about 2% to under 1%.",
+    "Part of the edge (the 0.25R time stop) is within the random-pick spread; expect a smaller gap live."]) + [
+          table(cmp, [40 * mm, 25 * mm, 18 * mm, 25 * mm, 18 * mm, 22 * mm]), Paragraph("", SUB),
+          table(cmproll, [60 * mm, 30 * mm, 30 * mm]),
           Paragraph("Backtest figures before tax; live results will be somewhat lower. Research only, not advice.", SUB)]
-story += ids.pdf_section([NAME], H2)
+story += ids.pdf_section([NAME, "longshort/L_cap20_dd"], H2)
 SimpleDocTemplate(str(OUT / "report.pdf"), pagesize=A4, leftMargin=12 * mm, rightMargin=12 * mm, topMargin=12 * mm,
                   bottomMargin=12 * mm, title="Risk of ruin").build(story)
 print("wrote", OUT / "report.pdf")
