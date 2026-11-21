@@ -1,0 +1,188 @@
+[
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T10_r0.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T10_r0"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T10_r025.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T10_r025"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T10_r05.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T10_r05"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T10_r10.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T10_r10"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T15_r0.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T15_r0"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T15_r025.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T15_r025"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T15_r05.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T15_r05"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T15_r10.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T15_r10"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T20_r0.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T20_r0"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T20_r025.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T20_r025"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T20_r05.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T20_r05"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T20_r10.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T20_r10"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T25_r0.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T25_r0"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T25_r025.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T25_r025"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T25_r10.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T25_r10"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T35_r0.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T35_r0"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T35_r025.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T35_r025"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T35_r05.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T35_r05"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T35_r10.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T35_r10"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T50_r0.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T50_r0"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T50_r025.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T50_r025"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T50_r05.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T50_r05"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T50_r10.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T50_r10"
+ },
+ {
+  "phase": "1-timestop",
+  "config": "strategies/hold/T_none.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/T_none"
+ },
+ {
+  "phase": "3-trail",
+  "config": "strategies/hold/X_st25.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/X_st25"
+ },
+ {
+  "phase": "3-trail",
+  "config": "strategies/hold/X_st4.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/X_st4"
+ },
+ {
+  "phase": "3-trail",
+  "config": "strategies/hold/X_mst3.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/X_mst3"
+ },
+ {
+  "phase": "3-trail",
+  "config": "strategies/hold/X_atr3.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/X_atr3"
+ },
+ {
+  "phase": "4-cap",
+  "config": "strategies/hold/Cap90.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/Cap90"
+ },
+ {
+  "phase": "4-cap",
+  "config": "strategies/hold/Cap180.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/Cap180"
+ },
+ {
+  "phase": "4-cap",
+  "config": "strategies/hold/Cap365.json",
+  "universe": "NIFTY500_PIT",
+  "name": "hold/Cap365"
+ }
+]

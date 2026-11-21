@@ -1,0 +1,15 @@
+{"verdict": [
+ "<b>Keep S1704ed9f's exits.</b> The current rule (sell if not 0.5R up after 25 days; trail with the weekly Supertrend(10, 3)) sits in the middle of a broad plateau: every check day from 20 to 50 with a 0–0.5R requirement gives 13–16% CAGR and a −22% to −26.5% drawdown.",
+ "<b>A small, plausible improvement: ask for less at the check.</b> Requiring 0.25R instead of 0.5R at day 25 (S63387f09) gives 15.8% / −26.5% vs 14.9% / −26.5%, and its neighbours agree (20 days 14.5%, 35 days 15.6%; 0R at 25 days 15.4%). It keeps a few more slow starters that later become big winners. Optional; the gain is under one point and within the range seen across random signal picks.",
+ "<b>Short or demanding time stops are worse:</b> 10–15 days or a 1R requirement cut CAGR to 8.5–13%. They lower the 2000–14 drawdown, which is why the walk-forward ranking picks them, but they all lose on 2015–26 (−1.4 to −2.4 points). The walk-forward check therefore argues against tightening.",
+ "<b>The weekly Supertrend(10, 3) is the right trailing exit.</b> Tighter (2.5) is slightly worse (14.3% / −26.9%); looser (4) or monthly adds drawdown (−35%, −41%) without more return; a 3 × ATR trail collapses to 3.1%: it sells the winners on normal pullbacks.",
+ "<b>Holding caps destroy the edge:</b> selling after 90, 180 or 365 days gives 5.0%, 8.2% and 12.3%. The 14% of fills held over a year made about 1.5 times the strategy's total net profit (99% of them winners); the 72% closed within a month lost money in total (−75% of net profit). That is the strategy: many small losses, a few long winners.",
+ "Tax point (not modelled): most of the profit comes from positions held over a year, which are taxed as long-term gains (12.5% above the exemption) rather than 20% short-term. Caps or tighter trails would also raise the tax bill."],
+ "findings": {"title": "Details", "points": [
+  "Lowest drawdown with a decent return: 35-day check at 0.5R (S44914129), 14.1% / −21.9%. Its neighbours are at −25%, so the lower drawdown is probably luck of timing, not a robust effect.",
+  "Without any time stop (T_none) CAGR is 14.0%: the time stop adds about one point by freeing slots from trades that go nowhere.",
+  "The holding-time table counts fills: month-end trims of positions above 20% of equity appear as separate fills."]},
+ "method": {"title": "Method", "points": [
+  "Base: S1704ed9f (filter/F_i200) at 1% risk, compounding, 10 slots, 20% position cap, drawdown rule, liquid-fund cash, NIFTY 500 index above its 200-day average for entries; point-in-time NIFTY 500 from 2000; Sharekhan costs + 0.1% slippage. Only the exit rules change.",
+  "Time stop: on the given calendar day after entry, if the close is below entry + gain × risk, sell at the next open; otherwise the trade runs until its stop or trailing exit.",
+  "Walk-forward: variants ranked by 2000–14 CAGR ÷ max drawdown, then checked on 2015–26."]}}

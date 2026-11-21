@@ -175,6 +175,8 @@ opts = "".join(f'<option value="{f}">{f}</option>' for f in families)
 STUDY_TITLES = {"slot_ranking": "Slot ranking: which signals should fill the 8 slots",
                 "cagr18": "CAGR 18%: capital use, exits, selection, regime, rotation",
                 "pit": "NIFTY 500 point in time: survivorship bias measured",
+                "hold": "Holding periods for S1704ed9f: time stop, trailing exit, caps",
+                "filter": "Entry filters for Sde394f26: NIFTY 500 index and breadth",
                 "skipped": "Skipped signals: what if we had traded them? Slots and random picks",
                 "ddcut": "Cutting Sde394f26's drawdown: NIFTY hedge, tighter exits, bear shorts, gold",
                 "longshort": "Long/short: hardened Sa15d9d9c, short books, NIFTY hedge",
