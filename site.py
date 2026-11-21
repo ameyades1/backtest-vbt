@@ -11,18 +11,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from lib.costs import fee_per_side
-from lib import ids
+from lib import ids, metrics
 
 ROOT = Path(__file__).resolve().parent
 REPO = "https://github.com/ameyades1/backtest-vbt/blob/main/"
-
-
-def streak(losses):
-    best = cur = 0
-    for x in losses:
-        cur = cur + 1 if x else 0
-        best = max(best, cur)
-    return best
 
 
 IDS = ids.by_name()
@@ -35,36 +27,18 @@ for cfgp in sorted(ROOT.glob("results/*/*/*/config.json")):
     S = pd.read_csv(run / "summary.csv", index_col=0)
     for ex, s in S.iterrows():
         tag = "none" if ex == "No target" else ex.split()[1].rstrip("%")
-        f = pd.read_csv(run / f"fills_{tag}.csv", parse_dates=["entry_date", "exit_date"])
-        f = f.dropna(subset=["exit_date"]).sort_values("exit_date")
-        if f.empty:
+        m = metrics.compute(pd.read_csv(run / f"fills_{tag}.csv"), s, c["period"]["start"])
+        if m is None:
             continue
-        pnl = f.proceeds - f.cost
-        ret = (f.proceeds / f.cost - 1) * 100
-        risk = f.qty * (f.entry - f.stop)
-        gross = f.qty * (f.exit - f.entry)
-        costs = (gross - pnl).sum()
-        gross_sum = gross.sum()
-        win, loss = ret[ret > 0], ret[ret <= 0]
-        yrs = (pd.Timestamp(f.exit_date.max()) - pd.Timestamp(c["period"]["start"])).days / 365.25
+        df_ = c.get("entry", {}).get("day_filters", {})
         rows.append({
             "id": IDS.get(c["name"], ""), "sid": ids.short(IDS[c["name"]]) if c["name"] in IDS else "",
             "risk": z["risk_pct"], "slots": z["max_positions"],
             "sizing": ", ".join(k for k in ("dd_rule", "risk_rules", "max_stop_pct") if z.get(k)) or "fixed",
             "family": run.parts[-3], "variant": run.parts[-2], "universe": run.parts[-1].upper(), "exit": ex,
-            "mkt": f"NIFTY > {c['entry']['day_filters']['market_sma']}-DMA"
-                   if "market_sma" in c.get("entry", {}).get("day_filters", {}) else "none",
-            "win": (ret > 0).mean() * 100,
-            "avg_ret": ret.mean(), "avg_rs": pnl.mean(),
-            "avg_win": win.mean() if len(win) else np.nan, "avg_loss": loss.mean() if len(loss) else np.nan,
-            "payoff": win.mean() / -loss.mean() if len(win) and len(loss) else np.nan,
-            "exp_r": (pnl / risk).mean(),
-            "cagr": s["CAGR %"], "mdd": s["Max DD %"], "mar": s["CAGR %"] / -s["Max DD %"],
-            "trades": len(f), "tpy": len(f) / yrs,
-            "streak": streak(list(pnl <= 0)),
-            "hold": float(s["Median hold days"]), "deployed": s["Avg deployed %"],
-            "skipped": int(s["Signals skipped"]),
-            "cost_pct": costs / gross_sum * 100 if gross_sum > 0 else np.inf,
+            "mkt": (f"NIFTY 500 > {df_['market_sma']}-DMA" if df_.get("market_index") == "^CRSLDX" else
+                    f"NIFTY > {df_['market_sma']}-DMA") if "market_sma" in df_ else "none",
+            **m,
             "pdf": REPO + (run / "report.pdf").relative_to(ROOT).as_posix(),
             "desc": c.get("description", ""),
         })
@@ -76,7 +50,7 @@ COLS = [  # key, header, format, tooltip
     ("exit", "Exit", None, "Fixed target, or no target (trend exit)"),
     ("risk", "Risk %", "{:g}", "Risk per trade, % of starting capital"),
     ("slots", "Slots", "{:d}", "Maximum open trades"),
-    ("mkt", "Market filter", None, "New entries only when NIFTY 50 is above its 200-day average"),
+    ("mkt", "Market filter", None, "New entries only when NIFTY 50 (or the NIFTY 500 index) is above its N-day average"),
     ("win", "Win %", "{:.0f}", "Share of closed trades that made money after costs"),
     ("avg_ret", "Avg trade %", "{:+.1f}", "Average net return per trade"),
     ("avg_rs", "Avg trade ₹", "{:+,.0f}", "Average net rupee profit per trade"),
@@ -87,7 +61,7 @@ COLS = [  # key, header, format, tooltip
     ("cagr", "CAGR %", "{:.1f}", "Compound annual growth of the account"),
     ("mdd", "Max DD %", "{:.0f}", "Largest fall from an equity peak"),
     ("mar", "CAGR / DD", "{:.2f}", "CAGR divided by max drawdown: return per unit of pain"),
-    ("trades", "Trades", "{:,}", "Closed trades"),
+    ("trades", "Trades", "{:,}", "Closed trades (a position-cap trim is part of its trade, not a separate trade)"),
     ("tpy", "Trades / yr", "{:.0f}", "Closed trades per year"),
     ("streak", "Max losing streak", "{:d}", "Most consecutive losing trades (by exit date)"),
     ("hold", "Median days", "{:.0f}", "Median holding period in calendar days"),

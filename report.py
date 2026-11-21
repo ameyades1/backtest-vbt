@@ -9,7 +9,7 @@ summary.csv, equity.csv and fills_*.csv; nothing is written by hand.
 import json, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib import ids, portfolio
+from lib import ids, portfolio, metrics
 _IDS = ids.by_name()
 import matplotlib
 matplotlib.use("Agg")
@@ -285,6 +285,30 @@ def build(run: Path):
                    f"{r[r > 0].mean():.1f}", f"{r[r <= 0].mean():.1f}",
                    f"{held[r > 0].median():.0f}", f"{held[r <= 0].median():.0f}", f"{(f.proceeds - f.cost).sum():,.0f}"])
 
+    KM = [("Closed trades", "trades", "{:,}"), ("Winners / losers", None, None), ("Win %", "win", "{:.1f}"),
+          ("Avg trade %", "avg_ret", "{:+.1f}"), ("Avg trade (Rs)", "avg_rs", "{:+,.0f}"), ("Avg win %", "avg_win", "{:+.1f}"),
+          ("Avg loss %", "avg_loss", "{:+.1f}"), ("Payoff", "payoff", "{:.2f}"), ("Expectancy R", "exp_r", "{:+.2f}"),
+          ("Profit factor", "pf", "{:.2f}"), ("Gross profit (Rs)", "gross_win", "{:,.0f}"),
+          ("Gross loss (Rs)", "gross_loss", "{:,.0f}"), ("CAGR / DD", "mar", "{:.2f}"), ("Trades / yr", "tpy", "{:.1f}"),
+          ("Max losing streak", "streak", "{:d}"), ("Median hold (days)", "hold", "{:.0f}"),
+          ("Avg deployed %", "deployed", "{:.0f}"), ("Signals skipped", "skipped", "{:,}"),
+          ("Costs % of gross", "cost_pct", "{:.0f}"), ("Open at end", "open", "{:d}")]
+    MS = {}
+    for col in S.index:
+        tag = "none" if col == "No target" else col.split()[1].rstrip("%")
+        MS[col] = metrics.compute(pd.read_csv(run / f"fills_{tag}.csv"), S.loc[col], c["period"]["start"]) or {}
+    km = [["Metric"] + [i.replace("Target ", "") for i in S.index]]
+    for lab, k, fm in KM:
+        row = [lab]
+        for col in S.index:
+            m = MS[col]
+            if k is None:
+                row.append(f"{m.get('n_win', 0)} / {m.get('n_loss', 0)}" if m else "–")
+            elif k in m and m[k] is not None and not (isinstance(m[k], float) and (pd.isna(m[k]) or m[k] == float("inf"))):
+                row.append(fm.format(m[k]))
+            else:
+                row.append(">100" if m.get(k) == float("inf") else "–")
+        km.append(row)
     best = S["CAGR %"].idxmax(); b = S.loc[best]
     eq = EQ[best].dropna(); dd = eq / eq.cummax() - 1; tr = dd.idxmin(); pk = eq[:tr].idxmax()
     rl, hdr = rules(c)
@@ -320,6 +344,13 @@ def build(run: Path):
                                       "Deployed % = open positions / equity, averaged over all days. Worst % = worst "
                                       "trade as a share of equity on its entry day. A trade counts once: month-end trims for the "
                                       "position cap are part of their trade.", SM)]),
+              KeepTogether([Paragraph("Trade statistics (same as the HTML scoreboard)", H2),
+                            table(km, [52 * mm] + [max(22, min(40, 120 // max(1, len(S)))) * mm] * len(S) + [0 * mm] * 0),
+                            Paragraph("Per closed trade, after costs; a month-end trim for the position cap is part of its "
+                                      "trade. Payoff = average win % ÷ average loss %. Expectancy R = average net profit "
+                                      "per rupee risked (1R = planned loss to the initial stop). Profit factor = gross "
+                                      "profit ÷ gross loss. CAGR / DD = return per unit of drawdown. Costs % of gross = "
+                                      "fees + slippage as a share of profit before costs.", SM)]),
               KeepTogether([Paragraph("Wins and losses (closed trades, after costs)", H2),
                             table(wl, [24 * mm, 22 * mm, 14 * mm, 22 * mm, 22 * mm, 22 * mm, 22 * mm, 26 * mm])]),
               Paragraph("Reproduce", H2),
