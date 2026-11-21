@@ -169,6 +169,23 @@ def build(path=OUT):
         "broker cuts this sharply.",
         "<b>Tax</b> is not in the backtest: short-term gains (under a year) 20%, long-term 12.5% above the exemption.",
         "Keep a journal: every setup, fill, skip, stop and exit, with the reason."]) + [
+        Paragraph("Daily assistant: live.py", H2),
+        Paragraph("live.py applies every rule above to the latest data and prints (and saves as a PDF in live/reports/) "
+                  "tomorrow's to-do list. No broker connection: you place the orders and record the fills.", P)] + num([
+        "Once: <font face='Courier'>python live.py init --capital 1000000</font>, then "
+        "<font face='Courier'>python live.py report --date &lt;last month end&gt;</font> to get this month's buy-stops.",
+        "Every trading day after the close: <font face='Courier'>python live.py report --refresh</font>. It shows the "
+        "market filter (buy-stops live or paused), equity, drawdown status and risk per trade, every action for "
+        "tomorrow (time stops, Supertrend exits on Fridays, trims at month end), and each buy-stop with its stop and "
+        "share count. On the last trading day of the month it scans for new setups.",
+        "After a fill: <font face='Courier'>python live.py buy SYMBOL PRICE QTY</font> (the stop is set to the last "
+        "completed week's low and printed for your GTT). After a sale: "
+        "<font face='Courier'>python live.py sell SYMBOL PRICE --why \"time stop\"</font>.",
+        "Now and then: <font face='Courier'>python live.py cash AMOUNT</font> to match your broker's cash (liquid fund "
+        "included). Everything is logged in live/journal.csv.",
+        "Checked against the backtest: same setups and buy-stops (March 2016), same stops, the same time-stop days "
+        "(Blue Star 20 May, NCC 23 May 2016) and the same Supertrend exit (Tata Communications, week of 11 Aug 2017). "
+        "Example sheet: reports/notes/live_example_2016-05-19.pdf."]) + [
         Paragraph("What to expect", H2)] + bl([
         "About <b>23% of trades win</b>; the average loss is about −6.7%, the average win about +81%. Losing streaks of "
         "20–30 trades happen (29 in a row in the backtest).",
