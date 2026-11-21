@@ -26,7 +26,8 @@ J = json.load(open(OUT / "jobs.json"))
 WIN = [(2000, 2004), (2005, 2009), (2010, 2014), (2015, 2019), (2020, 2026)]
 GROUPS = {"1-grid": "1. Risk per trade × number of slots", "2-cash": "2. Idle cash: liquid fund or nothing",
           "3-costs": "3. Broker costs: Sharekhan or Zerodha", "4-liquidity": "4. Liquidity floor",
-          "5-supertrend": "5. Supertrend settings for the exit", "6-ranking": "6. Which same-day signal gets the slot"}
+          "5-supertrend": "5. Supertrend settings for the exit", "6-ranking": "6. Which same-day signal gets the slot",
+          "7-neighbours": "7. Neighbouring settings (robustness)"}
 
 
 def load(n):
@@ -118,10 +119,42 @@ story += [PageBreak(), Paragraph(GROUPS["1-grid"], H2),
           Image(str(OUT / "grid.png"), width=186 * mm, height=61 * mm),
           Paragraph("Rows: risk per trade. Columns: maximum open positions. Bold: S44984096.", SM),
           table([HEAD, row(BASE, base_label)] + [row(j["name"], j["desc"]) for j in g], W)]
-for grp in ["2-cash", "3-costs", "4-liquidity", "5-supertrend", "6-ranking"]:
+for grp in ["2-cash", "3-costs", "4-liquidity", "5-supertrend", "6-ranking", "7-neighbours"]:
     js = [j for j in J if j["group"] == grp]
     story += [KeepTogether([Paragraph(GROUPS[grp], H2),
                             table([HEAD, row(BASE, base_label)] + [row(j["name"], j["desc"]) for j in js], W)])]
+
+# random-pick check (studies/skipped.py: 200 runs each with random choice among same-day signals)
+RP = ROOT / "results" / "studies" / "skipped" / "random.csv"
+TAGS = {"E": BASE, "G": "variants/r1_s7", "I": "variants/r1_s6", "J": "variants/r1_s8", "H": "variants/r1p5_s7",
+        "K": "variants/r1p5_s6", "L": "variants/r1p5_s8", "T": "variants/st14_3", "M": "variants/st12_3",
+        "N": "variants/st14_2p5"}
+if RP.exists():
+    rnd = pd.read_csv(RP); be = rnd[rnd.tag == "E"]
+    rr = [["ID", "Variant", "Actual", "Random median CAGR", "5th–95th", "Actual pct", "Median DD", "DD 5th–95th",
+           "Median CAGR/DD", "Beats S44984096 (pairs)"]]
+    for t, n in TAGS.items():
+        x = rnd[rnd.tag == t]
+        if len(x) < 150:
+            continue
+        a = R[n]["s"]["CAGR %"]
+        lab = base_label if n == BASE else next(j["desc"] for j in J if j["name"] == n)
+        rr.append([sid(n), lab, f"{a:.1f}%", f"{x.CAGR.median():.1f}%", f"{x.CAGR.quantile(.05):.1f}–{x.CAGR.quantile(.95):.1f}",
+                   f"{(x.CAGR < a).mean() * 100:.0f}", f"{x.DD.median():.1f}%", f"{x.DD.quantile(.05):.0f} to {x.DD.quantile(.95):.0f}",
+                   f"{(x.CAGR / -x.DD).median():.2f}",
+                   "–" if t == "E" else f"{(x.CAGR.values[:, None] > be.CAGR.values[None, :]).mean() * 100:.0f}%"])
+    story += [PageBreak(), Paragraph("8. Random-pick check: is the edge luck?", H2),
+              Paragraph("Each strategy rerun 200 times choosing at random among signals that fill on the same day (instead "
+                        "of tightest stop first). A real improvement shifts the whole distribution, not just the one actual "
+                        "path. Last column: share of (variant run, S44984096 run) pairs where the variant has the higher CAGR.", SM),
+              table(rr, [16, 46, 13, 18, 18, 12, 15, 18, 15, 19])]
+    fig, ax = plt.subplots(figsize=(7.6, 3.0))
+    data_ = [rnd[rnd.tag == t].CAGR for t in TAGS if (rnd.tag == t).sum() >= 150]
+    labs = [sid(TAGS[t]) for t in TAGS if (rnd.tag == t).sum() >= 150]
+    ax.boxplot(data_, labels=labs, showfliers=False); ax.tick_params(labelsize=6.5); ax.grid(alpha=.3)
+    ax.set_ylabel("CAGR % (200 random-pick runs)", fontsize=7.5)
+    fig.tight_layout(); fig.savefig(OUT / "random.png", dpi=170); plt.close(fig)
+    story.append(Image(str(OUT / "random.png"), width=186 * mm, height=73 * mm))
 
 # walk-forward
 wf = [["ID", "Variant"] + [f"{a}–{str(b)[-2:]}" for a, b in WIN]]

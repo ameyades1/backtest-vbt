@@ -392,3 +392,9 @@ S01a1ffaa-6892-76cd-a425-eff86841086d,S6841086d,variants/st10_2,strategies/varia
 S01a1ffaa-6893-7e43-93bb-5480ccc6149d,Sccc6149d,variants/st10_4,strategies/variants/st10_4.json,2026-11-21,active
 S01a1ffaa-6894-776b-b084-229fa1f19d11,Sa1f19d11,variants/st14_3,strategies/variants/st14_3.json,2026-11-21,active
 S01a1ffaa-6895-7680-b6f1-9cdfc8f6dfe7,Sc8f6dfe7,variants/zerodha,strategies/variants/zerodha.json,2026-11-21,active
+S01a1ffb6-41af-7049-acd0-a3adf660e97d,Sf660e97d,variants/r1_s6,strategies/variants/r1_s6.json,2026-11-21,active
+S01a1ffb6-41b0-79d3-ba82-2dd3cefe85a9,Scefe85a9,variants/r1_s8,strategies/variants/r1_s8.json,2026-11-21,active
+S01a1ffb6-41b1-78f0-bafa-270c35200f2f,S35200f2f,variants/r1p5_s6,strategies/variants/r1p5_s6.json,2026-11-21,active
+S01a1ffb6-41b2-7892-a9bd-34c64ed7ae52,S4ed7ae52,variants/r1p5_s8,strategies/variants/r1p5_s8.json,2026-11-21,active
+S01a1ffb6-41b3-79da-a742-76f7f34bb11d,Sf34bb11d,variants/st12_3,strategies/variants/st12_3.json,2026-11-21,active
+S01a1ffb6-41b4-73cf-973a-b7a2e6e624fa,Se6e624fa,variants/st14_2p5,strategies/variants/st14_2p5.json,2026-11-21,active

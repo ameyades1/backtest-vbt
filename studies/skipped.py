@@ -12,9 +12,12 @@ sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "studies"))
 from longshort_configs import write, load
 OUT = ROOT / "results" / "studies" / "skipped"
 OUT.mkdir(parents=True, exist_ok=True)
-BASES = {"D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth", "Y": "hold/T25_r025", "A": "stexit/A_flip", "E": "stexit/A_flip_capentry"}
-NOSLOTS = {"E"}                                  # tags without slot variants
-TAGN = {"D": "Sde394f26", "C": "Sa016f4eb", "Y": "S63387f09", "A": "Sf5b94362", "E": "S44984096"}
+BASES = {"D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth", "Y": "hold/T25_r025", "A": "stexit/A_flip", "E": "stexit/A_flip_capentry",
+         "G": "variants/r1_s7", "H": "variants/r1p5_s7", "T": "variants/st14_3", "I": "variants/r1_s6",
+         "J": "variants/r1_s8", "K": "variants/r1p5_s6", "L": "variants/r1p5_s8", "M": "variants/st12_3",
+         "N": "variants/st14_2p5"}
+NOSLOTS = set("EGHTIJKLMN")                                  # tags without slot variants
+TAGN = {"D": "Sde394f26", "C": "Sa016f4eb", "Y": "S63387f09", "A": "Sf5b94362", "E": "S44984096", "G": "Se8a1c516", "H": "Se4840bfe", "T": "Sa1f19d11", "I": "Sf660e97d", "J": "Scefe85a9", "K": "S35200f2f", "L": "S4ed7ae52", "M": "Sf34bb11d", "N": "Se6e624fa"}
 SEEDS = range(200)
 U = "NIFTY500_PIT"
 _C = {}

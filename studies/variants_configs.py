@@ -39,5 +39,12 @@ for n, m in ((10, 2), (10, 4), (14, 3)):
         lambda c, n=n, m=m: c["exits"]["supertrend_exit_when_no_target"].update(period=n, mult=m))
 var("rank_rs", "6-ranking", "Same-day signals ranked by 6-month relative strength instead of tightest stop",
     lambda c: c["sizing"].update(rank="score", score={"type": "mom", "months": 6}))
+for r in (1.0, 1.5):                                  # neighbours of the 7-slot results
+    for k in (6, 8):
+        var(f"r{r:g}_s{k}".replace(".", "p"), "7-neighbours", f"{r:g}% risk, {k} slots",
+            lambda c, r=r, k=k: c["sizing"].update(risk_pct=r, max_positions=k))
+for n, m in ((12, 3), (14, 2.5)):                     # neighbours of Supertrend(14, 3)
+    var(f"st{n}_{m:g}".replace(".", "p"), "7-neighbours", f"Weekly Supertrend({n}, {m:g}) for the exit instead of (10, 3)",
+        lambda c, n=n, m=m: c["exits"]["supertrend_exit_when_no_target"].update(period=n, mult=m))
 json.dump(jobs, open(J / "jobs.json", "w"), indent=1)
 print(len(jobs), "configs")

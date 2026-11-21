@@ -1,5 +1,4 @@
 {
-  "id": "S01a1ffaa-6884-7a23-9b1e-8da76e9ce613",
   "name": "variants/liq10",
   "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while the NIFTY 500 index is below its 200-day average (NIFTY 50 / Sensex before mid-2006, when its 200-day average starts). [Trend exit swapped: weekly Supertrend(10,3) turns bearish instead of a monthly close below EMA61.] [Stack (10 slots, liquid-fund cash, 25-day time stop) with compounding risk.] [20% position cap + drawdown rule.] [Entry filter: NIFTY 500 index above its 200-day average instead of NIFTY 50 above its 200-day.] [Time stop: sell if not 0.25R up after 25 days (instead of 0.5R / 25).] [Supertrend exit only when it turns from bullish to bearish after entry] [Position cap also applied at entry: a new position is limited to 20% of equity when bought.] [Only stocks trading at least Rs 10 crore a day (60-day median)]",
   "universe": "NIFTY500_PIT",
@@ -79,5 +78,6 @@
     "broker": "sharekhan",
     "product": "delivery",
     "slippage_pct": 0.1
-  }
+  },
+  "id": "S01a1ffaa-6884-7a23-9b1e-8da76e9ce613"
 }

@@ -1,9 +1,13 @@
-{"verdict": [
- "<b>2% risk with 5 slots (Sdab570f4): 16.0% / −26.2%</b>, against 15.9% / −24.2% for S44984096. About the same return with a deeper drawdown: no improvement. With the 20% entry cap most 2% positions are capped anyway, so doubling the risk does not double the bets.",
- "<b>7 slots beat 5 and 10 at every risk level.</b> 1% / 7 slots (Se8a1c516) 16.6% / −23.5%; 1.5% / 7 slots (Se4840bfe) 18.1% / −23.7%, the best CAGR/DD in the grid (0.76). With 10 slots, 1.5% and 2% risk deepen the drawdown (−26% to −32%) and the worst year (−22% to −23%). These are single paths: a random-pick check is needed before trusting a 1–2 point edge.",
- "<b>Idle-cash interest is essential:</b> without the liquid fund (S7b03d65f) CAGR falls from 15.9% to 12.4% and the drawdown deepens to −26%. About 3.5 points a year come from parking idle cash; in practice you must keep it in a liquid fund or liquid ETF.",
- "<b>Zerodha costs add about 1.9 points</b> (Sc8f6dfe7: 17.8% / −23.9%). Zero delivery brokerage matters for a system with ~15 round trips a year and many small losses. This is a real, not fitted, gain.",
- "<b>Liquidity floor: the edge sits partly in smaller stocks.</b> Only stocks trading ₹5 crore+ a day: 10.8%; ₹10 crore+: 8.4%. The floor is nominal (not inflation-scaled), so before about 2010 it removes most mid caps and the 2010–14 period collapses (27.6% → 5.0%). For a ₹10–20 lakh account (positions of ₹1–2 lakh) liquidity is not a constraint, but it means results would shrink for a much larger account.",
- "<b>Supertrend settings:</b> (14, 3) (Sa1f19d11) 18.3% / −22.6%, the best CAGR/DD in the study (0.81); (10, 2) 16.3% / −22.1% with more trades; (10, 4) 15.8% / −30.0%, worse. Looser trailing (multiplier 4) hurts; a longer ATR period helps. One neighbour testing better is a hint, not proof.",
- "<b>Ranking same-day signals by 6-month relative strength</b> (Sd7cc0575): 15.6% / −26.4%, no better than tightest stop; consistent with the random-pick check.",
- "<b>Next step, not done here:</b> combine only the robust changes (Zerodha costs; liquid fund kept), and test the promising ones (7 slots at 1–1.5% risk; Supertrend 14, 3) with the 200-run random-pick check and neighbouring settings before adopting any of them. Stacking every best result would overfit."]}
+{
+ "verdict": [
+  "<b>Random-pick check (200 runs each) — slots: no real gain.</b> 1% / 7 slots (Se8a1c516) has a random median of 15.5% against 16.4% for S44984096 and beats it in only 22% of pairings; 1.5% / 7 slots (Se4840bfe) 16.4%, a coin flip (52%), with a deeper drawdown tail (to −34%). The 18.1% single result was a lucky path. The 6- and 8-slot neighbours are no better. Keep 10 slots at 1%.",
+  "<b>Supertrend(14, 3) survives, modestly.</b> Random median 17.2% (5th–95th 15.6–18.5%) against 16.4%, with a shallower median drawdown (−25.2% vs −26.9%) and CAGR/DD 0.68 vs 0.61; it beats S44984096 in 72% of pairings. Its neighbour (12, 3) also helps (16.8%, 62%). But the multiplier is sensitive: (14, 2.5) drops to 14.3% and (10, 4) was worse on its single path. A longer ATR period helps; the multiplier should stay at 3.",
+  "<b>No combination tested:</b> only the Supertrend change survived the check, so there is nothing to combine with.",
+  "<b>2% risk with 5 slots (Sdab570f4): 16.0% / −26.2%</b>, against 15.9% / −24.2% for S44984096: about the same return with a deeper drawdown. With the 20% entry cap most 2% positions are capped anyway.",
+  "<b>Idle-cash interest is essential:</b> without the liquid fund (S7b03d65f) CAGR falls from 15.9% to 12.4%. About 3.5 points a year come from parking idle cash.",
+  "<b>Zerodha costs add about 1.9 points</b> (Sc8f6dfe7: 17.8% / −23.9%): a real gain from how you trade, not a fitted rule.",
+  "<b>Liquidity floor:</b> only stocks trading ₹5 crore+ a day: 10.8%; ₹10 crore+: 8.4%. The floor is nominal (not inflation-scaled) and removes most mid caps before about 2010; for a ₹10–20 lakh account liquidity is not a constraint, but returns would shrink for a much larger account.",
+  "<b>Ranking same-day signals by 6-month relative strength</b> (Sd7cc0575): 15.6% / −26.4%, no better than tightest stop.",
+  "<b>Bottom line:</b> keep 1% risk and 10 slots; trade through a zero-brokerage broker and keep idle cash in a liquid fund. Supertrend(14, 3) (Sa1f19d11) is a candidate upgrade worth about +0.8 points a year with a slightly smaller drawdown; adopting it is a judgement call, since it rests on one parameter that has been shown sensitive to its multiplier."
+ ]
+}

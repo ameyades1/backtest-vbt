@@ -112,5 +112,41 @@
   "group": "6-ranking",
   "desc": "Same-day signals ranked by 6-month relative strength instead of tightest stop",
   "config": "strategies/variants/rank_rs.json"
+ },
+ {
+  "name": "variants/r1_s6",
+  "group": "7-neighbours",
+  "desc": "1% risk, 6 slots",
+  "config": "strategies/variants/r1_s6.json"
+ },
+ {
+  "name": "variants/r1_s8",
+  "group": "7-neighbours",
+  "desc": "1% risk, 8 slots",
+  "config": "strategies/variants/r1_s8.json"
+ },
+ {
+  "name": "variants/r1p5_s6",
+  "group": "7-neighbours",
+  "desc": "1.5% risk, 6 slots",
+  "config": "strategies/variants/r1p5_s6.json"
+ },
+ {
+  "name": "variants/r1p5_s8",
+  "group": "7-neighbours",
+  "desc": "1.5% risk, 8 slots",
+  "config": "strategies/variants/r1p5_s8.json"
+ },
+ {
+  "name": "variants/st12_3",
+  "group": "7-neighbours",
+  "desc": "Weekly Supertrend(12, 3) for the exit instead of (10, 3)",
+  "config": "strategies/variants/st12_3.json"
+ },
+ {
+  "name": "variants/st14_2p5",
+  "group": "7-neighbours",
+  "desc": "Weekly Supertrend(14, 2.5) for the exit instead of (10, 3)",
+  "config": "strategies/variants/st14_2p5.json"
  }
 ]
