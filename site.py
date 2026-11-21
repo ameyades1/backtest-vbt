@@ -193,7 +193,7 @@ _rp = ROOT / "results" / "studies" / "recommendations" / "recommendations.json"
 recs = ""
 if _rp.exists():
     _r = json.load(open(_rp))
-    for _sec in _r["sections"]:
+    for _sec in [s for s in _r["sections"] if not s.get("pdf_only")]:
         _trs = "".join("<tr>" + "".join(f"<td>{html.escape(_c)}</td>" for _c in _row) + "</tr>" for _row in _sec["rows"])
         _mine = " mine" if _sec.get("mine") else ""
         recs += (f'<h3 class="{_mine.strip()}">{"★ " if _mine else ""}{html.escape(_sec["title"])}</h3><div class="wrap"><table class="rec{_mine}"><thead><tr>'

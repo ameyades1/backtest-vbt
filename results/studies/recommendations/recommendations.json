@@ -44,6 +44,7 @@
   {
    "title": "Your strategy: ₹10 lakh over each 5-year period",
    "mine": true,
+   "pdf_only": true,
    "head": [
     "Period",
     "Start",
@@ -219,6 +220,7 @@
   {
    "title": "₹10 lakh: your strategy vs Sde394f26",
    "mine": true,
+   "pdf_only": true,
    "head": [
     "Period",
     "Sde394f26",
@@ -417,6 +419,7 @@
   {
    "title": "Your strategy: risk of ruin",
    "mine": true,
+   "pdf_only": true,
    "head": [
     "Worst drawdown in 20 years",
     "Probability"
