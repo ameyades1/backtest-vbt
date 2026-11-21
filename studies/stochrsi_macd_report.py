@@ -15,7 +15,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from lib import ids
+from lib import ids, portfolio
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -44,7 +44,7 @@ eq = {k: pd.read_csv(folder(k) / "equity.csv", index_col=0, parse_dates=True) fo
 
 
 def fills(k, ex):
-    f = pd.read_csv(folder(k) / f"fills_{fid(ex)}.csv", parse_dates=["entry_date", "exit_date"])
+    f = portfolio.read_fills(folder(k) / f"fills_{fid(ex)}.csv", parse_dates=["entry_date", "exit_date"])
     risk = (f.entry - f.stop) * f.qty
     f["R"] = (f.proceeds - f.cost) / risk
     f["pnl"] = f.proceeds - f.cost

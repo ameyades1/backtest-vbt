@@ -14,6 +14,7 @@ from multiprocessing import Pool
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from lib import portfolio
 OUT = ROOT / "results" / "studies" / "overnight"
 LOG = OUT / "run.log"
 UNIS = ["NIFTY50", "NIFTY100", "MIDCAP150", "SMALLCAP250"]
@@ -87,7 +88,7 @@ def stage2(jobs):
         if not (d / "equity.csv").exists():
             continue
         e = pd.read_csv(d / "equity.csv", index_col=0, parse_dates=True)["No target"].dropna()[:"2018-12-31"]
-        f = pd.read_csv(d / "fills_none.csv", parse_dates=["entry_date"])
+        f = portfolio.read_fills(d / "fills_none.csv", parse_dates=["entry_date"])
         if len(f[f.entry_date <= "2018-12-31"]) < 50 or len(e) < 500:
             continue
         cg = ((e.iloc[-1] / e.iloc[0]) ** (365.25 / (e.index[-1] - e.index[0]).days) - 1) * 100

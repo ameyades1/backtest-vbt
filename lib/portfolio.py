@@ -315,3 +315,30 @@ def trade_stats(fdf: pd.DataFrame, equity: pd.Series) -> dict:
             "Median trade %": float(t.ret.median()), "Avg hold days": held.mean(),
             "Median hold days": float(held.median()), "Avg position (Rs)": t.cost.mean(),
             "Worst trade (Rs)": t.pnl[i], "Worst trade % of equity": t.pnl[i] / eq_in * 100}
+
+
+def merge_fills(fdf: pd.DataFrame) -> pd.DataFrame:
+    """Fill rows -> one row per trade with the same columns (qty, cost and proceeds summed; exit = quantity-weighted
+    exit price; exit_date = last exit, or empty while any part is still open)."""
+    if fdf.empty:
+        return fdf
+    f = fdf.copy()
+    if "side" not in f:
+        f["side"] = 1
+    f["side"] = f["side"].fillna(1)
+    keys = [k for k in TRADE_KEYS if k in f]
+    f["_xq"] = f["exit"] * f["qty"]
+    f["_open"] = f["exit_date"].isna()
+    agg = {c: "first" for c in f.columns if c not in keys}
+    agg.update(qty="sum", cost="sum", proceeds="sum", _xq="sum", _open="any", exit_date="max")
+    if "capped" in f:
+        agg["capped"] = "any"
+    out = f.groupby(keys, sort=False, as_index=False).agg(agg)
+    out["exit"] = out["_xq"] / out["qty"]
+    out.loc[out["_open"], "exit_date"] = pd.NaT if pd.api.types.is_datetime64_any_dtype(out["exit_date"]) else None
+    return out[[c for c in fdf.columns] + (["side"] if "side" not in fdf else [])].drop(columns=[], errors="ignore")
+
+
+def read_fills(path, **kw) -> pd.DataFrame:
+    """pd.read_csv of a fills_*.csv, merged to one row per trade (see merge_fills)."""
+    return merge_fills(pd.read_csv(path, **kw))

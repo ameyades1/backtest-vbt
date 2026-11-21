@@ -20,7 +20,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, KeepTogether, PageBreak
-from lib import data, market, ids
+from lib import data, market, ids, portfolio
 
 OUT = ROOT / "results" / "studies" / "market_filter"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -109,7 +109,7 @@ def curves(key, uni, ex):
     fam, var = key.split("/")
     a = pd.read_csv(ROOT / "results" / fam / var / uni / "equity.csv", index_col=0, parse_dates=True)[ex].dropna()
     b = pd.read_csv(ROOT / "results" / fam / f"{var}_nifty200" / uni / "equity.csv", index_col=0, parse_dates=True)[ex].dropna()
-    da = pd.read_csv(ROOT / "results" / fam / var / uni / f"fills_{'none' if ex == 'No target' else ex.split()[1].rstrip('%')}.csv",
+    da = portfolio.read_fills(ROOT / "results" / fam / var / uni / f"fills_{'none' if ex == 'No target' else ex.split()[1].rstrip('%')}.csv",
                      parse_dates=["entry_date", "exit_date"])
     return a, b
 
@@ -149,7 +149,7 @@ for m in MAINS[:4]:
     a = pd.read_csv(ROOT / "results" / fam / var / m[1] / "equity.csv", index_col=0, parse_dates=True)
     # deployed share is not stored in equity.csv; rebuild from fills
     def deployed(folder):
-        f = pd.read_csv(folder / "fills_none.csv", parse_dates=["entry_date", "exit_date"])
+        f = portfolio.read_fills(folder / "fills_none.csv", parse_dates=["entry_date", "exit_date"])
         eq = pd.read_csv(folder / "equity.csv", index_col=0, parse_dates=True)["No target"].dropna()
         n = pd.Series(0.0, index=eq.index)
         for r in f.itertuples():

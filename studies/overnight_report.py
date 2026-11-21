@@ -63,7 +63,7 @@ def load_run(name, uni):
     out = []
     for ex in sm.index:
         e = eq[ex].dropna()
-        f = pd.read_csv(d / f"fills_{fid(ex)}.csv") if (d / f"fills_{fid(ex)}.csv").exists() else pd.DataFrame()
+        f = portfolio.read_fills(d / f"fills_{fid(ex)}.csv") if (d / f"fills_{fid(ex)}.csv").exists() else pd.DataFrame()
         pnl = (f.proceeds - f.cost) if len(f) else pd.Series(dtype=float)
         pos = pnl[pnl > 0].sort_values(ascending=False)
         ins, hold = e[:"2018-12-31"], e["2019-01-01":]
@@ -116,7 +116,7 @@ for b in [MAIN, MAIN + "_nifty200"]:
         curve, fills, sk = portfolio.run(tw, cw, 100_000, 0.01, 8, fee, slip, "tightest", f"{a}-01-01")
         row.append(f"{cagr(curve['equity']):.1f}% / {mdd(curve['equity']):.0f}%")
     wf_rows.append(row)
-    f = pd.read_csv(ROOT / "results" / b / "nifty500" / "fills_none.csv", parse_dates=["entry_date", "exit_date"])
+    f = portfolio.read_fills(ROOT / "results" / b / "nifty500" / "fills_none.csv", parse_dates=["entry_date", "exit_date"])
     pnl = (f.proceeds - f.cost).to_numpy()
     yrs = (pd.Timestamp("2026-11-01") - pd.Timestamp("2000-01-01")).days / 365.25
     cg = lambda tot: ((100_000 + tot) / 100_000) ** (1 / yrs) * 100 - 100 if 100_000 + tot > 0 else -100

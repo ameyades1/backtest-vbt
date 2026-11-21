@@ -13,7 +13,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image
-from lib import ids
+from lib import ids, portfolio
 
 OUT = ROOT / "results" / "studies" / "hold"
 IDS = ids.by_name()
@@ -31,7 +31,7 @@ def stats(n):
     r = pd.read_csv(d / "summary.csv", index_col=0).iloc[0]
     e = pd.read_csv(d / "equity.csv", index_col=0, parse_dates=True)[r.name].dropna()
     ins, oos = e[:"2014-12-31"], e["2014-12-31":]
-    f = pd.read_csv(d / "fills_none.csv", parse_dates=["entry_date", "exit_date"])
+    f = portfolio.read_fills(d / "fills_none.csv", parse_dates=["entry_date", "exit_date"])
     f["pnl"] = f.proceeds - f.cost
     f["days"] = (f.exit_date - f.entry_date).dt.days
     return {"name": n, "CAGR": r["CAGR %"], "DD": r["Max DD %"], "trades": int(r["Trades taken"]),

@@ -15,7 +15,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image
-from lib import ids
+from lib import ids, portfolio
 
 OUT = ROOT / "results" / "studies" / "ruin"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -23,7 +23,7 @@ NAME = "hold/T25_r025"
 D = ROOT / "results" / NAME / "nifty500_pit"
 CAP = 10_00_000
 e = pd.read_csv(D / "equity.csv", index_col=0, parse_dates=True).iloc[:, 0].dropna()
-f = pd.read_csv(D / "fills_none.csv")
+f = portfolio.read_fills(D / "fills_none.csv")
 lak = lambda x: f"₹{x / 1e5:,.1f} L"
 
 # ---- bootstrap ----

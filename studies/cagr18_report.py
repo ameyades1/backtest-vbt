@@ -9,6 +9,7 @@ import json, sys
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "studies"))
+from lib import portfolio
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -66,7 +67,7 @@ def run_row(name, uni):
     r = sm.loc[ex]
     e = pd.read_csv(d / "equity.csv", index_col=0, parse_dates=True)[ex].dropna()
     EQ[(name, uni)] = e
-    f = pd.read_csv(sorted(d.glob("fills_*.csv"))[0])
+    f = portfolio.read_fills(sorted(d.glob("fills_*.csv"))[0])
     pnl = np.sort((f.proceeds - f.cost).to_numpy())[::-1]
     yrs = (e.index[-1] - e.index[0]).days / 365.25
     cap = e.iloc[0]

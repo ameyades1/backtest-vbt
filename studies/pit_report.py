@@ -16,7 +16,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image
-from lib import ids, membership as M, data, indices
+from lib import ids, membership as M, data, indices, portfolio
 
 OUT = ROOT / "results" / "studies" / "pit"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -59,7 +59,7 @@ for lab, n, u in RUNS:
     s = pd.read_csv(d / "summary.csv", index_col=0).iloc[0]
     e = pd.read_csv(d / "equity.csv", index_col=0, parse_dates=True).iloc[:, 0].dropna()
     EQ[lab] = e
-    f = pd.read_csv(d / "fills_none.csv"); pnl = (f.proceeds - f.cost).sort_values(ascending=False)
+    f = portfolio.read_fills(d / "fills_none.csv"); pnl = (f.proceeds - f.cost).sort_values(ascending=False)
     res.append([lab, f"{s['CAGR %']:.1f}", f"{s['Max DD %']:.0f}", int(s["Trades taken"]), f"{s['Win %']:.0f}",
                 f"{pnl.head(5).sum() / pnl.sum() * 100:.0f}%"] + [f"{cg(e, a, b):.1f}" for a, b in WIN])
 
@@ -69,7 +69,7 @@ for y in [2003, 2006, 2009, 2012, 2015, 2018, 2021, 2024]:
     m = M.members_on(f"{y}-06-30")
     cov.append([y, len(m), len(m & now), len(m & cached), f"{len(m & cached) / 500 * 100:.0f}%"])
 ch = pd.read_csv(M.CHANGES).fillna("")
-f = pd.read_csv(ROOT / "results" / NAME / "nifty500_pit" / "fills_none.csv")
+f = portfolio.read_fills(ROOT / "results" / NAME / "nifty500_pit" / "fills_none.csv")
 f["pnl"] = f.proceeds - f.cost
 f["still"] = f.symbol.isin(now)
 gone = f[~f.still]

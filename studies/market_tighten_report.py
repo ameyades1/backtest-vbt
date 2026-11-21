@@ -20,7 +20,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image, KeepTogether
-from lib import market, ids
+from lib import market, ids, portfolio
 
 OUT = ROOT / "results" / "studies" / "market_tighten"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -66,7 +66,7 @@ for s in STRATS:
         sm = pd.read_csv(folder(s, v) / "summary.csv", index_col=0)
         eq = pd.read_csv(folder(s, v) / "equity.csv", index_col=0, parse_dates=True)
         for ex in sm.index:
-            f = pd.read_csv(folder(s, v) / f"fills_{fid(ex)}.csv", parse_dates=["entry_date", "exit_date"])
+            f = portfolio.read_fills(folder(s, v) / f"fills_{fid(ex)}.csv", parse_dates=["entry_date", "exit_date"])
             f["pnl"] = f.proceeds - f.cost
             e = eq[ex].dropna()
             EQ[(s, v, ex)] = e
