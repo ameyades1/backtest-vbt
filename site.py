@@ -230,7 +230,8 @@ table.rec{{white-space:normal}} table.rec th{{text-align:left;cursor:default}} t
 <p>Every backtest (most at <b>1% risk per trade, 8 slots</b>; see the Risk and Slots columns), ₹1,00,000 starting capital, from 2000. Click a header to sort; hover a header for its meaning.</p>
 {recs}
 <h2>All runs</h2>
-<div class="bar"><label>Strategy <select id="fam"><option value="">All</option>{opts}</select></label>
+<div class="bar"><label>Search <input id="q" type="search" placeholder="e.g. Sde394 PIT supertrend" style="width:16em"></label>
+<label>Strategy <select id="fam"><option value="">All</option>{opts}</select></label>
 <label>Market filter <select id="mkt"><option value="">All</option><option>none</option><option>NIFTY &gt; 200-DMA</option></select></label>
 <span id="count" class="v"></span></div>
 <div class="wrap"><table id="t"><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>
@@ -251,8 +252,11 @@ table.rec{{white-space:normal}} table.rec th{{text-align:left;cursor:default}} t
 const t=document.getElementById('t'),tb=t.tBodies[0],fam=document.getElementById('fam'),cnt=document.getElementById('count');
 function count(){{const n=[...tb.rows].filter(r=>r.style.display!=='none').length;cnt.textContent=n+' rows';}}
 const mkt=document.getElementById('mkt');
-function filt(){{[...tb.rows].forEach(r=>r.style.display=(!fam.value||r.dataset.family===fam.value)&&(!mkt.value||r.dataset.mkt===mkt.value)?'':'none');count();}}
-fam.onchange=filt;mkt.onchange=filt;
+const q=document.getElementById('q');
+function filt(){{const w=q.value.toLowerCase().split(/\\s+/).filter(Boolean);
+[...tb.rows].forEach(r=>{{const tx=r.textContent.toLowerCase();
+r.style.display=(!fam.value||r.dataset.family===fam.value)&&(!mkt.value||r.dataset.mkt===mkt.value)&&w.every(x=>tx.includes(x))?'':'none';}});count();}}
+fam.onchange=filt;mkt.onchange=filt;q.oninput=filt;
 [...t.tHead.rows[0].cells].forEach((th,i)=>th.onclick=()=>{{
   const num=th.dataset.num==='1',asc=th.classList.contains('s')&&!th.classList.contains('asc');
   [...t.tHead.rows[0].cells].forEach(h=>h.classList.remove('s','asc'));th.classList.add('s');if(asc)th.classList.add('asc');
