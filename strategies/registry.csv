@@ -363,3 +363,6 @@ S01a1fd96-6fc8-7914-bb21-8eb66cead4a4,S6cead4a4,hold/X_atr3,strategies/hold/X_at
 S01a1fd96-6fc9-7149-8df2-02a4d3f7114a,Sd3f7114a,hold/X_mst3,strategies/hold/X_mst3.json,2026-11-21,active
 S01a1fd96-6fca-7bda-a120-c784bfeda0f5,Sbfeda0f5,hold/X_st25,strategies/hold/X_st25.json,2026-11-21,active
 S01a1fd96-6fcb-7034-aa65-abfb85dc2a6b,S85dc2a6b,hold/X_st4,strategies/hold/X_st4.json,2026-11-21,active
+S01a1fdcf-175b-7433-8e48-d619a61aa519,Sa61aa519,skipped/S63387f09_slots15,strategies/skipped/S63387f09_slots15.json,2026-11-21,active
+S01a1fdcf-175c-704f-8605-63f7d44a11fd,Sd44a11fd,skipped/S63387f09_slots20,strategies/skipped/S63387f09_slots20.json,2026-11-21,active
+S01a1fdcf-175d-7ba3-8182-fbbcf3482c72,Sf3482c72,skipped/S63387f09_slotsall,strategies/skipped/S63387f09_slotsall.json,2026-11-21,active

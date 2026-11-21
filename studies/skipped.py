@@ -1,5 +1,5 @@
-"""Skipped-signals study for Sde394f26 (D) and Sa016f4eb (C), point-in-time NIFTY 500.
-    python studies/skipped.py [workers=3]   (resumable) ; then python studies/skipped_report.py
+"""Skipped-signals study for Sde394f26 (D), Sa016f4eb (C) and S63387f09 (Y, your choice), point-in-time NIFTY 500.
+    python studies/skipped.py [workers=3] [tags=DCY]   (resumable) ; then python studies/skipped_report.py
 1. base run with every signal logged (taken / skipped + reason)  -> results/studies/skipped/<tag>/base/signals_none.csv
 2. slot variants 15, 20, unlimited (strategies/skipped/*.json; scoreboard runs)
 3. 200 runs with random ranking of same-day signals              -> results/studies/skipped/random.csv
@@ -12,8 +12,8 @@ sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "studies"))
 from longshort_configs import write, load
 OUT = ROOT / "results" / "studies" / "skipped"
 OUT.mkdir(parents=True, exist_ok=True)
-BASES = {"D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth"}
-TAGN = {"D": "Sde394f26", "C": "Sa016f4eb"}
+BASES = {"D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth", "Y": "hold/T25_r025"}
+TAGN = {"D": "Sde394f26", "C": "Sa016f4eb", "Y": "S63387f09"}
 SEEDS = range(200)
 U = "NIFTY500_PIT"
 _C = {}
@@ -54,6 +54,7 @@ def work(task):
 
 if __name__ == "__main__":
     w = int(sys.argv[1]) if len(sys.argv) > 1 else 3
+    only = sys.argv[2] if len(sys.argv) > 2 else "".join(BASES)
     jobs = configs()
     json.dump(jobs, open(OUT / "jobs.json", "w"), indent=1)
     import subprocess
@@ -63,8 +64,9 @@ if __name__ == "__main__":
     if rp.exists():
         import pandas as pd
         done = {(a, int(b)) for a, b in pd.read_csv(rp)[["tag", "x"]].itertuples(index=False)}
-    tasks = [("base", t, None) for t in BASES] + [("slots", None, j["config"]) for j in jobs] + \
-            [("random", t, s) for s in SEEDS for t in BASES if (t, s) not in done]
+    tasks = [("base", t, None) for t in only] + \
+            [("slots", None, j["config"]) for j in jobs if any(TAGN[t] in j["name"] for t in only)] + \
+            [("random", t, s) for s in SEEDS for t in only if (t, s) not in done]
     # group so each worker reuses its trade cache: random runs of one tag go together
     with Pool(w) as pool, open(OUT / "run.log", "a") as log:
         for i, res in enumerate(pool.imap_unordered(work, tasks, chunksize=1), 1):

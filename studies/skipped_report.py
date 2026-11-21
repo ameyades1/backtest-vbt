@@ -17,8 +17,9 @@ from lib import ids
 
 OUT = ROOT / "results" / "studies" / "skipped"
 IDS = ids.by_name()
-BASES = {"D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth"}
-NAME = {"D": "Sde394f26", "C": "Sa016f4eb"}
+BASES = {"Y": "hold/T25_r025", "D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth"}
+NAME = {"Y": "S63387f09 (your choice)", "D": "Sde394f26", "C": "Sa016f4eb"}
+SN = {"Y": "S63387f09", "D": "Sde394f26", "C": "Sa016f4eb"}
 WHY = {"taken": "Taken", "held": "Stock already held", "slots": "All slots full", "paused": "Drawdown pause",
        "cash": "Not enough cash", "too-small": "Risk buys < 1 share", "open-risk": "Open-risk cap",
        "sector": "Sector cap", "short-max": "Short limit"}
@@ -62,14 +63,14 @@ def slots_table():
     rows = [["ID", "Strategy", "Slots", "CAGR", "Max DD", "Trades", "Skipped", "Avg deployed", "Max deployed",
              "Cash-capped trades"]]
     for tag, base in BASES.items():
-        for n, k in [(base, "10"), (f"skipped/{NAME[tag]}_slots15", "15"), (f"skipped/{NAME[tag]}_slots20", "20"),
-                     (f"skipped/{NAME[tag]}_slotsall", "no limit")]:
+        for n, k in [(base, "10"), (f"skipped/{SN[tag]}_slots15", "15"), (f"skipped/{SN[tag]}_slots20", "20"),
+                     (f"skipped/{SN[tag]}_slotsall", "no limit")]:
             p = ROOT / "results" / n / "nifty500_pit" / "summary.csv"
             if not p.exists():
                 continue
             r = pd.read_csv(p, index_col=0).iloc[0]
             cc = [c for c in r.index if c.startswith("Cash-capped")]
-            rows.append([ids.short(IDS[n]) if n in IDS else "", NAME[tag], k, f"{r['CAGR %']:.1f}", f"{r['Max DD %']:.0f}",
+            rows.append([ids.short(IDS[n]) if n in IDS else "", SN[tag], k, f"{r['CAGR %']:.1f}", f"{r['Max DD %']:.0f}",
                          int(r["Trades taken"]), int(r["Signals skipped"]), f"{r['Avg deployed %']:.0f}%",
                          f"{r['Max deployed %']:.0f}%", f"{r[cc[0]]:.0f}" if cc else "–"])
     return rows
@@ -99,7 +100,7 @@ def table(rows, widths, fs=7.2):
 notes = json.load(open(OUT / "notes.json"))
 rnd = pd.read_csv(OUT / "random.csv")
 story = [Paragraph("Skipped signals: what if we had traded them?", H1),
-         Paragraph("Sde394f26 and Sa016f4eb (hedged), point-in-time NIFTY 500 from 2000, costs included. Every signal "
+         Paragraph("S63387f09 (your choice), Sde394f26 and Sa016f4eb (hedged), point-in-time NIFTY 500 from 2000, costs included. Every signal "
                    "is played out in full by the engine whether or not the portfolio takes it.", SUB),
          Paragraph("Verdict", H2)] + bl(notes["verdict"])
 base = {}
@@ -112,20 +113,20 @@ for tag in BASES:
               table(outcome_table(s_all[tag]), [52 * mm, 16 * mm, 14 * mm, 15 * mm, 17 * mm, 22 * mm, 17 * mm, 26 * mm])]
 story.append(Paragraph("R = profit or loss as a multiple of the trade's initial risk (entry − stop). 'Stock already held': "
                        "a new signal in a stock the portfolio already owns.", SM))
-story += [Paragraph("Taken vs skipped by period (Sde394f26)", H2),
-          table(year_table(s_all["D"]), [30 * mm, 22 * mm, 26 * mm, 22 * mm, 26 * mm])]
+story += [Paragraph("Taken vs skipped by period (S63387f09)", H2),
+          table(year_table(s_all["Y"]), [30 * mm, 22 * mm, 26 * mm, 22 * mm, 26 * mm])]
 story += [Paragraph("Trading more of them: 15, 20 and unlimited slots", H2),
           table(slots_table(), [15 * mm, 22 * mm, 15 * mm, 12 * mm, 14 * mm, 14 * mm, 15 * mm, 20 * mm, 20 * mm, 26 * mm])]
 story.append(Paragraph("Same 1% risk per trade on current equity; with more slots, cash, not slots, becomes the limit.", SM))
-fig, axs = plt.subplots(1, 2, figsize=(7.4, 2.8))
+fig, axs = plt.subplots(1, 3, figsize=(7.4, 2.6))
 rr = [["Strategy", "Actual (tightest stop first)", "Random: median", "5th – 95th pct", "Actual's percentile",
        "Random DD median", "DD 5th – 95th"]]
 for ax, tag in zip(axs, BASES):
     x = rnd[rnd.tag == tag]
     a, d = base[tag]["CAGR %"], base[tag]["Max DD %"]
     ax.hist(x.CAGR, bins=25, color="#94a3b8"); ax.axvline(a, color="#dc2626", lw=1.5, label=f"actual {a:.1f}%")
-    ax.set_title(f"{NAME[tag]}: CAGR of {len(x)} random picks", fontsize=8.5); ax.legend(fontsize=7); ax.tick_params(labelsize=7)
-    rr.append([NAME[tag], f"{a:.1f}% / {d:.0f}%", f"{x.CAGR.median():.1f}%", f"{x.CAGR.quantile(.05):.1f} – {x.CAGR.quantile(.95):.1f}%",
+    ax.set_title(f"{SN[tag]}: {len(x)} random picks", fontsize=8); ax.legend(fontsize=6.5); ax.tick_params(labelsize=7)
+    rr.append([SN[tag], f"{a:.1f}% / {d:.0f}%", f"{x.CAGR.median():.1f}%", f"{x.CAGR.quantile(.05):.1f} – {x.CAGR.quantile(.95):.1f}%",
                f"{(x.CAGR < a).mean() * 100:.0f}", f"{x.DD.median():.0f}%", f"{x.DD.quantile(.05):.0f} to {x.DD.quantile(.95):.0f}%"])
 fig.tight_layout(); fig.savefig(OUT / "random.png", dpi=160); plt.close(fig)
 story += [Paragraph("Random-pick check: 200 runs each", H2),
@@ -136,7 +137,7 @@ story += [Paragraph("Random-pick check: 200 runs each", H2),
 for k in ("findings", "method"):
     if k in notes:
         story += [Paragraph(notes[k]["title"], H2)] + bl(notes[k]["points"])
-story += ids.pdf_section(list(BASES.values()) + [f"skipped/{NAME[t]}_slots{k}" for t in BASES for k in ("15", "20", "all")], H2)
+story += ids.pdf_section(list(BASES.values()) + [f"skipped/{SN[t]}_slots{k}" for t in BASES for k in ("15", "20", "all")], H2)
 SimpleDocTemplate(str(OUT / "report.pdf"), pagesize=A4, leftMargin=12 * mm, rightMargin=12 * mm, topMargin=12 * mm,
                   bottomMargin=12 * mm, title="Skipped signals").build(story)
 print("wrote", OUT / "report.pdf")
