@@ -1,0 +1,116 @@
+[
+ {
+  "name": "variants/r0p75_s5",
+  "group": "1-grid",
+  "desc": "0.75% risk, 5 slots",
+  "config": "strategies/variants/r0p75_s5.json"
+ },
+ {
+  "name": "variants/r0p75_s7",
+  "group": "1-grid",
+  "desc": "0.75% risk, 7 slots",
+  "config": "strategies/variants/r0p75_s7.json"
+ },
+ {
+  "name": "variants/r0p75_s10",
+  "group": "1-grid",
+  "desc": "0.75% risk, 10 slots",
+  "config": "strategies/variants/r0p75_s10.json"
+ },
+ {
+  "name": "variants/r1_s5",
+  "group": "1-grid",
+  "desc": "1% risk, 5 slots",
+  "config": "strategies/variants/r1_s5.json"
+ },
+ {
+  "name": "variants/r1_s7",
+  "group": "1-grid",
+  "desc": "1% risk, 7 slots",
+  "config": "strategies/variants/r1_s7.json"
+ },
+ {
+  "name": "variants/r1p5_s5",
+  "group": "1-grid",
+  "desc": "1.5% risk, 5 slots",
+  "config": "strategies/variants/r1p5_s5.json"
+ },
+ {
+  "name": "variants/r1p5_s7",
+  "group": "1-grid",
+  "desc": "1.5% risk, 7 slots",
+  "config": "strategies/variants/r1p5_s7.json"
+ },
+ {
+  "name": "variants/r1p5_s10",
+  "group": "1-grid",
+  "desc": "1.5% risk, 10 slots",
+  "config": "strategies/variants/r1p5_s10.json"
+ },
+ {
+  "name": "variants/r2_s5",
+  "group": "1-grid",
+  "desc": "2% risk, 5 slots",
+  "config": "strategies/variants/r2_s5.json"
+ },
+ {
+  "name": "variants/r2_s7",
+  "group": "1-grid",
+  "desc": "2% risk, 7 slots",
+  "config": "strategies/variants/r2_s7.json"
+ },
+ {
+  "name": "variants/r2_s10",
+  "group": "1-grid",
+  "desc": "2% risk, 10 slots",
+  "config": "strategies/variants/r2_s10.json"
+ },
+ {
+  "name": "variants/cash0",
+  "group": "2-cash",
+  "desc": "Idle cash earns nothing (no liquid fund)",
+  "config": "strategies/variants/cash0.json"
+ },
+ {
+  "name": "variants/zerodha",
+  "group": "3-costs",
+  "desc": "Zerodha costs: zero delivery brokerage (statutory charges + 0.1% slippage)",
+  "config": "strategies/variants/zerodha.json"
+ },
+ {
+  "name": "variants/liq5",
+  "group": "4-liquidity",
+  "desc": "Only stocks trading at least Rs 5 crore a day (60-day median)",
+  "config": "strategies/variants/liq5.json"
+ },
+ {
+  "name": "variants/liq10",
+  "group": "4-liquidity",
+  "desc": "Only stocks trading at least Rs 10 crore a day (60-day median)",
+  "config": "strategies/variants/liq10.json"
+ },
+ {
+  "name": "variants/st10_2",
+  "group": "5-supertrend",
+  "desc": "Weekly Supertrend(10, 2) for the exit instead of (10, 3)",
+  "config": "strategies/variants/st10_2.json"
+ },
+ {
+  "name": "variants/st10_4",
+  "group": "5-supertrend",
+  "desc": "Weekly Supertrend(10, 4) for the exit instead of (10, 3)",
+  "config": "strategies/variants/st10_4.json"
+ },
+ {
+  "name": "variants/st14_3",
+  "group": "5-supertrend",
+  "desc": "Weekly Supertrend(14, 3) for the exit instead of (10, 3)",
+  "config": "strategies/variants/st14_3.json"
+ },
+ {
+  "name": "variants/rank_rs",
+  "group": "6-ranking",
+  "desc": "Same-day signals ranked by 6-month relative strength instead of tightest stop",
+  "config": "strategies/variants/rank_rs.json"
+ }
+]
