@@ -13,22 +13,30 @@
    ],
    "rows": [
     [
-     "S1704ed9f",
-     "Sde394f26 at 1% risk, long only, no hedges; market filter on the NIFTY 500 index (only buy while it is above its 200-day average)",
-     "14.9%",
+     "S63387f09",
+     "Sde394f26 at 1% risk, long only, no hedges; NIFTY 500 index market filter; time stop needs 0.25R at day 25",
+     "15.8%",
      "−26.5%",
      "Your strategy (adopted 21 Nov 2026)"
     ],
     [
+     "S1704ed9f",
+     "Same with the original 0.5R time stop",
+     "14.9%",
+     "−26.5%",
+     "Previous choice"
+    ],
+    [
      "Sde394f26",
-     "The original: same rules with the NIFTY 50 market filter",
+     "The original: NIFTY 50 market filter, 0.5R time stop",
      "13.7%",
      "−27%",
-     "Previous choice, kept for comparison"
+     "First choice, kept for comparison"
     ]
    ],
    "notes": [
-    "Rules: monthly StochRSI pullback; close above EMA 61 on monthly, weekly and daily; RSI above 50; NIFTY 500 index above its 200-day average (previous close). Stop at the previous week's low; exit on a bearish weekly Supertrend or the 25-day time stop.",
+    "Entry: monthly StochRSI pullback; close above EMA 61 on monthly, weekly and daily; RSI above 50; NIFTY 500 index above its 200-day average (previous close).",
+    "Exits: stop at the previous week's low; sell at the next open if the trade is not 0.25R up 25 days after entry; otherwise hold until the weekly Supertrend(10, 3) turns bearish. No holding cap.",
     "Sizing: 1% risk per trade on current equity, 10 slots, 20% position cap; halve size at a 10% drawdown, pause 21 days at 15%. Idle cash in a liquid fund. No NIFTY futures hedges.",
     "The worst drawdown (May–June 2006 crash) can't be cut by an entry filter; plan for about −27% to −30%."
    ]
