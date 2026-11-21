@@ -76,6 +76,15 @@ REC = {
 
 if __name__ == "__main__":
     REC["date"] = f"{date.today():%d %b %Y}"
+    _rp = ROOT / "results" / "studies" / "ruin" / "ruin.json"
+    if _rp.exists():  # your strategy: ₹10 lakh over 5-year periods and drawdown odds (studies/ruin_report.py)
+        _r = json.load(open(_rp))
+        REC["sections"][1:1] = [
+            {"title": "Your strategy: ₹10 lakh over each 5-year period", "mine": True, "head": _r["win"][0],
+             "rows": _r["win"][1:], "notes": [f"{a}: {b}" for a, b in _r["roll"][1:]]},
+            {"title": "Your strategy: risk of ruin", "mine": True, "head": _r["dd"][0], "rows": _r["dd"][1:],
+             "notes": ["From 20,000 resampled 20-year histories (monthly returns, 12-month blocks)."] + _r["facts"]
+                      + ["Going bust is effectively impossible while the rules are followed; never add leverage or margin."]}]
     json.dump(REC, open(OUT / "recommendations.json", "w"), indent=1, ensure_ascii=False)
     ss = getSampleStyleSheet()
     DARK, GREY = "#0f172a", "#64748b"
@@ -88,7 +97,7 @@ if __name__ == "__main__":
     W = {5: [18 * mm, 70 * mm, 15 * mm, 15 * mm, 68 * mm], 2: [70 * mm, 116 * mm], 4: [38 * mm, 50 * mm, 42 * mm, 56 * mm], 6: [11 * mm, 20 * mm, 55 * mm, 15 * mm, 15 * mm, 70 * mm]}
     story = [Paragraph("Strategy recommendations", H1), Paragraph(f"{REC['intro']} Updated {REC['date']}.", SUB)]
     for sec in REC["sections"]:
-        widths = [12 * mm, 174 * mm] if sec["title"] == "Before real money" else W[len(sec["head"])]
+        widths = [12 * mm, 174 * mm] if sec["title"] == "Before real money" else [45 * mm, 30 * mm, 35 * mm, 30 * mm, 46 * mm] if "₹10 lakh" in sec["title"] else W[len(sec["head"])]
         rows = [[Paragraph(h, TH) for h in sec["head"]]] + [[Paragraph(c, TC) for c in r] for r in sec["rows"]]
         tb = Table(rows, colWidths=widths, repeatRows=1)
         st = [("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(DARK)), ("VALIGN", (0, 0), (-1, -1), "TOP"),

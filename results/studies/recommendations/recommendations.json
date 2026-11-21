@@ -42,6 +42,221 @@
    ]
   },
   {
+   "title": "Your strategy: ₹10 lakh over each 5-year period",
+   "mine": true,
+   "head": [
+    "Period",
+    "Start",
+    "End value",
+    "CAGR",
+    "Worst DD in period"
+   ],
+   "rows": [
+    [
+     "Jan 2000 – Dec 2004",
+     "₹10.0 L",
+     "₹18.3 L",
+     "12.9%",
+     "-6%"
+    ],
+    [
+     "Jan 2001 – Dec 2005",
+     "₹10.0 L",
+     "₹26.1 L",
+     "21.1%",
+     "-13%"
+    ],
+    [
+     "Jan 2002 – Dec 2006",
+     "₹10.0 L",
+     "₹28.0 L",
+     "22.9%",
+     "-26%"
+    ],
+    [
+     "Jan 2003 – Dec 2007",
+     "₹10.0 L",
+     "₹36.4 L",
+     "29.5%",
+     "-26%"
+    ],
+    [
+     "Jan 2004 – Dec 2008",
+     "₹10.0 L",
+     "₹22.4 L",
+     "17.5%",
+     "-26%"
+    ],
+    [
+     "Jan 2005 – Dec 2009",
+     "₹10.0 L",
+     "₹20.9 L",
+     "15.9%",
+     "-26%"
+    ],
+    [
+     "Jan 2006 – Dec 2010",
+     "₹10.0 L",
+     "₹15.2 L",
+     "8.7%",
+     "-26%"
+    ],
+    [
+     "Jan 2007 – Dec 2011",
+     "₹10.0 L",
+     "₹12.7 L",
+     "4.9%",
+     "-24%"
+    ],
+    [
+     "Jan 2008 – Dec 2012",
+     "₹10.0 L",
+     "₹12.5 L",
+     "4.6%",
+     "-24%"
+    ],
+    [
+     "Jan 2009 – Dec 2013",
+     "₹10.0 L",
+     "₹21.1 L",
+     "16.1%",
+     "-11%"
+    ],
+    [
+     "Jan 2010 – Dec 2014",
+     "₹10.0 L",
+     "₹39.7 L",
+     "31.7%",
+     "-11%"
+    ],
+    [
+     "Jan 2011 – Dec 2015",
+     "₹10.0 L",
+     "₹41.6 L",
+     "33.0%",
+     "-14%"
+    ],
+    [
+     "Jan 2012 – Dec 2016",
+     "₹10.0 L",
+     "₹40.2 L",
+     "32.1%",
+     "-22%"
+    ],
+    [
+     "Jan 2013 – Dec 2017",
+     "₹10.0 L",
+     "₹37.7 L",
+     "30.4%",
+     "-22%"
+    ],
+    [
+     "Jan 2014 – Dec 2018",
+     "₹10.0 L",
+     "₹25.6 L",
+     "20.7%",
+     "-22%"
+    ],
+    [
+     "Jan 2015 – Dec 2019",
+     "₹10.0 L",
+     "₹13.0 L",
+     "5.4%",
+     "-22%"
+    ],
+    [
+     "Jan 2016 – Dec 2020",
+     "₹10.0 L",
+     "₹12.2 L",
+     "4.1%",
+     "-19%"
+    ],
+    [
+     "Jan 2017 – Dec 2021",
+     "₹10.0 L",
+     "₹18.1 L",
+     "12.5%",
+     "-19%"
+    ],
+    [
+     "Jan 2018 – Dec 2022",
+     "₹10.0 L",
+     "₹12.9 L",
+     "5.3%",
+     "-19%"
+    ],
+    [
+     "Jan 2019 – Dec 2023",
+     "₹10.0 L",
+     "₹23.5 L",
+     "18.7%",
+     "-16%"
+    ],
+    [
+     "Jan 2020 – Dec 2024",
+     "₹10.0 L",
+     "₹25.3 L",
+     "20.4%",
+     "-18%"
+    ],
+    [
+     "Jan 2021 – Dec 2025",
+     "₹10.0 L",
+     "₹22.1 L",
+     "17.2%",
+     "-25%"
+    ]
+   ],
+   "notes": [
+    "Worst: ₹9.4 L",
+    "10th percentile: ₹13.0 L",
+    "Median: ₹22.7 L",
+    "90th percentile: ₹40.4 L",
+    "Best: ₹47.6 L",
+    "Windows ending below ₹10 L: 0.7%"
+   ]
+  },
+  {
+   "title": "Your strategy: risk of ruin",
+   "mine": true,
+   "head": [
+    "Worst drawdown in 20 years",
+    "Probability"
+   ],
+   "rows": [
+    [
+     "-23% or worse (median)",
+     "50%"
+    ],
+    [
+     "-30% or worse",
+     "15.4%"
+    ],
+    [
+     "-40% or worse",
+     "1.7%"
+    ],
+    [
+     "-50% or worse",
+     "0.1%"
+    ],
+    [
+     "-60% or worse",
+     "0.0%"
+    ],
+    [
+     "Lose money over 20 years",
+     "0.005%"
+    ]
+   ],
+   "notes": [
+    "From 20,000 resampled 20-year histories (monthly returns, 12-month blocks).",
+    "Position cap 20%: a stock going to zero overnight costs at most about 20% of the account.",
+    "Worst month -14.1%; longest losing streak 17 trades; backtest max drawdown -26.5%.",
+    "Going bust is effectively impossible while the rules are followed; never add leverage or margin."
+   ]
+  },
+  {
    "title": "Recommended",
    "head": [
     "Rank",
