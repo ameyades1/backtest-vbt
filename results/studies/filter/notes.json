@@ -1,0 +1,16 @@
+{"verdict": [
+ "<b>Best simple change: judge the market by the NIFTY 500 index instead of NIFTY 50</b>, i.e. only buy while the NIFTY 500 index is above its 200-day average (S1704ed9f): <b>14.9% CAGR</b> vs 13.7%, same −26.5% worst drawdown. In 2015–26 its drawdown is −22.6% vs −27.1%.",
+ "<b>No entry filter cuts the worst drawdown.</b> Every variant still shows about −26.5%, the May–June 2006 crash: it started from a strong bull market with healthy breadth, so there was no warning before the stocks already held fell. Only a hedge or lower risk reduces that episode.",
+ "<b>Breadth works as an entry filter too:</b> no new buys while fewer than 30–45% of that day's NIFTY 500 members are above their 200-day average adds 0.7–1.2 points of CAGR (14.4–14.9%) and cuts the 2018–20 fall from −27% to −20/−23%. 50% is too strict (12.8%).",
+ "<b>Highest result: NIFTY 500 index above its 150-day average plus the 35% breadth filter (S5bb19ac6), 16.9% / −26.4%</b>. Treat it with caution: the 150-day setting is a peak between 100 days (13.7%) and 200 days (14.9%), which is the pattern of a lucky number, not a robust one.",
+ "<b>Walk-forward:</b> chosen on 2000–14 alone, the best rule is the NIFTY 500 index above its 200-day average; on the unseen 2015–26 period it gives about the same CAGR as Sde394f26 (8.4% vs 8.3%) with a smaller drawdown (−22.6% vs −27.1%). So the out-of-sample gain is mainly lower drawdown, not extra return.",
+ "Faster market filters (50–100 days, NIFTY 50 or NIFTY 500) are worse: they whipsaw in and out and miss the starts of rallies."],
+ "plot": ["longshort/L_cap20_dd", "filter/F_i200", "filter/F_b30", "filter/C_i150_b35"],
+ "findings": {"title": "Details", "points": [
+  "Point-in-time breadth (only that day's index members) gives somewhat lower results than breadth over every stock ever in the index: the half-risk rule is 14.1% (F_bh40) here vs 15.1% for S7a24cbc0. The point-in-time figure is the honest one.",
+  "Combining the 200-day NIFTY 500 filter with breadth adds nothing (14.6%): both rules switch off in the same periods.",
+  "The two-step rule (half risk below 50% breadth, no buys below 30%) gives the smallest 2015–26 drawdown (−20%) but costs CAGR (13.4%)."]},
+ "method": {"title": "Method", "points": [
+  "Base: Sde394f26 (longshort/L_cap20_dd) at 1% risk, compounding, 10 slots, 20% position cap, drawdown rule, liquid-fund cash; point-in-time NIFTY 500 from 2000; Sharekhan costs + 0.1% slippage.",
+  "NIFTY 500 index: Yahoo ^CRSLDX from Sept 2005 (its 200-day average from mid-2006); NIFTY 50 / Sensex regime before that. The filter uses the previous day's close.",
+  "Breadth: share of that day's NIFTY 500 members (rebuilt membership) whose close is above their 200-day average, previous day's value."]}}

@@ -2,6 +2,37 @@
  "intro": "Figures are from historical (point-in-time) NIFTY 500 membership unless noted, include costs, and start from 2000. Expect live results somewhat lower.",
  "sections": [
   {
+   "title": "Your choice",
+   "mine": true,
+   "head": [
+    "ID",
+    "Strategy",
+    "CAGR",
+    "Max DD",
+    "Status"
+   ],
+   "rows": [
+    [
+     "Sde394f26",
+     "Sde394f26 at 1% risk, long only, no hedges",
+     "13.7%",
+     "−27%",
+     "Your preferred strategy"
+    ],
+    [
+     "S1704ed9f",
+     "Same, but the market filter uses the NIFTY 500 index (above its 200-day average) instead of NIFTY 50",
+     "14.9%",
+     "−26.5%",
+     "Suggested upgrade: one rule change, passed the walk-forward check (smaller 2015–26 drawdown)"
+    ]
+   ],
+   "notes": [
+    "You chose 1% risk for the full return and no NIFTY futures hedges (not enough capital for them).",
+    "The worst drawdown (May–June 2006 crash) can't be cut by an entry filter; plan for about −27% to −30%."
+   ]
+  },
+  {
    "title": "Recommended",
    "head": [
     "Rank",

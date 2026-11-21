@@ -19,6 +19,14 @@ REC = {
     "intro": "Figures are from historical (point-in-time) NIFTY 500 membership unless noted, include costs, and "
              "start from 2000. Expect live results somewhat lower.",
     "sections": [
+        {"title": "Your choice", "mine": True,
+         "head": ["ID", "Strategy", "CAGR", "Max DD", "Status"],
+         "rows": [["Sde394f26", "Sde394f26 at 1% risk, long only, no hedges", "13.7%", "−27%", "Your preferred strategy"],
+                  ["S1704ed9f", "Same, but the market filter uses the NIFTY 500 index (above its 200-day average) "
+                                "instead of NIFTY 50", "14.9%", "−26.5%",
+                   "Suggested upgrade: one rule change, passed the walk-forward check (smaller 2015–26 drawdown)"]],
+         "notes": ["You chose 1% risk for the full return and no NIFTY futures hedges (not enough capital for them).",
+                   "The worst drawdown (May–June 2006 crash) can't be cut by an entry filter; plan for about −27% to −30%."]},
         {"title": "Recommended",
          "head": ["Rank", "ID", "Strategy", "CAGR", "Max DD", "Best for"],
          "rows": [["1", "S150d745e", "Sde394f26 at 0.5% risk, long only", "11.1%", "−20%",
@@ -71,7 +79,7 @@ if __name__ == "__main__":
     TC = ParagraphStyle("TC", parent=ss["Normal"], fontSize=8, leading=10)
     TH = ParagraphStyle("TH", parent=TC, textColor=colors.white, fontName="Helvetica-Bold")
     BL = ParagraphStyle("BL", parent=ss["Normal"], fontSize=8.6, leading=11.5, leftIndent=10)
-    W = {2: [70 * mm, 116 * mm], 4: [38 * mm, 50 * mm, 42 * mm, 56 * mm], 6: [11 * mm, 20 * mm, 55 * mm, 15 * mm, 15 * mm, 70 * mm]}
+    W = {5: [18 * mm, 70 * mm, 15 * mm, 15 * mm, 68 * mm], 2: [70 * mm, 116 * mm], 4: [38 * mm, 50 * mm, 42 * mm, 56 * mm], 6: [11 * mm, 20 * mm, 55 * mm, 15 * mm, 15 * mm, 70 * mm]}
     story = [Paragraph("Strategy recommendations", H1), Paragraph(f"{REC['intro']} Updated {REC['date']}.", SUB)]
     for sec in REC["sections"]:
         widths = [12 * mm, 174 * mm] if sec["title"] == "Before real money" else W[len(sec["head"])]
@@ -82,6 +90,9 @@ if __name__ == "__main__":
               ("TOPPADDING", (0, 0), (-1, -1), 3), ("BOTTOMPADDING", (0, 0), (-1, -1), 3)]
         if sec["title"] == "Recommended":
             st.append(("BACKGROUND", (0, 1), (-1, 1), colors.HexColor("#dcfce7")))
+        if sec.get("mine"):
+            st += [("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#b45309")),
+                   ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor("#fef3c7")), ("BOX", (0, 0), (-1, -1), 1.2, colors.HexColor("#b45309"))]
         tb.setStyle(TableStyle(st))
         story += [Paragraph(sec["title"], H2), tb]
         story += [Paragraph(n, BL, bulletText="•") for n in sec.get("notes", [])]

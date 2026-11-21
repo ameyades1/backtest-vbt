@@ -59,8 +59,11 @@ def fid(tg):
 _BREADTH = {}
 
 
-def risk_mult(rules, closes):
-    """Day -> risk multiplier from sizing.risk_rules (market_sma, breadth, vix); uses data known before the day."""
+def risk_mult(rules, closes, members=None):
+    """Day -> risk multiplier from sizing.risk_rules (market_sma, breadth, vix); uses data known before the day.
+    breadth: {"days": 200, "min": 40, "mult": 0.5} or {"days": 200, "steps": [[50, 0.5], [30, 0.0]]} (the lowest
+    breached step applies; mult 0 = no new trades). members: day x symbol bool (point in time) -> breadth counts
+    only that day's index members."""
     m = pd.Series(1.0, index=closes.index)
     if "market_sma" in rules:
         r = rules["market_sma"]
@@ -68,14 +71,20 @@ def risk_mult(rules, closes):
         m[~ok.shift(1, fill_value=True)] *= r.get("mult", 0.5)
     if "breadth" in rules:
         r = rules["breadth"]
-        k = (tuple(closes.columns), r.get("days", 200))
+        k = (tuple(closes.columns), r.get("days", 200), members is not None)
         if k not in _BREADTH:
             c = closes.ffill()
             sm = c.rolling(r.get("days", 200), min_periods=r.get("days", 200)).mean()
             valid = sm.notna()
+            if members is not None:
+                valid &= members.reindex(index=c.index, columns=c.columns).fillna(False).astype(bool)
             _BREADTH[k] = ((c > sm) & valid).sum(axis=1) / valid.sum(axis=1).replace(0, np.nan) * 100
         b = _BREADTH[k].shift(1)
-        m[(b < r.get("min", 40)).fillna(False)] *= r.get("mult", 0.5)
+        steps = r.get("steps") or [[r.get("min", 40), r.get("mult", 0.5)]]
+        bm = pd.Series(1.0, index=m.index)
+        for lvl, mu in sorted(steps, key=lambda x: -x[0]):          # lower thresholds override higher ones
+            bm[(b < lvl).fillna(False)] = mu
+        m *= bm
     if "vix" in rules:
         r = rules["vix"]
         v = data.load(["^INDIAVIX"])["Close"]["^INDIAVIX"].reindex(closes.index, method="ffill").shift(1)
@@ -107,7 +116,7 @@ def invert(df):
 def _sim(ec, dailies, end):
     df_ = ec.get("entry", {}).get("day_filters", {})
     mdays = df_.get("market_sma") or df_.get("market_below_sma") or ec["stop"].get("market_sma")
-    mk = market.regime(mdays) if mdays else None
+    mk = market.regime(mdays, df_.get("market_index")) if mdays else None
     st_ = ec.get("stop", {})
     mkt_t = market.regime(st_["market_tighten_sma"], st_.get("market_tighten_index")) \
         if st_.get("market_tighten") and st_.get("market_tighten_sma") else None
@@ -141,7 +150,12 @@ def run(cfg, closes, dailies, out):
         f.unlink()
     rows, curves = {}, {}
     score = scores.table(siz["score"], dailies) if "score" in siz else None
-    rm = risk_mult(siz["risk_rules"], closes) if siz.get("risk_rules") else None
+    pit = None
+    if cfg.get("universe") == "NIFTY500_PIT":
+        from lib import membership
+        pit = membership.membership_table(closes.index, list(dailies))
+    rm = risk_mult(siz["risk_rules"], closes, pit if siz["risk_rules"].get("breadth", {}).get("pit") else None) \
+        if siz.get("risk_rules") else None
     cr = cash_return(siz["cash"], closes) if siz.get("cash") else None
     if siz.get("sector_top"):
         top_sectors_tab = scores.top_sectors(dailies, siz["sector_top"].get("n", 4), siz["sector_top"].get("months", 6))
@@ -163,9 +177,6 @@ def run(cfg, closes, dailies, out):
         h = siz["hedge"]
         hedge_spec = {"ratio": h.get("ratio", 1.0), "fee": sfee,
                       "regime": ~market.regime(h.get("sma", 200), h.get("index")).shift(1, fill_value=True).astype(bool)}
-    if cfg.get("universe") == "NIFTY500_PIT":
-        from lib import membership
-        pit = membership.membership_table(closes.index, list(dailies))
     if cfg["setup"]["type"] == "momentum_rotation":
         curve, fills, skipped = rotation.run(cfg, closes, dailies, siz["capital"], fee, slip, start, cr,
                                              pit if cfg.get("universe") == "NIFTY500_PIT" else None)

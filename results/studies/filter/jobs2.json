@@ -1,0 +1,38 @@
+[
+ {
+  "phase": "3-combo",
+  "config": "strategies/filter/C_i150_b35.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/C_i150_b35"
+ },
+ {
+  "phase": "3-combo",
+  "config": "strategies/filter/C_i150_bh40.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/C_i150_bh40"
+ },
+ {
+  "phase": "3-combo",
+  "config": "strategies/filter/C_i150_steps.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/C_i150_steps"
+ },
+ {
+  "phase": "3-combo",
+  "config": "strategies/filter/C_i200_b35.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/C_i200_b35"
+ },
+ {
+  "phase": "3-combo",
+  "config": "strategies/filter/C_i200_bh40.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/C_i200_bh40"
+ },
+ {
+  "phase": "3-combo",
+  "config": "strategies/filter/C_i200_steps.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/C_i200_steps"
+ }
+]

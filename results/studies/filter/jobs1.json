@@ -1,0 +1,86 @@
+[
+ {
+  "phase": "1-index",
+  "config": "strategies/filter/F_i50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_i50"
+ },
+ {
+  "phase": "1-index",
+  "config": "strategies/filter/F_i75.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_i75"
+ },
+ {
+  "phase": "1-index",
+  "config": "strategies/filter/F_i100.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_i100"
+ },
+ {
+  "phase": "1-index",
+  "config": "strategies/filter/F_i150.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_i150"
+ },
+ {
+  "phase": "1-index",
+  "config": "strategies/filter/F_i200.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_i200"
+ },
+ {
+  "phase": "1-nifty50",
+  "config": "strategies/filter/F_n50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_n50"
+ },
+ {
+  "phase": "1-nifty50",
+  "config": "strategies/filter/F_n100.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_n100"
+ },
+ {
+  "phase": "2-breadth",
+  "config": "strategies/filter/F_b30.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_b30"
+ },
+ {
+  "phase": "2-breadth",
+  "config": "strategies/filter/F_b35.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_b35"
+ },
+ {
+  "phase": "2-breadth",
+  "config": "strategies/filter/F_b40.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_b40"
+ },
+ {
+  "phase": "2-breadth",
+  "config": "strategies/filter/F_b45.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_b45"
+ },
+ {
+  "phase": "2-breadth",
+  "config": "strategies/filter/F_b50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_b50"
+ },
+ {
+  "phase": "2-breadth",
+  "config": "strategies/filter/F_bh40.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_bh40"
+ },
+ {
+  "phase": "2-breadth",
+  "config": "strategies/filter/F_steps.json",
+  "universe": "NIFTY500_PIT",
+  "name": "filter/F_steps"
+ }
+]

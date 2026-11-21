@@ -134,10 +134,12 @@ def rules(c):
         ent += "; only on days when " + " and ".join(
             {"weekly_ema": f"last week's close >= weekly EMA{df.get('weekly_ema')}",
              "daily_ema": f"yesterday's close >= daily EMA{df.get('daily_ema')}",
-             "market_sma": f"NIFTY 50 closed above its {df.get('market_sma')}-day average yesterday "
-                           f"(Sensex before mid-2008)",
+             "market_sma": (f"the NIFTY 500 index closed above its {df.get('market_sma')}-day average yesterday "
+                            f"(NIFTY 50 / Sensex before its history starts)" if df.get("market_index") == "^CRSLDX" else
+                            f"NIFTY 50 closed above its {df.get('market_sma')}-day average yesterday "
+                            f"(Sensex before mid-2008)"),
              "market_below_sma": f"NIFTY 50 closed below its {df.get('market_below_sma')}-day average yesterday "
-                                 f"(Sensex before mid-2008)"}[k] for k in df)
+                                 f"(Sensex before mid-2008)"}[k] for k in df if k != "market_index")
     if e.get("delay_days"):
         ent += f"; entry no earlier than {e['delay_days']} trading day(s) after the signal candle"
     rows.append(["Entry", ent])
@@ -196,8 +198,11 @@ def rules(c):
         extra.append(f"x{rr['market_sma'].get('mult', 0.5):g} risk while NIFTY 50 is below its "
                      f"{rr['market_sma'].get('days', 200)}-day average")
     if "breadth" in rr:
-        extra.append(f"x{rr['breadth'].get('mult', 0.5):g} risk while under {rr['breadth'].get('min', 40)}% of the "
-                     f"universe is above its 200-day average")
+        b_ = rr["breadth"]
+        who = "that day's NIFTY 500 members" if b_.get("pit") else "the universe"
+        for lvl, mu in (b_.get("steps") or [[b_.get("min", 40), b_.get("mult", 0.5)]]):
+            extra.append((f"no new buys" if mu == 0 else f"x{mu:g} risk") + f" while under {lvl}% of {who} "
+                         f"are above their {b_.get('days', 200)}-day average")
     if "vix" in rr:
         extra.append(f"x{rr['vix'].get('mult', 0.5):g} risk while India VIX is above {rr['vix'].get('max', 25)}")
     if z.get("cash"):

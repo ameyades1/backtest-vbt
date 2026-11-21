@@ -192,7 +192,8 @@ if _rp.exists():
     _r = json.load(open(_rp))
     for _sec in _r["sections"]:
         _trs = "".join("<tr>" + "".join(f"<td>{html.escape(_c)}</td>" for _c in _row) + "</tr>" for _row in _sec["rows"])
-        recs += (f'<h3>{html.escape(_sec["title"])}</h3><div class="wrap"><table class="rec"><thead><tr>'
+        _mine = " mine" if _sec.get("mine") else ""
+        recs += (f'<h3 class="{_mine.strip()}">{"★ " if _mine else ""}{html.escape(_sec["title"])}</h3><div class="wrap"><table class="rec{_mine}"><thead><tr>'
                  + "".join(f"<th>{html.escape(_h)}</th>" for _h in _sec["head"])
                  + f"</tr></thead><tbody>{_trs}</tbody></table></div>"
                  + ("<ul class=\"notes\">" + "".join(f"<li>{html.escape(_n)}</li>" for _n in _sec["notes"]) + "</ul>"
@@ -225,6 +226,7 @@ h2{{font-size:17px;margin:24px 0 8px}}
 .gloss dt{{font-weight:600}} .gloss dd{{margin:0;color:var(--mut)}}
 @media (max-width:600px){{.gloss{{grid-template-columns:1fr}} .gloss dd{{margin-bottom:6px}}}}
 h3{{font-size:14.5px;margin:16px 0 6px}}
+table.rec.mine{{outline:2px solid #b45309;background:#fef3c7}} table.rec.mine th{{background:#b45309;color:#fff}} table.rec.mine td{{color:#1c1917}} h3.mine{{color:#b45309}}
 table.rec{{white-space:normal}} table.rec th{{text-align:left;cursor:default}} table.rec td{{vertical-align:top}}
 .notes{{margin-top:16px;font-size:12.5px;color:var(--mut)}} .notes li{{margin:2px 0}}
 </style></head><body><main>
