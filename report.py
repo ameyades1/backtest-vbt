@@ -133,6 +133,7 @@ def rules(c):
     if df:
         ent += "; only on days when " + " and ".join(
             {"weekly_ema": f"last week's close >= weekly EMA{df.get('weekly_ema')}",
+             "weekly_supertrend": "the last completed week's Supertrend(10, 3) is bullish",
              "daily_ema": f"yesterday's close >= daily EMA{df.get('daily_ema')}",
              "market_sma": (f"the NIFTY 500 index closed above its {df.get('market_sma')}-day average yesterday "
                             f"(NIFTY 50 / Sensex before its history starts)" if df.get("market_index") == "^CRSLDX" else
@@ -170,7 +171,9 @@ def rules(c):
     if None in ex["targets_pct"]:
         xs.append(f"no target (exit on {TF[ex['ema_close_when_no_target'].get('timeframe', c['timeframe'])]} close below EMA{ex['ema_close_when_no_target']['span']})"
                   if ex.get("ema_close_when_no_target") else
-                  (f"no target (exit when the {TF[ex['supertrend_exit_when_no_target'].get('timeframe', 'W')]} "
+                  (f"no target (exit at the next open after the {TF[ex['supertrend_exit_when_no_target'].get('timeframe', 'W')]} "
+                   f"Supertrend turns from bullish to bearish after entry)" if ex.get("supertrend_exit_when_no_target", {}).get("on_flip") else
+                   f"no target (exit when the {TF[ex['supertrend_exit_when_no_target'].get('timeframe', 'W')]} "
                    f"Supertrend is bearish at a candle close, sold at the next open; this includes a trade bought while it "
                    f"was already bearish, which is sold after its first candle)" if ex.get("supertrend_exit_when_no_target") else "no target (stop only)"))
     if ex.get("max_days"):
