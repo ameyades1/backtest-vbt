@@ -224,7 +224,8 @@ def rules(c):
         x = c["costs"]["slippage_extra"]
         extra.append(f"{x['universe']} trades pay {x['pct']:g}% slippage per side")
     if z.get("pos_cap"):
-        extra.append(f"positions above {z['pos_cap'] * 100:g}% of equity trimmed at month end")
+        extra.append((f"a new position is limited to {z['pos_cap'] * 100:g}% of equity when bought, and " if z.get("pos_cap_entry")
+                      else "") + f"positions above {z['pos_cap'] * 100:g}% of equity trimmed at month end")
     if z.get("max_open_risk"):
         extra.append(f"total open risk at most {z['max_open_risk'] * 100:g}% of equity")
     if z.get("hedge"):

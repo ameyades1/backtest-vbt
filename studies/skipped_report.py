@@ -18,9 +18,9 @@ from lib import ids
 
 OUT = ROOT / "results" / "studies" / "skipped"
 IDS = ids.by_name()
-BASES = {"Y": "hold/T25_r025", "A": "stexit/A_flip", "D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth"}
-NAME = {"Y": "S63387f09 (your choice)", "A": "Sf5b94362 (Supertrend turn exit)", "D": "Sde394f26", "C": "Sa016f4eb"}
-SN = {"Y": "S63387f09", "A": "Sf5b94362", "D": "Sde394f26", "C": "Sa016f4eb"}
+BASES = {"Y": "hold/T25_r025", "A": "stexit/A_flip", "E": "stexit/A_flip_capentry", "D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth"}
+NAME = {"Y": "S63387f09", "A": "Sf5b94362 (your choice)", "E": "S44984096 (20% cap at entry)", "D": "Sde394f26", "C": "Sa016f4eb"}
+SN = {"Y": "S63387f09", "A": "Sf5b94362", "E": "S44984096", "D": "Sde394f26", "C": "Sa016f4eb"}
 WHY = {"taken": "Taken", "held": "Stock already held", "slots": "All slots full", "paused": "Drawdown pause",
        "cash": "Not enough cash", "too-small": "Risk buys < 1 share", "open-risk": "Open-risk cap",
        "sector": "Sector cap", "short-max": "Short limit"}

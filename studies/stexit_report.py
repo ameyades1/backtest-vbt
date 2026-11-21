@@ -24,7 +24,8 @@ IDS = ids.by_name()
 RUNS = [("S63387f09 (yours): exit on any bearish week", "hold/T25_r025"),
         ("A: exit only on a turn to bearish", "stexit/A_flip"),
         ("B: enter only while weekly Supertrend is bullish", "stexit/B_wst"),
-        ("A + B", "stexit/AB")]
+        ("A + B", "stexit/AB"),
+        ("A + 20% cap at entry", "stexit/A_flip_capentry")]
 WIN = [(2000, 2004), (2005, 2009), (2010, 2014), (2015, 2019), (2020, 2026)]
 
 
@@ -76,7 +77,7 @@ def table(rows, widths, fs=7.4):
 
 
 fig, ax = plt.subplots(figsize=(7.4, 3.2))
-for lab, e in list(EQ.items())[:3]:
+for lab, e in [x for i, x in enumerate(EQ.items()) if i in (0, 1, 4)]:
     ax.plot(e / e.iloc[0], lw=1, label=lab)
 ax.set_yscale("log"); ax.grid(alpha=.3); ax.legend(fontsize=7); ax.set_title("Growth of 1 (log)", fontsize=9)
 fig.tight_layout(); fig.savefig(OUT / "equity.png", dpi=160); plt.close(fig)

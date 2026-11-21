@@ -222,7 +222,7 @@ def run(cfg, closes, dailies, out):
                                               siz["max_positions"], fee, slip, siz.get("rank", "tightest"), start,
                                               score=score, risk_mult=rm, dd_rule=siz.get("dd_rule"),
                                               cash_ret=cr, compound=siz.get("compound", False),
-                                              pos_cap=siz.get("pos_cap"), max_open_risk=siz.get("max_open_risk"),
+                                              pos_cap=siz.get("pos_cap"), pos_cap_entry=siz.get("pos_cap_entry", False), max_open_risk=siz.get("max_open_risk"),
                                               short=short_spec, hedge=hedge_spec, slip_of=slip_of, sector_of=sec_of, sector_cap=siz.get("sector_cap"),
                                               seed=siz.get("seed"), skip_log=skips)
         rows[lbl] = {"Signals filled": len(trades), "Median stop %": np.median(sd) if len(sd) else np.nan,

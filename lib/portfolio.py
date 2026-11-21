@@ -34,6 +34,7 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
         seed: int | None = None, sector_of: dict | None = None, sector_cap: int | None = None,
         risk_mult: pd.Series | None = None, dd_rule: dict | None = None,
         cash_ret: pd.Series | None = None, compound: bool = False, pos_cap: float | None = None,
+        pos_cap_entry: bool = False,
         short: dict | None = None, max_open_risk: float | None = None, hedge: dict | None = None, slip_of: dict | None = None,
         skip_log: list | None = None):
     """rank: order of same-day signals when slots are scarce.
@@ -50,6 +51,7 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
        cash_ret:  day -> return earned that day by uninvested cash (liquid fund / index ETF); applied to the
                   previous day's cash before the day's trades
        compound:  risk per trade = risk_pct x the previous day's equity (default: x the starting capital)
+       pos_cap_entry: also limit a new long position to pos_cap x yesterday's equity when it is bought.
        pos_cap:   a long position worth more than this share of equity at a month's last close is trimmed back to
                   it at that close (the trimmed shares are booked as a separate fill)
        short:     settings for trades with side -1 (stock futures): {"fee": per side, "margin": 0.25 (share of
@@ -192,6 +194,8 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
             capped = False
             if side(t) > 0:
                 px = t.entry * (1 + sl(t.symbol)) * (1 + fee)
+                if pos_cap and pos_cap_entry:            # also cap the position at entry (not only at month end)
+                    qty = min(qty, int(pos_cap * prev_eq // px))
                 if qty * px > cash:
                     qty, capped = int(cash // px), True
                 unit = px

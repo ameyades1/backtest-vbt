@@ -12,9 +12,9 @@ sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "studies"))
 from longshort_configs import write, load
 OUT = ROOT / "results" / "studies" / "skipped"
 OUT.mkdir(parents=True, exist_ok=True)
-BASES = {"D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth", "Y": "hold/T25_r025", "A": "stexit/A_flip"}
-NOSLOTS = set()                                  # tags without slot variants
-TAGN = {"D": "Sde394f26", "C": "Sa016f4eb", "Y": "S63387f09", "A": "Sf5b94362"}
+BASES = {"D": "longshort/L_cap20_dd", "C": "ddcut/C_hedge_i50_breadth", "Y": "hold/T25_r025", "A": "stexit/A_flip", "E": "stexit/A_flip_capentry"}
+NOSLOTS = {"E"}                                  # tags without slot variants
+TAGN = {"D": "Sde394f26", "C": "Sa016f4eb", "Y": "S63387f09", "A": "Sf5b94362", "E": "S44984096"}
 SEEDS = range(200)
 U = "NIFTY500_PIT"
 _C = {}
