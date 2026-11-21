@@ -227,7 +227,7 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
     stype = stop_cfg.get("type", "none")
     mt = stop_cfg.get("market_tighten")                 # None | "weekly_low" | "exit"
     need_weeks = stype == "prev_week_low" or stop_cfg.get("trail") == "weekly_low" or "weekly_ema" in dayf \
-        or mt == "weekly_low" or stop_cfg.get("trail") == "atr"
+        or mt == "weekly_low" or stop_cfg.get("trail") == "atr" or "weekly_supertrend" in dayf
     if need_weeks:
         w = resample(daily, "W")
         w_end = np.searchsorted(days, w.index, side="right")
@@ -235,6 +235,9 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
         w_low = w["Low"].to_numpy()
         if "weekly_ema" in dayf:
             w_close, w_ema = w["Close"].to_numpy(), ema(w["Close"], dayf["weekly_ema"]).to_numpy()
+        if "weekly_supertrend" in dayf:                  # buy only while the last completed week's Supertrend is bullish
+            wst = dayf["weekly_supertrend"]
+            w_bull = supertrend(w, wst.get("period", 10), wst.get("mult", 3.0)).to_numpy().astype(bool)
     if "daily_ema" in dayf:
         d_ema = ema(daily["Close"], dayf["daily_ema"]).to_numpy()
     if "market_below_sma" in dayf:
@@ -269,6 +272,8 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
         sb = bars if stf == tf else resample(daily, stf)
         s_end = bar_end if stf == tf else np.searchsorted(days, sb.index, side="right")
         bear = (~supertrend(sb, sc.get("period", 10), sc.get("mult", 3.0))).to_numpy()
+        if sc.get("on_flip"):                            # only a bullish -> bearish change counts
+            bear = bear & np.r_[False, ~bear[:-1]]
         ema_exit = ema_exit | {s_end[i] for i in np.flatnonzero(bear)}
 
     trades, free = [], 0
@@ -288,6 +293,8 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
                 lw = last_w[j]
                 if np.isnan(w_ema[lw]) or w_close[lw] < w_ema[lw]:
                     continue
+            if "weekly_supertrend" in dayf and not w_bull[last_w[j]]:
+                continue
             if "market_sma" in dayf and not mkt_ok[j]:
                 continue
             if "market_below_sma" in dayf and not mkt_below[j]:

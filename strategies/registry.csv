@@ -366,3 +366,6 @@ S01a1fd96-6fcb-7034-aa65-abfb85dc2a6b,S85dc2a6b,hold/X_st4,strategies/hold/X_st4
 S01a1fdcf-175b-7433-8e48-d619a61aa519,Sa61aa519,skipped/S63387f09_slots15,strategies/skipped/S63387f09_slots15.json,2026-11-21,active
 S01a1fdcf-175c-704f-8605-63f7d44a11fd,Sd44a11fd,skipped/S63387f09_slots20,strategies/skipped/S63387f09_slots20.json,2026-11-21,active
 S01a1fdcf-175d-7ba3-8182-fbbcf3482c72,Sf3482c72,skipped/S63387f09_slotsall,strategies/skipped/S63387f09_slotsall.json,2026-11-21,active
+S01a1ff02-d2da-71db-975c-751fbb45ac25,Sbb45ac25,stexit/AB,strategies/stexit/AB.json,2026-11-21,active
+S01a1ff02-d2db-7578-ae9a-2ef2f5b94362,Sf5b94362,stexit/A_flip,strategies/stexit/A_flip.json,2026-11-21,active
+S01a1ff02-d2dc-7949-893c-e709e5b28548,Se5b28548,stexit/B_wst,strategies/stexit/B_wst.json,2026-11-21,active
