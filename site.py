@@ -172,7 +172,8 @@ families = sorted({r["family"] for r in rows})
 head = "".join(f'<th title="{html.escape(t)}" data-num="{0 if f is None else 1}">{h}</th>' for _, h, f, t in COLS)
 opts = "".join(f'<option value="{f}">{f}</option>' for f in families)
 
-STUDY_TITLES = {"ruin": "Risk of ruin and ₹10 lakh over 5-year periods for S63387f09 (your choice)",
+STUDY_TITLES = {"yearly": "Year by year: Sf5b94362 (your choice) vs ₹10 lakh in the NIFTY",
+                "ruin": "Risk of ruin and ₹10 lakh over 5-year periods for S63387f09 (your choice)",
                 "slot_ranking": "Slot ranking: which signals should fill the 8 slots",
                 "cagr18": "CAGR 18%: capital use, exits, selection, regime, rotation",
                 "pit": "NIFTY 500 point in time: survivorship bias measured",
