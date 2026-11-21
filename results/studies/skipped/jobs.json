@@ -52,5 +52,23 @@
   "config": "strategies/skipped/S63387f09_slotsall.json",
   "universe": "NIFTY500_PIT",
   "name": "skipped/S63387f09_slotsall"
+ },
+ {
+  "phase": "slots",
+  "config": "strategies/skipped/Sf5b94362_slots15.json",
+  "universe": "NIFTY500_PIT",
+  "name": "skipped/Sf5b94362_slots15"
+ },
+ {
+  "phase": "slots",
+  "config": "strategies/skipped/Sf5b94362_slots20.json",
+  "universe": "NIFTY500_PIT",
+  "name": "skipped/Sf5b94362_slots20"
+ },
+ {
+  "phase": "slots",
+  "config": "strategies/skipped/Sf5b94362_slotsall.json",
+  "universe": "NIFTY500_PIT",
+  "name": "skipped/Sf5b94362_slotsall"
  }
 ]
