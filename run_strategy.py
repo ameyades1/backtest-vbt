@@ -108,12 +108,15 @@ def _sim(ec, dailies, end):
     df_ = ec.get("entry", {}).get("day_filters", {})
     mdays = df_.get("market_sma") or df_.get("market_below_sma") or ec["stop"].get("market_sma")
     mk = market.regime(mdays) if mdays else None
+    st_ = ec.get("stop", {})
+    mkt_t = market.regime(st_["market_tighten_sma"], st_.get("market_tighten_index")) \
+        if st_.get("market_tighten") and st_.get("market_tighten_sma") else None
     key = (json.dumps(ec, sort_keys=True), tuple(dailies), end)
     if key not in _TRADES:
         if ec.get("side") == "short":
             out = []
             for s, df in dailies.items():
-                for t in engine.simulate(invert(df), s, ec, mk):
+                for t in engine.simulate(invert(df), s, ec, mk, mkt_t):
                     t.entry = INV_C / t.entry
                     t.exit = INV_C / t.exit if t.exit is not None else None
                     t.stop = INV_C / t.stop if t.stop is not None else None
@@ -121,7 +124,7 @@ def _sim(ec, dailies, end):
                     out.append(t)
             _TRADES[key] = out
         else:
-            _TRADES[key] = [t for s, df in dailies.items() for t in engine.simulate(df, s, ec, mk)]
+            _TRADES[key] = [t for s, df in dailies.items() for t in engine.simulate(df, s, ec, mk, mkt_t)]
     return _TRADES[key]
 
 
@@ -159,7 +162,7 @@ def run(cfg, closes, dailies, out):
     if siz.get("hedge"):                                 # {"ratio": 1.0, "sma": 200}: short NIFTY futures below the SMA
         h = siz["hedge"]
         hedge_spec = {"ratio": h.get("ratio", 1.0), "fee": sfee,
-                      "regime": ~market.regime(h.get("sma", 200)).shift(1, fill_value=True).astype(bool)}
+                      "regime": ~market.regime(h.get("sma", 200), h.get("index")).shift(1, fill_value=True).astype(bool)}
     if cfg.get("universe") == "NIFTY500_PIT":
         from lib import membership
         pit = membership.membership_table(closes.index, list(dailies))

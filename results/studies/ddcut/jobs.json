@@ -1,0 +1,134 @@
+[
+ {
+  "phase": "1-hedge",
+  "config": "strategies/ddcut/H_n50_r50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/H_n50_r50"
+ },
+ {
+  "phase": "1-hedge",
+  "config": "strategies/ddcut/H_n50_r100.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/H_n50_r100"
+ },
+ {
+  "phase": "1-hedge",
+  "config": "strategies/ddcut/H_n100_r50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/H_n100_r50"
+ },
+ {
+  "phase": "1-hedge",
+  "config": "strategies/ddcut/H_n100_r100.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/H_n100_r100"
+ },
+ {
+  "phase": "1-hedge",
+  "config": "strategies/ddcut/H_i50_r50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/H_i50_r50"
+ },
+ {
+  "phase": "1-hedge",
+  "config": "strategies/ddcut/H_i50_r100.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/H_i50_r100"
+ },
+ {
+  "phase": "2-tighten",
+  "config": "strategies/ddcut/T_wl_n50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/T_wl_n50"
+ },
+ {
+  "phase": "2-tighten",
+  "config": "strategies/ddcut/T_wl_i50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/T_wl_i50"
+ },
+ {
+  "phase": "2-tighten",
+  "config": "strategies/ddcut/T_exit_n50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/T_exit_n50"
+ },
+ {
+  "phase": "2-tighten",
+  "config": "strategies/ddcut/T_exit_i100.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/T_exit_i100"
+ },
+ {
+  "phase": "2-tighten",
+  "config": "strategies/ddcut/T_halfrisk_n50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/T_halfrisk_n50"
+ },
+ {
+  "phase": "2-tighten",
+  "config": "strategies/ddcut/T_halfrisk_i50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/T_halfrisk_i50"
+ },
+ {
+  "phase": "3-short-leg",
+  "config": "strategies/ddcut/S_rally21.json",
+  "universe": "NIFTY200",
+  "name": "ddcut/S_rally21"
+ },
+ {
+  "phase": "3-short-leg",
+  "config": "strategies/ddcut/S_rally21_r50.json",
+  "universe": "NIFTY200",
+  "name": "ddcut/S_rally21_r50"
+ },
+ {
+  "phase": "3-short-leg",
+  "config": "strategies/ddcut/S_break10.json",
+  "universe": "NIFTY200",
+  "name": "ddcut/S_break10"
+ },
+ {
+  "phase": "3-short-leg",
+  "config": "strategies/ddcut/S_rally21_trail.json",
+  "universe": "NIFTY200",
+  "name": "ddcut/S_rally21_trail"
+ },
+ {
+  "phase": "3-longshort",
+  "config": "strategies/ddcut/LS_rally21.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/LS_rally21"
+ },
+ {
+  "phase": "3-longshort",
+  "config": "strategies/ddcut/LS_rally21_r50.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/LS_rally21_r50"
+ },
+ {
+  "phase": "3-longshort",
+  "config": "strategies/ddcut/LS_break10.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/LS_break10"
+ },
+ {
+  "phase": "3-longshort",
+  "config": "strategies/ddcut/LS_rally21_trail.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/LS_rally21_trail"
+ },
+ {
+  "phase": "3-longshort",
+  "config": "strategies/ddcut/LS_rally21_break10.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/LS_rally21_break10"
+ },
+ {
+  "phase": "5-combined",
+  "config": "strategies/ddcut/C_hedge_i50_breadth.json",
+  "universe": "NIFTY500_PIT",
+  "name": "ddcut/C_hedge_i50_breadth"
+ }
+]

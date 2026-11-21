@@ -1,0 +1,84 @@
+{
+  "id": "S01a1fd31-7561-7bf0-96de-d906b39bc278",
+  "name": "ddcut/H_i50_r100",
+  "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while NIFTY 50 is below its 200-day average (Sensex before mid-2008). [Trend exit swapped: weekly Supertrend(10,3) turns bearish instead of a monthly close below EMA61.] [Stack (10 slots, liquid-fund cash, 25-day time stop) with compounding risk.] [20% position cap + drawdown rule.] [Short NIFTY futures = 100% of the long book while the NIFTY 500 index below its 50-DMA.]",
+  "universe": "NIFTY500_PIT",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "M",
+  "setup": {
+    "type": "stochrsi_cross",
+    "rsi": 14,
+    "stoch": 14,
+    "k": 3,
+    "d": 3,
+    "oversold": 30
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "M",
+        "W",
+        "D"
+      ]
+    },
+    "rsi_min": {
+      "period": 14,
+      "value": 50
+    }
+  },
+  "entry": {
+    "valid_bars": 1,
+    "day_filters": {
+      "market_sma": 200
+    }
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      null
+    ],
+    "ema_close_when_no_target": null,
+    "max_days": null,
+    "supertrend_exit_when_no_target": {
+      "timeframe": "W",
+      "period": 10,
+      "mult": 3
+    },
+    "time_stop": {
+      "days": 25,
+      "min_r": 0.5
+    }
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 10,
+    "rank": "tightest",
+    "cash": {
+      "type": "liquid",
+      "rate": 6.5
+    },
+    "compound": true,
+    "pos_cap": 0.2,
+    "dd_rule": {
+      "halve": 10,
+      "pause": 15,
+      "pause_days": 21
+    },
+    "hedge": {
+      "ratio": 1.0,
+      "sma": 50,
+      "index": "^CRSLDX"
+    }
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1
+  }
+}

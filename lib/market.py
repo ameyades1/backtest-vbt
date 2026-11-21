@@ -9,7 +9,15 @@ import pandas as pd
 from . import data
 
 
-def regime(days: int = 200) -> pd.Series:
+def regime(days: int = 200, index: str | None = None) -> pd.Series:
+    """index: another Yahoo index (e.g. ^CRSLDX = NIFTY 500) used wherever its N-day average exists,
+    with the NIFTY/Sensex regime before that."""
+    if index:
+        base = regime(days)
+        s = data.load([index])["Close"][index].dropna()
+        sma = s.rolling(days).mean()
+        r = (s > sma)[sma.notna()]
+        return pd.concat([base[base.index < r.index[0]], r]).rename(f"{index}_above_{days}dma")
     c = data.load(["^NSEI", "^BSESN"])["Close"]
     out = None
     for sym in ["^BSESN", "^NSEI"]:

@@ -211,7 +211,9 @@ def _signal_mask(daily, bars, tf, cfg):
     return sig
 
 
-def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | None = None) -> list[Trade]:
+def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | None = None,
+             market_t: pd.Series | None = None) -> list[Trade]:
+    """market_t: separate regime for stop.market_tighten (default: `market`)."""
     tf = cfg["timeframe"]
     bars = resample(daily, tf)
     days = daily.index
@@ -239,10 +241,13 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
         if market is None:
             raise ValueError("market_below_sma needs the market regime")
         mkt_below = market.astype(float).shift(1).reindex(days, method="ffill").fillna(1).to_numpy() == 0
-    if "market_sma" in dayf or mt:
+    if "market_sma" in dayf or (mt and market_t is None):
         if market is None:
             raise ValueError("market_sma filter / market_tighten need the market regime (lib.market.regime)")
         mkt_ok = market.astype(float).shift(1).reindex(days, method="ffill").fillna(0).to_numpy() > 0
+    mkt_t = mkt_ok if (mt and market_t is None) else None
+    if mt and market_t is not None:
+        mkt_t = market_t.astype(float).shift(1).reindex(days, method="ffill").fillna(1).to_numpy() > 0
     if stype == "atr" or stop_cfg.get("trail") == "atr":
         d_atr = atr(daily, stop_cfg.get("period", 14)).to_numpy()
     delay = entry_cfg.get("delay_days", 0)
@@ -337,10 +342,10 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
                     stop = max(stop, w_low[last_w[j]])
                 elif stop_cfg.get("trail") == "atr" and not np.isnan(d_atr[j - 1]):
                     stop = max(stop, hh - stop_cfg.get("trail_mult", 3.0) * d_atr[j - 1])
-                if mt == "weekly_low" and not mkt_ok[j] and last_w[j] >= 0:
+                if mt == "weekly_low" and not mkt_t[j] and last_w[j] >= 0:
                     stop = max(stop, w_low[last_w[j]])
                 o, h, l = d[j, 0], d[j, 1], d[j, 2]
-                if mt == "exit" and not mkt_ok[j]:
+                if mt == "exit" and not mkt_t[j]:
                     exit_px, exit_day, reason = o, j, "market"; break
                 if max_days is not None and (days[j] - days[k]).days >= max_days:
                     exit_px, exit_day, reason = o, j, "time"; break

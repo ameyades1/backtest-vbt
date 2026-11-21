@@ -175,6 +175,7 @@ opts = "".join(f'<option value="{f}">{f}</option>' for f in families)
 STUDY_TITLES = {"slot_ranking": "Slot ranking: which signals should fill the 8 slots",
                 "cagr18": "CAGR 18%: capital use, exits, selection, regime, rotation",
                 "pit": "NIFTY 500 point in time: survivorship bias measured",
+                "ddcut": "Cutting Sde394f26's drawdown: NIFTY hedge, tighter exits, bear shorts, gold",
                 "longshort": "Long/short: hardened Sa15d9d9c, short books, NIFTY hedge",
                 "market_filter": "NIFTY 200-day market filter on every strategy",
                 "market_tighten": "Tightening stops / exiting when NIFTY is below its 200-day average",

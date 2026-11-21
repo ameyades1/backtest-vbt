@@ -1,0 +1,76 @@
+{
+  "id": "S01a1fd31-756e-71fe-b36c-e2ba51dd9cd1",
+  "name": "ddcut/S_rally21_r50",
+  "description": "SHORT (stock futures, NIFTY 200 names), bear-market rules: as S_rally21, but shorts allowed below the 50-DMA. Close below EMA61 on W and D; RSI < 50; new shorts only while NIFTY is below its 50-day average; stop at the previous week's high; cover half at 1.5R; cover if not 0.5R up after 10 days; cover when weekly Supertrend(10,2) turns bullish.",
+  "universe": "NIFTY200",
+  "period": {
+    "start": "2000-01-01"
+  },
+  "timeframe": "W",
+  "setup": {
+    "type": "ema_touch",
+    "span": 21
+  },
+  "filters": {
+    "trend_ema": {
+      "span": 61,
+      "timeframes": [
+        "W",
+        "D"
+      ]
+    },
+    "rsi_min": {
+      "period": 14,
+      "value": 50
+    }
+  },
+  "entry": {
+    "valid_bars": 1,
+    "day_filters": {
+      "market_below_sma": 50
+    }
+  },
+  "stop": {
+    "type": "prev_week_low"
+  },
+  "exits": {
+    "targets_pct": [
+      "P1.5R"
+    ],
+    "ema_close_when_no_target": null,
+    "max_days": null,
+    "supertrend_exit_when_no_target": {
+      "timeframe": "W",
+      "period": 10,
+      "mult": 2
+    },
+    "time_stop": {
+      "days": 10,
+      "min_r": 0.5
+    }
+  },
+  "sizing": {
+    "capital": 100000,
+    "risk_pct": 1.0,
+    "max_positions": 4,
+    "rank": "tightest",
+    "compound": true,
+    "cash": {
+      "type": "liquid",
+      "rate": 6.5
+    },
+    "short": {
+      "margin": 0.25,
+      "roll": 0.001,
+      "max": 4
+    }
+  },
+  "costs": {
+    "broker": "sharekhan",
+    "product": "delivery",
+    "slippage_pct": 0.1,
+    "short_product": "futures"
+  },
+  "side": "short",
+  "symbols_from": "NIFTY200"
+}

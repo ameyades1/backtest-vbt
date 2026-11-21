@@ -177,6 +177,8 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                     skipped += 1
                     continue
             base = prev_eq * risk_pct if compound else risk_amt
+            if side(t) < 0 and sh.get("risk_mult"):          # shorts sized smaller, e.g. 0.5 x the long risk
+                base *= sh["risk_mult"]
             qty = int(base * mult * t.weight // dist(t))
             if max_open_risk is not None:
                 room = max_open_risk * prev_eq - open_risk

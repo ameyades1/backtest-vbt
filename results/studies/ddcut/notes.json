@@ -1,0 +1,27 @@
+{"verdict": [
+ "<b>Best: the NIFTY 500 hedge + breadth sizing together (C_hedge_i50_breadth): 14.8% CAGR, −21% max drawdown</b>, against 13.7% / −27% for Sde394f26. Longest time under water falls from 4.7 to 2.9 years.",
+ "<b>With 20–30% in gold (rebalanced yearly) it becomes about 15.4% / −14% to −15% from Dec 2003</b>: CAGR/DD rises from 0.52 to about 1.0–1.1. This is the most efficient book in the whole project so far.",
+ "Sde394f26's −27% came in two episodes: the 2018–19 midcap bear market (NIFTY 50 stayed above its 200-day average, so the existing filters never fired) and the March 2020 crash. A regime read from the NIFTY 500 index and from breadth catches both; NIFTY 50 does not.",
+ "<b>Exiting or tightening the longs failed badly</b> (4.6–7.2% CAGR): every dip below the 50-DMA sold the winners, and most of Sde394f26's profit is in a few long-held winners.",
+ "<b>The bear-market stock shorts did not help</b> (11.7–12.7% CAGR, −28% to −32%): short-covering rallies hit the stops; NIFTY futures are the better bear-market tool.",
+ "Caution: there are only five real drawdown episodes since 2000, and the regime index and moving average were picked from a handful of choices. Gold returned 11.8% a year from 2004 to 2026, an unusually strong run. Expect less in live trading, but the direction is robust: every hedge and gold variant improved on the plain strategy."],
+ "plot": ["longshort/L_cap20_dd", "ddcut/C_hedge_i50_breadth", "C_hedge_i50_breadth + gold 20%"],
+ "hedge": {"title": "1. NIFTY futures hedge", "points": [
+  "The original 200-DMA hedge made things worse (−31%): it switches on late and stays on through the rebound.",
+  "A 50-DMA hedge cuts 2006 and 2008 sharply (2008: −24% to −9% at 100%) but on NIFTY 50 misses the 2018–19 midcap bear market.",
+  "Reading the regime from the NIFTY 500 index (^CRSLDX, from 2005; Sensex/NIFTY before) at 100% of the long book: 14.1% / −26%, with 2006 at −14% and 2008 at −12%.",
+  "Practical: one NIFTY lot is about ₹19–20 lakh of exposure, so a precise 100% hedge needs an account of ₹40–50 lakh or more; smaller accounts can buy NIFTY puts or a partial hedge."]},
+ "tighten": {"title": "2. Tighten or exit the longs", "points": [
+  "Weekly-low stops or full exits when NIFTY or NIFTY 500 drops below its 50- or 100-DMA cut drawdowns to −23% to −25% but CAGR to 4.6–7.2%. Not worth it.",
+  "Half risk on new longs while fewer than 40% of NIFTY 500 stocks are above their 200-DMA: <b>15.1% / −26%</b>, better on both counts; 2018–20 falls from −27% to −22%. The half-risk rule on NIFTY's 50-DMA did nothing (13.3% / −28%)."]},
+ "shorts": {"title": "3. Bear-market stock shorts", "points": [
+  "Weekly failed rallies to a falling 21 EMA, or weekly closes below the 10-week low, in NIFTY 200 names, half the long risk, half covered at 1.5R, a 10-day time stop.",
+  "Alone they make 1–3% a year including cash interest. Combined they lower CAGR and deepen the drawdown: shorts lose most in the sharp bear-market rallies, which are exactly when the longs restart."]},
+ "gold": {"title": "4. Gold for part of the capital", "points": [
+  "INR gold: COMEX gold × USD/INR less 0.5% a year to 2008, then actual Gold BeES prices (one bad Yahoo tick in Dec 2019 replaced by the spot move). Rebalanced each year end, 0.1% cost per side.",
+  "Sde394f26 + 20–30% gold: CAGR slightly higher (14.6% vs 14.2% over the same period), drawdown −24% to −25%, time under water 4.7 → 2.1–2.9 years. Gold rose in most of the strategy's drawdowns.",
+  "On top of the hedge + breadth book, gold takes the drawdown to −14% / −15%.",
+  "Taxes not modelled: gold ETF gains held over a year are taxed as long-term gains; yearly rebalancing triggers some tax."]},
+ "method": {"title": "Method", "points": [
+  "All on point-in-time NIFTY 500 from 2000, 1% risk per trade compounding, 20% position cap, drawdown rule, idle cash in a liquid fund at 6.5%, Sharekhan costs + 0.1% slippage; NIFTY futures and stock futures at futures fees with monthly roll costs.",
+  "The hedge is sized on the previous day's long book and switched with the previous day's close; no look-ahead."]}}

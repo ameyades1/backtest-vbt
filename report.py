@@ -149,11 +149,13 @@ def rules(c):
         stop += f", trailed at the highest high since entry minus {st.get('trail_mult', 3):g} x ATR"
     if st.get("trail") == "weekly_low":
         stop += ", raised to each completed week's low"
+    _ix = {"^CRSLDX": "the NIFTY 500 index", "^NSMIDCP": "the NIFTY Midcap index"}.get(st.get("market_tighten_index"), "NIFTY 50")
+    _ms = st.get("market_tighten_sma") or st.get("market_sma", 200)
     if st.get("market_tighten") == "weekly_low":
-        stop += (f"; while NIFTY 50 is below its {st.get('market_sma', 200)}-day average (previous close), raised to "
+        stop += (f"; while {_ix} is below its {_ms}-day average (previous close), raised to "
                  f"the last completed week's low")
     elif st.get("market_tighten") == "exit":
-        stop += f"; all open trades sold at the next open when NIFTY 50 closes below its {st.get('market_sma', 200)}-day average"
+        stop += f"; all open trades sold at the next open when {_ix} closes below its {_ms}-day average"
     rows.append(["Stop", stop])
     ex = c["exits"]
     tg = [t for t in ex["targets_pct"] if t is not None]
@@ -217,11 +219,13 @@ def rules(c):
         extra.append(f"total open risk at most {z['max_open_risk'] * 100:g}% of equity")
     if z.get("hedge"):
         extra.append(f"short NIFTY futures worth {z['hedge'].get('ratio', 1) * 100:g}% of the long book while NIFTY 50 is "
-                     f"below its {z['hedge'].get('sma', 200)}-day average")
+                     f"below its {z['hedge'].get('sma', 200)}-day average"
+                     + (" (regime read from the NIFTY 500 index)" if z['hedge'].get('index') == "^CRSLDX" else ""))
     if c.get("side") == "short" or c.get("combine"):
         sh = {"margin": 0.25, "roll": 0.001, "max": 6, **z.get("short", {})}
         extra.append(f"shorts: {sh['margin'] * 100:g}% margin, {sh['roll'] * 100:g}% roll cost a month, at most "
-                     f"{sh['max']} open, futures fees")
+                     f"{sh['max']} open, futures fees"
+                     + (f", risk {sh['risk_mult']:g} x the long risk per short" if sh.get("risk_mult") else ""))
     if z.get("sector_cap"):
         extra.append(f"at most {z['sector_cap']} open positions per sector")
     if c.get("combine"):
