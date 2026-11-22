@@ -1,4 +1,4 @@
-"""Risk of ruin and 5-year outcomes for S63387f09 (your choice) -> results/studies/ruin/{report.pdf, ruin.json}.
+"""Risk of ruin and 5-year outcomes for S44984096 (your choice) -> results/studies/ruin/{report.pdf, ruin.json}.
 Block bootstrap of monthly returns (12-month blocks, 20,000 x 20-year paths) and ₹10 lakh over every 5-year window.
 """
 import json, sys
@@ -20,11 +20,11 @@ from lib import ids, portfolio
 
 OUT = ROOT / "results" / "studies" / "ruin"
 OUT.mkdir(parents=True, exist_ok=True)
-NAME = "hold/T25_r025"
+NAME = "stexit/A_flip_capentry"
 D = ROOT / "results" / NAME / "nifty500_pit"
 CAP = 10_00_000
 e = pd.read_csv(D / "equity.csv", index_col=0, parse_dates=True).iloc[:, 0].dropna()
-f = portfolio.read_fills(D / "fills_none.csv")
+f = portfolio.trades(portfolio.read_fills(D / "fills_none.csv"))
 lak = lambda x: f"₹{x / 1e5:,.1f} L"
 
 # ---- bootstrap ----
@@ -39,12 +39,12 @@ ddrows = [["Worst drawdown in 20 years", "Probability"],
           [f"{np.median(dd) * 100:.0f}% or worse (median)", "50%"]] + \
          [[f"{t}% or worse", f"{(dd <= t / 100).mean() * 100:.1f}%"] for t in (-30, -40, -50, -60)] + \
          [["Lose money over 20 years", f"{(fin < 1).mean() * 100:.3f}%"]]
-pnl = (f.proceeds - f.cost).values * f.side.values
+pnl = f.sort_values("exit_date").pnl.values
 streak = mx = 0
 for p in pnl:
     streak = 0 if p > 0 else streak + 1; mx = max(mx, streak)
 mret = pd.Series(m)
-facts = ["Position cap 20%: a stock going to zero overnight costs at most about 20% of the account.",
+facts = ["Position cap 20%, also applied when a position is bought: a stock going to zero overnight costs at most about 20% of the account.",
          f"Worst month {mret.min() * 100:.1f}%; longest losing streak {mx} trades; backtest max drawdown "
          f"{((e / e.cummax()) - 1).min() * 100:.1f}%."]
 
@@ -70,7 +70,7 @@ rollrows = [["Any start day (" + f"{len(roll):,} windows)", "Value of ₹10 L af
            [["Windows ending below ₹10 L", f"{(roll < CAP).mean() * 100:.1f}%"]]
 # ---- comparison with Sde394f26 ----
 o = pd.read_csv(ROOT / "results" / "longshort/L_cap20_dd" / "nifty500_pit" / "equity.csv", index_col=0, parse_dates=True).iloc[:, 0].dropna()
-cmp = [["Period", "Sde394f26", "CAGR", "S63387f09", "CAGR", "Ahead by"]]
+cmp = [["Period", "Sde394f26", "CAGR", "S44984096", "CAGR", "Ahead by"]]
 for row in win[1:]:
     y = int(row[0].split()[1]); x = o[f"{y}-01-01":f"{y + 4}-12-31"]; v = CAP * x.iloc[-1] / x.iloc[0]
     mine = float(row[2].strip("₹ L").replace(",", "")) * 1e5
@@ -80,7 +80,7 @@ def rollq(x):
     v = (en / x.values)[x.index + pd.Timedelta(days=n5) <= x.index[-1]] * CAP
     return list(np.percentile(v, [0, 10, 50, 90, 100])) + [(v < CAP).mean()]
 qo, qm = rollq(o), rollq(e)
-cmproll = [["₹10 L after 5 years, any start day", "Sde394f26", "S63387f09"]] + \
+cmproll = [["₹10 L after 5 years, any start day", "Sde394f26", "S44984096"]] + \
           [[l, lak(a), lak(b)] for l, a, b in zip(["Worst", "10th percentile", "Median", "90th percentile", "Best"], qo, qm)] + \
           [["Windows ending below ₹10 L", f"{qo[-1] * 100:.1f}%", f"{qm[-1] * 100:.1f}%"]]
 json.dump({"cmp": cmp, "cmproll": cmproll, "dd": ddrows, "win": win, "roll": rollrows, "facts": facts}, open(OUT / "ruin.json", "w"), indent=1, ensure_ascii=False)
@@ -102,9 +102,9 @@ def table(rows, widths):
     return tb
 fig, ax = plt.subplots(figsize=(7.4, 2.8))
 ax.hist(dd * 100, bins=60, color="#b45309"); ax.set_xlabel("Worst drawdown over a simulated 20 years (%)")
-ax.set_title("S63387f09: 20,000 resampled 20-year histories", fontsize=9); ax.grid(alpha=.3)
+ax.set_title("S44984096: 20,000 resampled 20-year histories", fontsize=9); ax.grid(alpha=.3)
 fig.tight_layout(); fig.savefig(OUT / "dd_hist.png", dpi=160); plt.close(fig)
-story = [Paragraph("Risk of ruin and ₹10 lakh outcomes: S63387f09 (an earlier choice)", H1),
+story = [Paragraph("Risk of ruin and ₹10 lakh outcomes: S44984096 (your choice)", H1),
          Paragraph("1% risk, long only, no hedges, point-in-time NIFTY 500, costs included. Monthly returns resampled in "
                    "12-month blocks.", SUB), Paragraph("Verdict", H2)] + bl([
     "<b>Going bust is effectively impossible if the rules are followed:</b> 1% risk per trade, 20% position cap, size "
@@ -118,9 +118,9 @@ story += [Paragraph("Drawdown probabilities", H2), table(ddrows, [70 * mm, 30 * 
           Paragraph("₹10 lakh over each calendar 5-year period", H2), table(win, [45 * mm, 25 * mm, 28 * mm, 20 * mm, 32 * mm]),
           Paragraph("₹10 lakh over any 5-year window", H2), table(rollrows, [70 * mm, 45 * mm]),
           Paragraph("Compared with Sde394f26 (the original), ₹10 lakh per calendar 5-year period", H2)] + bl([
-    "S63387f09 ends ahead in every period. The gap is small before 2009 (same 2006–08 drawdowns) and large from 2009 "
-    "and after 2017, when the NIFTY 500 filter helped most. Losing 5-year windows fall from about 2% to under 1%.",
-    "Part of the edge (the 0.25R time stop) is within the random-pick spread; expect a smaller gap live."]) + [
+    f"S44984096 ends ahead in {sum(1 for r in cmp[1:] if r[-1].startswith('+'))} of {len(cmp) - 1} calendar periods; "
+    f"losing 5-year windows (any start day): Sde394f26 {qo[-1] * 100:.1f}%, S44984096 {qm[-1] * 100:.1f}%.",
+    "Part of the edge is within the random-pick spread (S44984096 random median 16.4%); expect a smaller gap live."]) + [
           table(cmp, [40 * mm, 25 * mm, 18 * mm, 25 * mm, 18 * mm, 22 * mm]), Paragraph("", SUB),
           table(cmproll, [60 * mm, 30 * mm, 30 * mm]),
           Paragraph("Backtest figures before tax; live results will be somewhat lower. Research only, not advice.", SUB)]

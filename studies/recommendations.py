@@ -91,7 +91,7 @@ if __name__ == "__main__":
             {"title": "Your strategy: ₹10 lakh over each 5-year period", "mine": True, "pdf_only": True, "head": _r["win"][0],
              "rows": _r["win"][1:], "notes": [f"{a}: {b}" for a, b in _r["roll"][1:]]},
             {"title": "₹10 lakh: your strategy vs Sde394f26", "mine": True, "pdf_only": True, "head": _r["cmp"][0],
-             "rows": _r["cmp"][1:], "notes": [f"{a}: Sde394f26 {b}, S63387f09 {c}" for a, b, c in _r["cmproll"][1:]]},
+             "rows": _r["cmp"][1:], "notes": [f"{a}: Sde394f26 {b}, S44984096 {c}" for a, b, c in _r["cmproll"][1:]]},
             {"title": "Your strategy: risk of ruin", "mine": True, "pdf_only": True, "head": _r["dd"][0], "rows": _r["dd"][1:],
              "notes": ["From 20,000 resampled 20-year histories (monthly returns, 12-month blocks)."] + _r["facts"]
                       + ["Going bust is effectively impossible while the rules are followed; never add leverage or margin."]}]

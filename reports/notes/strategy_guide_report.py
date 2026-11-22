@@ -1,7 +1,7 @@
 """Build reports/notes/strategy_guide.pdf: step-by-step trading guide for S44984096 (your choice).
 
 Every rule here is written from the code that ran the backtest (lib/engine.py, lib/portfolio.py, run_strategy.py,
-strategies/stexit/A_flip.json). Also bundled at the front of each replay workbook (studies/replay.py).
+strategies/stexit/A_flip_capentry.json). Also bundled at the front of each replay workbook (studies/replay.py).
 """
 import sys
 from pathlib import Path

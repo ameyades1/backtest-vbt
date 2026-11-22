@@ -5,7 +5,7 @@
     python studies/replay.py 2016 --rerun         # force a fresh run
 
 A fresh run of the strategy starting on 1 Jan of --start with --capital (default ₹10 lakh), everything else exactly
-as strategies/stexit/A_flip.json. Writes results/studies/replay/from<start>/:
+as strategies/stexit/A_flip_capentry.json. Writes results/studies/replay/from<start>/:
     run/ (summary, equity, fills, signals log)  setups_<year>.csv  workbook_<year>.pdf
 Each month has two pages: "Your turn" (portfolio going in, last month's setups and the orders they imply) and
 "What happened" (fills with the sizing worked out, skips and why, exits with P&L and R).
