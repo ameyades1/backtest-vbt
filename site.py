@@ -38,7 +38,7 @@ for cfgp in sorted(ROOT.glob("results/*/*/*/config.json")):
             "family": run.parts[-3], "variant": run.parts[-2], "universe": run.parts[-1].upper(), "exit": ex,
             "mkt": (f"NIFTY 500 > {df_['market_sma']}-DMA" if df_.get("market_index") == "^CRSLDX" else
                     f"NIFTY > {df_['market_sma']}-DMA") if "market_sma" in df_ else "none",
-            **m,
+            **{k: v for k, v in m.items() if not k.startswith("_")},
             "pdf": REPO + (run / "report.pdf").relative_to(ROOT).as_posix(),
             "desc": c.get("description", ""),
         })
@@ -58,6 +58,8 @@ COLS = [  # key, header, format, tooltip
     ("avg_loss", "Avg loss %", "{:+.1f}", "Average net return of losing trades"),
     ("payoff", "Payoff", "{:.2f}", "Average win ÷ average loss"),
     ("exp_r", "Expectancy R", "{:+.2f}", "Average net profit per rupee risked (1R = planned loss to the stop)"),
+    ("sqn", "SQN", "{:.1f}", "Van Tharp's System Quality Number: mean R ÷ std dev of R × √(trades, max 100). "
+     "1.6–1.9 poor but tradable, 2–2.4 average, 2.5–2.9 good, 3–5 excellent"),
     ("cagr", "CAGR %", "{:.1f}", "Compound annual growth of the account"),
     ("mdd", "Max DD %", "{:.0f}", "Largest fall from an equity peak"),
     ("mar", "CAGR / DD", "{:.2f}", "CAGR divided by max drawdown: return per unit of pain"),
@@ -92,6 +94,9 @@ GLOSSARY = {
     "Avg loss %": "Average net return of the losing trades only. Usually close to the stop distance plus costs.",
     "Payoff": "Average win divided by average loss. A payoff of 3 means the typical winner is three times the "
               "typical loser. Low win rates need high payoffs to make money.",
+    "SQN": "Van Tharp's System Quality Number = average R ÷ standard deviation of R × √(number of trades, capped at 100). "
+           "It measures how consistently a system earns its expectancy. 1.6–1.9 poor but tradable, 2–2.4 average, "
+           "2.5–2.9 good, 3–5 excellent. Trend systems with a few huge winners score low despite high expectancy.",
     "Expectancy R": "Average net profit per rupee risked. 1R is the planned loss if the stop is hit (about ₹1,000 here). "
                     "+0.5R means each trade earns half of what it risks on average; below 0 the strategy loses money.",
     "CAGR %": "Compound annual growth rate: the steady yearly return that would turn ₹1 lakh into the final equity.",

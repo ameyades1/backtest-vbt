@@ -63,6 +63,88 @@
    ]
   },
   {
+   "title": "Your strategy: Van Tharp view (SQN and market types)",
+   "mine": true,
+   "head": [
+    "Market type",
+    "Days %",
+    "Strategy / yr",
+    "NIFTY / yr",
+    "Trades",
+    "Win %",
+    "Expectancy R",
+    "Share of R"
+   ],
+   "rows": [
+    [
+     "Bull quiet",
+     "28",
+     "+25.0%",
+     "+21.1%",
+     "137",
+     "26",
+     "+2.42",
+     "35%"
+    ],
+    [
+     "Bull volatile",
+     "15",
+     "+37.8%",
+     "+36.6%",
+     "90",
+     "29",
+     "+3.74",
+     "35%"
+    ],
+    [
+     "Sideways quiet",
+     "20",
+     "+12.2%",
+     "+10.5%",
+     "98",
+     "19",
+     "+2.97",
+     "31%"
+    ],
+    [
+     "Sideways volatile",
+     "14",
+     "+7.5%",
+     "-18.8%",
+     "73",
+     "16",
+     "-0.29",
+     "-2%"
+    ],
+    [
+     "Bear quiet",
+     "7",
+     "+3.9%",
+     "-8.2%",
+     "8",
+     "38",
+     "+1.98",
+     "2%"
+    ],
+    [
+     "Bear volatile",
+     "15",
+     "+0.5%",
+     "+12.7%",
+     "4",
+     "0",
+     "-0.93",
+     "-0%"
+    ]
+   ],
+   "notes": [
+    "SQN 1.9 on Tharp's 100-trade basis (1.6–1.9 poor but tradable, 2–2.4 average, 2.5–2.9 good, 3–5 excellent); 3.8 on all 410 trades. Expectancy +2.32R, std dev of R 12.3R. Sa1f19d11: SQN 2.0, expectancy +2.53R.",
+    "Low SQN, high expectancy: a few huge winners (best 137R) widen the R spread. Without the 10 best trades expectancy is +0.61R, still positive; missing big winners is the main risk.",
+    "Market types: bull days and quiet sideways days earn almost all the R; volatile sideways markets are the bleed (negative expectancy), and the NIFTY 500 filter keeps the strategy mostly out of bear markets (few trades, near-flat returns).",
+    "Each day typed from NIFTY 50 up to the previous close: 13-week change above +5% bull, below −5% bear; volatile if 20-day volatility is above its rolling 3-year median. Trades filed by their entry day."
+   ]
+  },
+  {
    "title": "Your strategy: ₹10 lakh over each 5-year period",
    "mine": true,
    "pdf_only": true,

@@ -30,7 +30,11 @@ def compute(fills: pd.DataFrame, summary: pd.Series, start: str) -> dict | None:
     yrs = (c.exit_date.max() - pd.Timestamp(start)).days / 365.25
     costs, gsum = (c.gross - c.pnl).sum(), c.gross.sum()
     r = c.pnl / c.risk.replace(0, np.nan)
-    return {"win": (c.ret > 0).mean() * 100, "avg_ret": c.ret.mean(), "avg_rs": c.pnl.mean(),
+    rs = r.dropna()
+    sqn = rs.mean() / rs.std() * np.sqrt(min(len(rs), 100)) if len(rs) > 1 and rs.std() > 0 else np.nan
+    return {"sqn": sqn, "sqn_all": rs.mean() / rs.std() * np.sqrt(len(rs)) if len(rs) > 1 and rs.std() > 0 else np.nan,
+            "r_sd": rs.std(), "_closed": c,
+            "win": (c.ret > 0).mean() * 100, "avg_ret": c.ret.mean(), "avg_rs": c.pnl.mean(),
             "avg_win": win.mean() if len(win) else np.nan, "avg_loss": loss.mean() if len(loss) else np.nan,
             "payoff": win.mean() / -loss.mean() if len(win) and len(loss) else np.nan,
             "exp_r": r.mean(), "cagr": summary["CAGR %"], "mdd": summary["Max DD %"],

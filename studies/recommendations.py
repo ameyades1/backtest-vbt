@@ -95,6 +95,28 @@ if __name__ == "__main__":
             {"title": "Your strategy: risk of ruin", "mine": True, "pdf_only": True, "head": _r["dd"][0], "rows": _r["dd"][1:],
              "notes": ["From 20,000 resampled 20-year histories (monthly returns, 12-month blocks)."] + _r["facts"]
                       + ["Going bust is effectively impossible while the rules are followed; never add leverage or margin."]}]
+    import pandas as pd
+    from lib import metrics, markettype
+    def _m(n):
+        d = ROOT / "results" / n / "nifty500_pit"
+        sm = pd.read_csv(d / "summary.csv", index_col=0).iloc[0]
+        return metrics.compute(pd.read_csv(d / "fills_none.csv"), sm, "2000-01-01"), \
+            pd.read_csv(d / "equity.csv", index_col=0, parse_dates=True).iloc[:, 0]
+    _a, _ea = _m("stexit/A_flip_capentry"); _b, _ = _m("variants/st14_3")
+    _c = _a["_closed"]; _R = (_c.pnl / _c.risk).dropna(); _x = _R.drop(_R.nlargest(10).index)
+    REC["sections"].insert(1, {
+        "title": "Your strategy: Van Tharp view (SQN and market types)", "mine": True,
+        "head": markettype.breakdown(_ea, _c)[0], "rows": markettype.breakdown(_ea, _c)[1:],
+        "notes": [f"SQN {_a['sqn']:.1f} on Tharp's 100-trade basis (1.6–1.9 poor but tradable, 2–2.4 average, 2.5–2.9 good, "
+                  f"3–5 excellent); {_a['sqn_all']:.1f} on all {_a['trades']} trades. Expectancy {_a['exp_r']:+.2f}R, "
+                  f"std dev of R {_a['r_sd']:.1f}R. Sa1f19d11: SQN {_b['sqn']:.1f}, expectancy {_b['exp_r']:+.2f}R.",
+                  f"Low SQN, high expectancy: a few huge winners (best {_R.max():.0f}R) widen the R spread. Without the 10 "
+                  f"best trades expectancy is {_x.mean():+.2f}R, still positive; missing big winners is the main risk.",
+                  "Market types: bull days and quiet sideways days earn almost all the R; volatile sideways markets are the "
+                  "bleed (negative expectancy), and the NIFTY 500 filter keeps the strategy mostly out of bear markets "
+                  "(few trades, near-flat returns).",
+                  "Each day typed from NIFTY 50 up to the previous close: 13-week change above +5% bull, below −5% bear; "
+                  "volatile if 20-day volatility is above its rolling 3-year median. Trades filed by their entry day."]})
     json.dump(REC, open(OUT / "recommendations.json", "w"), indent=1, ensure_ascii=False)
     ss = getSampleStyleSheet()
     DARK, GREY = "#0f172a", "#64748b"
@@ -104,7 +126,7 @@ if __name__ == "__main__":
     TC = ParagraphStyle("TC", parent=ss["Normal"], fontSize=8, leading=10)
     TH = ParagraphStyle("TH", parent=TC, textColor=colors.white, fontName="Helvetica-Bold")
     BL = ParagraphStyle("BL", parent=ss["Normal"], fontSize=8.6, leading=11.5, leftIndent=10)
-    W = {5: [18 * mm, 70 * mm, 15 * mm, 15 * mm, 68 * mm], 2: [70 * mm, 116 * mm], 4: [38 * mm, 50 * mm, 42 * mm, 56 * mm], 6: [11 * mm, 20 * mm, 55 * mm, 15 * mm, 15 * mm, 70 * mm]}
+    W = {8: [30 * mm, 15 * mm, 25 * mm, 23 * mm, 17 * mm, 16 * mm, 30 * mm, 30 * mm], 5: [18 * mm, 70 * mm, 15 * mm, 15 * mm, 68 * mm], 2: [70 * mm, 116 * mm], 4: [38 * mm, 50 * mm, 42 * mm, 56 * mm], 6: [11 * mm, 20 * mm, 55 * mm, 15 * mm, 15 * mm, 70 * mm]}
     story = [Paragraph("Strategy recommendations", H1), Paragraph(f"{REC['intro']} Updated {REC['date']}.", SUB)]
     for sec in REC["sections"]:
         widths = [12 * mm, 174 * mm] if sec["title"] == "Before real money" else [45 * mm, 30 * mm, 35 * mm, 30 * mm, 46 * mm] if "₹10 lakh" in sec["title"] else [40 * mm, 30 * mm, 26 * mm, 30 * mm, 26 * mm, 34 * mm] if "vs Sde394f26" in sec["title"] else W[len(sec["head"])]

@@ -9,7 +9,7 @@ summary.csv, equity.csv and fills_*.csv; nothing is written by hand.
 import json, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib import ids, portfolio, metrics
+from lib import ids, portfolio, metrics, markettype
 _IDS = ids.by_name()
 import matplotlib
 matplotlib.use("Agg")
@@ -251,6 +251,26 @@ def rules(c):
     return [[a, Paragraph(b, SM)] for a, b in rows[1:]], rows[0]
 
 
+def mt_block(MS, EQ, best):
+    """Van Tharp market types for the no-target exit (or the best exit): where the strategy earns and bleeds."""
+    col = "No target" if "No target" in MS and MS["No target"] else best
+    m = MS.get(col) or {}
+    if "_closed" not in m or col not in EQ:
+        return []
+    try:
+        rows = markettype.breakdown(EQ[col], m["_closed"])
+    except Exception:
+        return []
+    return [KeepTogether([Paragraph(f"Market types ({col.replace('Target ', '')})", H2),
+                          table(rows, [32 * mm, 14 * mm, 22 * mm, 20 * mm, 15 * mm, 14 * mm, 22 * mm, 20 * mm]),
+                          Paragraph("Each day is typed from NIFTY 50 (Sensex before 2007) up to the previous close. Bull / bear: "
+                                    "13-week change above +5% / below −5%, otherwise sideways. Volatile: 20-day volatility "
+                                    "above its rolling 3-year median. Strategy / yr and NIFTY / yr = annualised return on the "
+                                    "days of that type. Trades are filed by the type on their entry day; Share of R = that "
+                                    "type's part of all R earned. NIFTY / yr in bear-volatile is often positive: it holds the "
+                                    "sharp rebound days that follow falls.", SM)])]
+
+
 def build(run: Path):
     c = json.load(open(run / "config.json"))
     S = pd.read_csv(run / "summary.csv", index_col=0)
@@ -290,6 +310,7 @@ def build(run: Path):
     KM = [("Closed trades", "trades", "{:,}"), ("Winners / losers", None, None), ("Win %", "win", "{:.1f}"),
           ("Avg trade %", "avg_ret", "{:+.1f}"), ("Avg trade (Rs)", "avg_rs", "{:+,.0f}"), ("Avg win %", "avg_win", "{:+.1f}"),
           ("Avg loss %", "avg_loss", "{:+.1f}"), ("Payoff", "payoff", "{:.2f}"), ("Expectancy R", "exp_r", "{:+.2f}"),
+          ("SQN (100 trades)", "sqn", "{:.1f}"), ("SQN (all trades)", "sqn_all", "{:.1f}"), ("Std dev of R", "r_sd", "{:.1f}"),
           ("Profit factor", "pf", "{:.2f}"), ("Gross profit (Rs)", "gross_win", "{:,.0f}"),
           ("Gross loss (Rs)", "gross_loss", "{:,.0f}"), ("CAGR / DD", "mar", "{:.2f}"), ("Trades / yr", "tpy", "{:.1f}"),
           ("Max losing streak", "streak", "{:d}"), ("Median hold (days)", "hold", "{:.0f}"),
@@ -352,7 +373,10 @@ def build(run: Path):
                                       "trade. Payoff = average win % ÷ average loss %. Expectancy R = average net profit "
                                       "per rupee risked (1R = planned loss to the initial stop). Profit factor = gross "
                                       "profit ÷ gross loss. CAGR / DD = return per unit of drawdown. Costs % of gross = "
-                                      "fees + slippage as a share of profit before costs.", SM)]),
+                                      "fees + slippage as a share of profit before costs. SQN (Van Tharp's System Quality Number) = "
+                                      "mean R ÷ std dev of R × √N, N capped at 100: 1.6–1.9 poor but tradable, 2–2.4 average, "
+                                      "2.5–2.9 good, 3–5 excellent. A few very large winners raise the std dev and lower SQN.", SM)]),
+              *mt_block(MS, EQ, best),
               KeepTogether([Paragraph("Wins and losses (closed trades, after costs)", H2),
                             table(wl, [24 * mm, 22 * mm, 14 * mm, 22 * mm, 22 * mm, 22 * mm, 22 * mm, 26 * mm])]),
               Paragraph("Reproduce", H2),
