@@ -281,10 +281,18 @@ def build(run: Path):
     for i, col in enumerate(S.index):
         e = EQ[col].dropna()
         ax.plot(e.index, e / 1e5, lw=1.4, color=DARK if col == "No target" else cm(0.35 + 0.6 * i / max(1, len(S) - 1)),
-                label=col.replace("Target ", ""))
+                label=f"{col.replace('Target ', '')} ({S.loc[col, 'CAGR %']:.1f}%/yr)")
+    try:  # NIFTY 50 buy-and-hold from the same start and capital (price index, no dividends)
+        from lib.engine import nifty_close
+        e0 = EQ[S.index[0]].dropna(); nx = nifty_close().reindex(e0.index, method="ffill").dropna()
+        yrs = (nx.index[-1] - nx.index[0]).days / 365.25
+        ax.plot(nx.index, nx / nx.iloc[0] * e0.loc[nx.index[0]] / 1e5, lw=1.1, color="#94a3b8", ls="--",
+                label=f"NIFTY 50 ({((nx.iloc[-1] / nx.iloc[0]) ** (1 / yrs) - 1) * 100:.1f}%/yr)")
+    except Exception:
+        pass
     ax.set_yscale("log"); ax.yaxis.set_major_formatter(lambda v, _: f"Rs {v:g}L")
     ax.legend(frameon=False, fontsize=7.5, loc="upper left", ncol=4)
-    ax.set_title("Equity", loc="left", fontsize=10.5, fontweight="bold", color=DARK)
+    ax.set_title("Equity vs NIFTY 50 (log scale)", loc="left", fontsize=10.5, fontweight="bold", color=DARK)
     style(ax); fig.tight_layout(); p = run / "_c1.png"; fig.savefig(p); plt.close(fig); charts.append(p)
 
     fig, ax = plt.subplots(figsize=(7.2, 2.6), dpi=200)

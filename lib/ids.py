@@ -126,4 +126,5 @@ def pdf_section(names, h2_style, fs=7.2):
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0f172a")),
         ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f1f5f9")]),
         ("TOPPADDING", (0, 0), (-1, -1), 2.2), ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2)]))
-    return [KeepTogether([Paragraph("Strategy IDs", h2_style), tb])]
+    from . import markettype
+    return markettype.compact_flowables(names, h2_style) + [KeepTogether([Paragraph("Strategy IDs", h2_style), tb])]

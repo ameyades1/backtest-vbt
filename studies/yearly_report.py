@@ -85,6 +85,8 @@ story = [Paragraph("Year by year: S44984096 (your choice) vs the index", H1),
 story += [Paragraph("Year by year", H2), tb,
           Paragraph("Worst drop: deepest fall from a peak within the year. Trades: closed in that year (winners).", SM),
           Image(str(OUT / "equity.png"), width=180 * mm, height=73 * mm)]
+from lib import markettype
+story += markettype.flowables(markettype.for_run(D if "D" in dir() else ROOT / "results" / NAME / "nifty500_pit"), H2)
 story += ids.pdf_section([NAME], H2)
 SimpleDocTemplate(str(OUT / "report.pdf"), pagesize=A4, leftMargin=12 * mm, rightMargin=12 * mm, topMargin=12 * mm,
                   bottomMargin=12 * mm, title="Year by year").build(story)

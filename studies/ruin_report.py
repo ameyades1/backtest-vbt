@@ -124,6 +124,8 @@ story += [Paragraph("Drawdown probabilities", H2), table(ddrows, [70 * mm, 30 * 
           table(cmp, [40 * mm, 25 * mm, 18 * mm, 25 * mm, 18 * mm, 22 * mm]), Paragraph("", SUB),
           table(cmproll, [60 * mm, 30 * mm, 30 * mm]),
           Paragraph("Backtest figures before tax; live results will be somewhat lower. Research only, not advice.", SUB)]
+from lib import markettype
+story += markettype.flowables(markettype.for_run(D if "D" in dir() else ROOT / "results" / NAME / "nifty500_pit"), H2)
 story += ids.pdf_section([NAME, "longshort/L_cap20_dd"], H2)
 SimpleDocTemplate(str(OUT / "report.pdf"), pagesize=A4, leftMargin=12 * mm, rightMargin=12 * mm, topMargin=12 * mm,
                   bottomMargin=12 * mm, title="Risk of ruin").build(story)

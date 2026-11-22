@@ -190,9 +190,16 @@ def build(path=OUT):
         "About <b>23% of trades win</b>; the average loss is about −6.7%, the average win about +81%. Losing streaks of "
         "20–30 trades happen (29 in a row in the backtest).",
         "The top 10 trades in 26 years made more than all of the net profit; never cut a big winner early.",
+        "Van Tharp view: expectancy +2.32R per trade but SQN 1.9 (poor but tradable): a few huge winners make results "
+        "lumpy. Without the 10 best trades expectancy is +0.61R. Take every signal and keep risk at 1%.",
         "Drawdowns of −20% to −30% happen (worst −24% in the backtest, −27% median across random picks); the account "
         "spends long stretches at half risk.",
-        "Calendar years from about −14% to +105%; flat or slightly negative years are common."]) + [
+        "Calendar years from about −14% to +105%; flat or slightly negative years are common.",
+        "Where it earns: bull markets and quiet sideways markets give almost all the R. <b>Choppy, volatile sideways "
+        "markets are the bleed</b> (expectancy below zero); in bear markets the NIFTY 500 filter keeps you mostly in cash. "
+        "Expect the dull, losing stretches in sideways years (2007–12 and 2015–20 in the backtest)."]) + \
+        __import__("lib.markettype", fromlist=["x"]).flowables(
+            __import__("lib.markettype", fromlist=["x"]).for_run(ROOT / "results" / "stexit" / "A_flip_capentry" / "nifty500_pit"), H2) + [
         Paragraph("Research and education only, not investment advice.", SM)]
     SimpleDocTemplate(str(path), pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm, topMargin=14 * mm,
                       bottomMargin=14 * mm, title="S44984096 trading guide").build(s)

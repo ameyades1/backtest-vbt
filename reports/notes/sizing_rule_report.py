@@ -87,6 +87,8 @@ story += [Paragraph("What it means", H2)] + bl([
     "recoveries. Part of the CAGR is traded for safety.",
     "In live trading, follow it mechanically: compute the peak from your own account statement each day, and size "
     "the next trade from the previous close."])
+from lib import markettype
+story += markettype.flowables(markettype.for_run(ROOT / "results" / "stexit" / "A_flip_capentry" / "nifty500_pit"), H2)
 story.append(Paragraph("Research and education only, not investment advice.", SUB))
 SimpleDocTemplate(str(OUT), pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm, topMargin=14 * mm,
                   bottomMargin=14 * mm, title="Position sizing and the drawdown rule").build(story)
