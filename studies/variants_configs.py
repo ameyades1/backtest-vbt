@@ -46,5 +46,14 @@ for r in (1.0, 1.5):                                  # neighbours of the 7-slot
 for n, m in ((12, 3), (14, 2.5)):                     # neighbours of Supertrend(14, 3)
     var(f"st{n}_{m:g}".replace(".", "p"), "7-neighbours", f"Weekly Supertrend({n}, {m:g}) for the exit instead of (10, 3)",
         lambda c, n=n, m=m: c["exits"]["supertrend_exit_when_no_target"].update(period=n, mult=m))
+for o in (20, 25):                                    # robustness: StochRSI oversold level (base 30)
+    var(f"os{o}", "8-robust", f"StochRSI oversold level {o} instead of 30",
+        lambda c, o=o: c["setup"].update(oversold=o))
+for d in (20, 25, 30):                                # robustness: time stop (base 25 days / 0.25R)
+    for r in (0.25, 0.5):
+        if (d, r) == (25, 0.25):
+            continue
+        var(f"ts{d}_{r:g}".replace(".", "p"), "8-robust", f"Time stop: {r:g}R needed after {d} days (instead of 0.25R / 25)",
+            lambda c, d=d, r=r: c["exits"]["time_stop"].update(days=d, min_r=r))
 json.dump(jobs, open(J / "jobs.json", "w"), indent=1)
 print(len(jobs), "configs")

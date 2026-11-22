@@ -398,3 +398,10 @@ S01a1ffb6-41b1-78f0-bafa-270c35200f2f,S35200f2f,variants/r1p5_s6,strategies/vari
 S01a1ffb6-41b2-7892-a9bd-34c64ed7ae52,S4ed7ae52,variants/r1p5_s8,strategies/variants/r1p5_s8.json,2026-11-21,active
 S01a1ffb6-41b3-79da-a742-76f7f34bb11d,Sf34bb11d,variants/st12_3,strategies/variants/st12_3.json,2026-11-21,active
 S01a1ffb6-41b4-73cf-973a-b7a2e6e624fa,Se6e624fa,variants/st14_2p5,strategies/variants/st14_2p5.json,2026-11-21,active
+S01a201dc-6bbd-78e5-acc7-14bac512a8cb,Sc512a8cb,variants/os20,strategies/variants/os20.json,2026-11-22,active
+S01a201dc-6bbe-793a-88ba-10ed9578a50b,S9578a50b,variants/os25,strategies/variants/os25.json,2026-11-22,active
+S01a201dc-6bbf-7ee0-8580-869658e05ee3,S58e05ee3,variants/ts20_0p25,strategies/variants/ts20_0p25.json,2026-11-22,active
+S01a201dc-6bc0-794b-b562-177f5d5ce341,S5d5ce341,variants/ts20_0p5,strategies/variants/ts20_0p5.json,2026-11-22,active
+S01a201dc-6bc1-7e50-9bb2-53d0526db558,S526db558,variants/ts25_0p5,strategies/variants/ts25_0p5.json,2026-11-22,active
+S01a201dc-6bc2-7e72-85d6-c39accf1e731,Sccf1e731,variants/ts30_0p25,strategies/variants/ts30_0p25.json,2026-11-22,active
+S01a201dc-6bc3-7fcd-bc88-8b3be5dffb39,Se5dffb39,variants/ts30_0p5,strategies/variants/ts30_0p5.json,2026-11-22,active

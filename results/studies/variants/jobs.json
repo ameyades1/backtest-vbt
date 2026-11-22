@@ -148,5 +148,47 @@
   "group": "7-neighbours",
   "desc": "Weekly Supertrend(14, 2.5) for the exit instead of (10, 3)",
   "config": "strategies/variants/st14_2p5.json"
+ },
+ {
+  "name": "variants/os20",
+  "group": "8-robust",
+  "desc": "StochRSI oversold level 20 instead of 30",
+  "config": "strategies/variants/os20.json"
+ },
+ {
+  "name": "variants/os25",
+  "group": "8-robust",
+  "desc": "StochRSI oversold level 25 instead of 30",
+  "config": "strategies/variants/os25.json"
+ },
+ {
+  "name": "variants/ts20_0p25",
+  "group": "8-robust",
+  "desc": "Time stop: 0.25R needed after 20 days (instead of 0.25R / 25)",
+  "config": "strategies/variants/ts20_0p25.json"
+ },
+ {
+  "name": "variants/ts20_0p5",
+  "group": "8-robust",
+  "desc": "Time stop: 0.5R needed after 20 days (instead of 0.25R / 25)",
+  "config": "strategies/variants/ts20_0p5.json"
+ },
+ {
+  "name": "variants/ts25_0p5",
+  "group": "8-robust",
+  "desc": "Time stop: 0.5R needed after 25 days (instead of 0.25R / 25)",
+  "config": "strategies/variants/ts25_0p5.json"
+ },
+ {
+  "name": "variants/ts30_0p25",
+  "group": "8-robust",
+  "desc": "Time stop: 0.25R needed after 30 days (instead of 0.25R / 25)",
+  "config": "strategies/variants/ts30_0p25.json"
+ },
+ {
+  "name": "variants/ts30_0p5",
+  "group": "8-robust",
+  "desc": "Time stop: 0.5R needed after 30 days (instead of 0.25R / 25)",
+  "config": "strategies/variants/ts30_0p5.json"
  }
 ]

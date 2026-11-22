@@ -27,7 +27,8 @@ WIN = [(2000, 2004), (2005, 2009), (2010, 2014), (2015, 2019), (2020, 2026)]
 GROUPS = {"1-grid": "1. Risk per trade × number of slots", "2-cash": "2. Idle cash: liquid fund or nothing",
           "3-costs": "3. Broker costs: Sharekhan or Zerodha", "4-liquidity": "4. Liquidity floor",
           "5-supertrend": "5. Supertrend settings for the exit", "6-ranking": "6. Which same-day signal gets the slot",
-          "7-neighbours": "7. Neighbouring settings (robustness)"}
+          "7-neighbours": "7. Neighbouring settings (robustness)",
+          "8-robust": "8. Robustness of the fitted parts: StochRSI oversold level and time stop"}
 
 
 def load(n):
