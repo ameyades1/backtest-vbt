@@ -13,23 +13,10 @@ from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
 
 OUT = ROOT / "reports" / "notes" / "sizing_rule.pdf"
-DARK, GREY, AMBER = "#0f172a", "#64748b", "#b45309"
-ss = getSampleStyleSheet()
-H1 = ParagraphStyle("h1", parent=ss["Title"], textColor=colors.HexColor(DARK), fontSize=19, alignment=0, spaceAfter=2)
-SUB = ParagraphStyle("sub", parent=ss["Normal"], textColor=colors.HexColor(GREY), fontSize=9.5, spaceAfter=8)
-H2 = ParagraphStyle("h2", parent=ss["Heading2"], textColor=colors.HexColor(AMBER), fontSize=13, spaceBefore=10, spaceAfter=4)
-P = ParagraphStyle("p", parent=ss["Normal"], fontSize=9.8, leading=14, spaceAfter=4)
-B = ParagraphStyle("b", parent=P, leftIndent=12, bulletIndent=2, spaceAfter=2.5)
-bl = lambda xs: [Paragraph(x, B, bulletText="•") for x in xs]
-
-
-def table(rows, widths):
-    t = Table(rows, colWidths=widths, repeatRows=1)
-    t.setStyle(TableStyle([("FONT", (0, 0), (-1, 0), "Helvetica-Bold", 9), ("FONT", (0, 1), (-1, -1), "Helvetica", 9),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(AMBER)),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fef3c7")]),
-        ("TOPPADDING", (0, 0), (-1, -1), 3), ("BOTTOMPADDING", (0, 0), (-1, -1), 3)]))
-    return t
+from lib import bookstyle as bs
+from lib.bookstyle import H1, SUB, H2, P, SM, bl, table
+B = bs.N
+DARK, GREY, AMBER = bs.INK, bs.GREY, bs.AMBER
 
 
 # replay the rule on the saved equity curve (same logic as lib/portfolio.py, previous close)
@@ -88,8 +75,7 @@ story += [Paragraph("What it means", H2)] + bl([
     "In live trading, follow it mechanically: compute the peak from your own account statement each day, and size "
     "the next trade from the previous close."])
 from lib import markettype
-story += markettype.flowables(markettype.for_run(ROOT / "results" / "stexit" / "A_flip_capentry" / "nifty500_pit"), H2)
+story += markettype.big(ROOT / "results" / "stexit" / "A_flip_capentry" / "nifty500_pit")
 story.append(Paragraph("Research and education only, not investment advice.", SUB))
-SimpleDocTemplate(str(OUT), pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm, topMargin=14 * mm,
-                  bottomMargin=14 * mm, title="Position sizing and the drawdown rule").build(story)
+bs.build(OUT, story, "Position sizing and the drawdown rule")
 print("wrote", OUT)

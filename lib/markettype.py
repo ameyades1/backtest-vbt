@@ -132,3 +132,13 @@ def compact_flowables(names, h2_style, fs=7.0):
     sm = ParagraphStyle("mtc", fontName="Helvetica", fontSize=6.8, leading=8.6, textColor=colors.HexColor("#64748b"))
     return [KeepTogether([Paragraph("Market types (Van Tharp): return per year · expectancy per trade", h2_style), tb,
                           Paragraph("No-target exit. " + NOTE, sm)])]
+
+
+def big(run, title="Market types (Van Tharp)"):
+    """Large-type version for the textbook-style notes (lib.bookstyle)."""
+    from . import bookstyle as bs
+    from reportlab.platypus import Paragraph
+    rows = for_run(run)
+    rows[0] = ["Market type", "Days %", "Strategy / yr", "NIFTY / yr", "Trades", "Win %", "Exp. R", "R share"]
+    return [Paragraph(title, bs.H2), bs.table(rows, [w * 2.8346 for w in (38, 17, 25, 22, 18, 16, 16, 18)]),
+            Paragraph("Exp. R = expectancy per trade; R share = that type's share of all R earned. " + NOTE, bs.SM)]

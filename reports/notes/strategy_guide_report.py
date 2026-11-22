@@ -16,27 +16,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, 
 from lib import costs
 
 OUT = ROOT / "reports" / "notes" / "strategy_guide.pdf"
-DARK, GREY, AMBER = "#0f172a", "#64748b", "#b45309"
-ss = getSampleStyleSheet()
-H1 = ParagraphStyle("h1", parent=ss["Title"], textColor=colors.HexColor(DARK), fontSize=19, alignment=0, spaceAfter=2)
-SUB = ParagraphStyle("sub", parent=ss["Normal"], textColor=colors.HexColor(GREY), fontSize=9, spaceAfter=6)
-H2 = ParagraphStyle("h2", parent=ss["Heading2"], textColor=colors.HexColor(AMBER), fontSize=13, spaceBefore=9, spaceAfter=3)
-H3 = ParagraphStyle("h3", parent=ss["Heading3"], textColor=colors.HexColor(DARK), fontSize=10.5, spaceBefore=5, spaceAfter=2)
-P = ParagraphStyle("p", parent=ss["Normal"], fontSize=9.3, leading=13, spaceAfter=3)
-N = ParagraphStyle("n", parent=P, leftIndent=14, bulletIndent=2, spaceAfter=2)
-SM = ParagraphStyle("sm", parent=P, fontSize=8, leading=10.5, textColor=colors.HexColor(GREY))
-bl = lambda xs: [Paragraph(x, N, bulletText="•") for x in xs]
-num = lambda xs: [Paragraph(x, N, bulletText=f"{i}.") for i, x in enumerate(xs, 1)]
-
-
-def table(rows, widths):
-    rows = [[Paragraph(c, P) if isinstance(c, str) else c for c in r] for r in rows]
-    t = Table(rows, colWidths=widths, repeatRows=1)
-    t.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(AMBER)),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fef3c7")]),
-        ("TOPPADDING", (0, 0), (-1, -1), 2.5), ("BOTTOMPADDING", (0, 0), (-1, -1), 2.5)]))
-    return t
+from lib import bookstyle as bs
+from lib.bookstyle import H1, SUB, H2, H3, P, N, SM, bl, num, table
+DARK, GREY, AMBER = bs.INK, bs.GREY, bs.AMBER
 
 
 buy, sell = costs.side_costs("sharekhan", "delivery")
@@ -48,12 +30,13 @@ def build(path=OUT):
                    "code that produced the backtest (15.9% CAGR / −24.2% max drawdown, point-in-time NIFTY 500, 2000–2026; "
                    "random-pick median 16.4%). Research and education only, not investment advice.", SUB),
          Paragraph("The strategy in one paragraph", H2),
-         Paragraph("Buy NIFTY 500 stocks in a long-term uptrend when their monthly momentum turns up after a pullback, but only "
+         bs.box("key", "Buy NIFTY 500 stocks in a long-term uptrend when their monthly momentum turns up after a pullback, but only "
                    "while the broad market (NIFTY 500 index) is above its 200-day average. Risk 1% of the account per trade "
                    "with a stop at the previous week's low. Cut trades that go nowhere after 25 days; otherwise hold until the "
                    "weekly Supertrend turns bearish, which can be years. Hold at most 10 stocks, no stock above 20% of the "
                    "account, and cut risk in half when the account is 10% below its high. About 1 trade in 4 wins; a few "
-                   "multi-year winners pay for everything.", P),
+                   "multi-year winners pay for everything."),
+         Paragraph("New to the terms (R, expectancy, Supertrend, SQN)? See reports/notes/concepts.pdf.", SM),
          Paragraph("Your monitoring routine", H2),
          Paragraph("Month end alone is not enough: stops act intraday, the time stop is checked daily and the Supertrend "
                    "exit weekly. Most of it can be left to standing orders with your broker.", P),
@@ -198,11 +181,9 @@ def build(path=OUT):
         "Where it earns: bull markets and quiet sideways markets give almost all the R. <b>Choppy, volatile sideways "
         "markets are the bleed</b> (expectancy below zero); in bear markets the NIFTY 500 filter keeps you mostly in cash. "
         "Expect the dull, losing stretches in sideways years (2007–12 and 2015–20 in the backtest)."]) + \
-        __import__("lib.markettype", fromlist=["x"]).flowables(
-            __import__("lib.markettype", fromlist=["x"]).for_run(ROOT / "results" / "stexit" / "A_flip_capentry" / "nifty500_pit"), H2) + [
+        __import__("lib.markettype", fromlist=["x"]).big(ROOT / "results" / "stexit" / "A_flip_capentry" / "nifty500_pit") + [
         Paragraph("Research and education only, not investment advice.", SM)]
-    SimpleDocTemplate(str(path), pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm, topMargin=14 * mm,
-                      bottomMargin=14 * mm, title="S44984096 trading guide").build(s)
+    bs.build(path, s, "S44984096 trading guide")
     return path
 
 
