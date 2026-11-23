@@ -29,6 +29,37 @@ def download(symbols: list[str], start: str = "1990-01-01", chunk: int = 50) -> 
             frames.append(df)
     out = pd.concat(frames)
     out.index.name = "Date"
+    return _fill_last_close(out)
+
+
+def _fill_last_close(out: pd.DataFrame, days: int = 7) -> pd.DataFrame:
+    """Yahoo often publishes the latest daily candle with Open/High/Low/Volume but Close = NaN for a day or more
+    (seen 23 Nov 2026), and such rows were dropped later, so the cache silently lagged a day. For rows in the last
+    `days` days with a missing Close, take the close of that day's last hourly bar (same price NSE shows as the
+    close to within the closing-auction difference) and widen High/Low to include it."""
+    miss = out["Close"].isna() & out[["Open", "High", "Low"]].notna().all(axis=1) \
+        & (out.index >= out.index.max() - pd.Timedelta(days=days))
+    syms = sorted(out.loc[miss, "Symbol"].unique())
+    if not syms:
+        return out
+    print(f"Filling the latest close for {len(syms)} symbols from hourly bars ...")
+    h = yf.download(syms, period="1mo", interval="1h", auto_adjust=False, group_by="ticker", progress=False,
+                    threads=True)
+    for sym in syms:
+        try:
+            c = h[sym]["Close"].dropna()
+        except KeyError:
+            continue
+        idx = c.index.tz_localize(None) if c.index.tz is None else c.index.tz_convert("Asia/Kolkata").tz_localize(None)
+        last = pd.Series(c.to_numpy(), index=idx.normalize()).groupby(level=0).last()
+        rows = miss & (out["Symbol"] == sym)
+        for d in out.index[rows]:
+            if d in last.index:
+                m = rows & (out.index == d)
+                out.loc[m, "Close"] = last[d]
+                out.loc[m, "Adj Close" if "Adj Close" in out else "Close"] = last[d]
+                out.loc[m, "High"] = out.loc[m, "High"].clip(lower=last[d])
+                out.loc[m, "Low"] = out.loc[m, "Low"].clip(upper=last[d])
     return out
 
 
