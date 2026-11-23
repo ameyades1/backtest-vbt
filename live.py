@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 import numpy as np
 import pandas as pd
-from lib import data, market, membership, costs, ids
+from lib import data, market, membership, costs, ids, nse_holidays
 from lib.engine import _signal_mask
 from lib.indicators import resample, supertrend, stoch_rsi, rsi, ema
 
@@ -39,6 +39,14 @@ BUY_C, SELL_C = costs.side_costs(CFG["costs"]["broker"], CFG["costs"]["product"]
 SLIP = CFG["costs"]["slippage_pct"] / 100
 IDX = CFG["entry"]["day_filters"].get("market_index", "^NSEI")
 SMA = CFG["entry"]["day_filters"]["market_sma"]
+# in the NIFTY 500 list but not tradeable as stocks here (REITs, no Yahoo data, NSE placeholders)
+EXCLUDE = {"BIRET.NS", "EMBASSY.NS", "BAGMANE.NS"}
+
+
+def tradeable(syms):
+    return {s for s in syms if s not in EXCLUDE and not s.upper().startswith("DUMMY")}
+
+
 POS_COLS = ["symbol", "entry_date", "entry", "stop", "qty", "tstop_done"]
 
 
@@ -154,10 +162,10 @@ def cmd_cash(a):
 
 
 def refresh(pos):
-    syms = membership.members_on(pd.Timestamp.today()) | set(pos.symbol) | {IDX, "^NSEI", "^BSESN"}
+    syms = tradeable(membership.members_on(pd.Timestamp.today())) | set(pos.symbol) | {IDX, "^NSEI", "^BSESN"}
     print(f"downloading {len(syms)} symbols from Yahoo ...")
     df = data.download(sorted(syms), start="1995-01-01")
-    data.save(data.clean(df) if hasattr(data, "clean") else df)
+    data.save(data.drop_prelisting(data.clean(df))[0])         # same cleaning as download.py
 
 
 def cmd_report(a):
@@ -169,7 +177,10 @@ def cmd_report(a):
     if day not in td:
         day = td[td <= day][-1]
     nxt = td[td > day]
-    tomorrow = nxt[0] if len(nxt) else pd.Timestamp(np.busday_offset(day.date(), 1, roll="forward"))
+    tomorrow = nxt[0] if len(nxt) else nse_holidays.next_trading_day(day)
+    if not len(nxt) and not nse_holidays.covered(tomorrow):
+        print(f"WARNING: no NSE holiday list for {tomorrow.year} in lib/nse_holidays.py; next trading day assumed "
+              f"{tomorrow:%a %d %b %Y}. Add the year's list.")
     week_end = a.week_end or tomorrow.to_period("W-FRI") != day.to_period("W-FRI")
     month_end = a.month_end or tomorrow.month != day.month
     out = {"day": day, "tomorrow": tomorrow, "week_end": week_end, "month_end": month_end}
@@ -219,12 +230,19 @@ def cmd_report(a):
             else:
                 acts.append((p.symbol, "keep", f"time stop passed (close {p.close:,.2f} ≥ {lvl:,.2f}); no longer applies"))
             pos.loc[pos.symbol == p.symbol, "tstop_done"] = True
-        if week_end:
-            w = resample(df, "W")
-            bull = supertrend(w, STC.get("period", 10), STC.get("mult", 3.0))
-            if len(bull) > 1 and not bull.iat[-1] and bull.iat[-2] and df.index[-1] >= p.entry_date:
-                acts.append((p.symbol, "SELL at next open", "weekly Supertrend(10, 3) turned bearish this week"))
-            pv.loc[i, "st"] = "bull" if bull.iat[-1] else "bear"
+        # weekly Supertrend: any bullish -> bearish flip on a completed week ending on/after entry is a sell. Checked on
+        # every report (not only at week end) so a holiday Friday or a missed report can't hide a flip.
+        w = resample(df, "W")
+        bull = supertrend(w, STC.get("period", 10), STC.get("mult", 3.0)).fillna(True).to_numpy(dtype=bool)
+        done = (w.index.to_period("W-FRI") < tomorrow.to_period("W-FRI")) if not week_end else \
+            (w.index.to_period("W-FRI") <= day.to_period("W-FRI"))
+        flips = [j for j in range(1, len(w)) if done[j] and bull[j - 1] and not bull[j] and w.index[j] >= p.entry_date]
+        if flips:
+            wk = w.index[flips[-1]]
+            late = wk.to_period("W-FRI") < day.to_period("W-FRI")
+            acts.append((p.symbol, "SELL at next open", f"weekly Supertrend(10, 3) turned bearish in the week ending "
+                                                        f"{wk:%d %b}" + (" (OVERDUE)" if late else "")))
+        pv.loc[i, "st"] = "bull" if bull[-1] else "bear"
         if month_end and p.value > CAP * equity:
             n = int(p.qty - CAP * equity // p.close)
             acts.append((p.symbol, f"SELL {n} shares at today's close / next open", f"20% cap: worth "
@@ -234,7 +252,7 @@ def cmd_report(a):
     # month end: new setups -> orders for next month
     if month_end:
         lst = []
-        members = membership.members_on(day) | membership.members_on(day + pd.offsets.MonthEnd(1))  # joining next month too
+        members = tradeable(membership.members_on(day) | membership.members_on(day + pd.offsets.MonthEnd(1)))  # joining next month too
         allb = data.load(sorted(members))
         for s in sorted(members):
             if s not in allb["Close"].columns:

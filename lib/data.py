@@ -18,18 +18,50 @@ def download(symbols: list[str], start: str = "1990-01-01", chunk: int = 50) -> 
         batch = symbols[i : i + chunk]
         print(f"Downloading {i + 1}-{i + len(batch)} of {len(symbols)} ...")
         raw = yf.download(batch, start=start, auto_adjust=False, group_by="ticker",
-                          progress=False, threads=True)
+                          progress=False, threads=True, actions=True)
         for sym in batch:
             if sym not in raw.columns.get_level_values(0):
                 continue
             df = raw[sym][FIELDS].dropna(how="all")
             if df.empty:
                 continue
+            if "Stock Splits" in raw[sym]:
+                sp = raw[sym]["Stock Splits"].fillna(0)
+                df = fix_split_gaps(df, sp[sp > 0], sym)
             df = df.assign(Symbol=sym)
             frames.append(df)
     out = pd.concat(frames)
     out.index.name = "Date"
     return _fill_last_close(out)
+
+
+RATIOS = [1.25, 4 / 3, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10, 15, 20, 25, 50, 100]
+
+
+def fix_split_gaps(df: pd.DataFrame, splits: pd.Series, sym: str = "", tol: float = 0.06) -> pd.DataFrame:
+    """Yahoo back-adjusts a recent split only to 1 January of the split year, leaving older rows unadjusted, so the
+    first trading day of that year shows a fake crash of about 1/k (TRENT 1 Jan 2026 -33%, CGCL 1 Jan 2024 -75%,
+    MOTILALOFS 1 Jan 2024 -75%, CONCOR 1 Jan 2025 -21%). For each split year, if the first trading day's open is
+    below the previous close by a standard split ratio (within `tol`; the recorded ratio can be wrong when a bonus
+    came with the split, e.g. CGCL 2 recorded, 4 actual), divide prices before that day by the ratio and multiply
+    volume by it."""
+    df = df.copy()
+    for y in sorted({d.year for d in splits.index}):
+        i = df.index.searchsorted(pd.Timestamp(y, 1, 1))
+        if i == 0 or i >= len(df):
+            continue
+        prev, cur = df["Close"].iat[i - 1], df["Open"].iat[i]
+        if not (prev > 0 and cur > 0) or prev / cur < 1.15:
+            continue
+        r = prev / cur
+        k = min(RATIOS + list(splits[splits.index.year == y]), key=lambda x: abs(r / x - 1))
+        if abs(r / k - 1) > tol:
+            continue
+        pre = df.index < df.index[i]
+        df.loc[pre, ["Open", "High", "Low", "Close"]] /= k
+        df.loc[pre, "Volume"] *= k
+        print(f"  {sym}: split gap on {df.index[i].date()} (×{k:g}) back-adjusted")
+    return df
 
 
 def _fill_last_close(out: pd.DataFrame, days: int = 7) -> pd.DataFrame:

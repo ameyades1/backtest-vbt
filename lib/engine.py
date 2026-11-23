@@ -202,7 +202,7 @@ def _signal_mask(daily, bars, tf, cfg):
     if "rsi_min" in f:
         rtf = f["rsi_min"].get("timeframe", tf)
         rb = bars if rtf == tf else resample(daily, rtf)
-        ok = (rsi(rb["Close"], f["rsi_min"].get("period", 14)) > f["rsi_min"]["value"]).to_numpy()
+        ok = (rsi(rb["Close"], f["rsi_min"].get("period", 14)) >= f["rsi_min"]["value"]).to_numpy()
         sig &= ok if rtf == tf else _on_candles(daily, rtf, ok, last_day)[0]
     for name, mk in FILTERS.items():
         if name in f:
