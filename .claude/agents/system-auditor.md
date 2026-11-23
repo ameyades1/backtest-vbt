@@ -80,6 +80,48 @@ risk manager who has been burnt by bad data and backtest bugs: assume nothing, c
 - `git status` clean apart from known scratch; registry (`strategies/registry.csv`) IDs match config files; no
   secrets (API keys, tokens) committed.
 
+## Regression checks: findings from earlier audits (re-check every one; say fixed / still open / regressed)
+
+Audit of 24 Nov 2026 (fixes in commits 1b0fdb0c and f8e85b1f unless marked open):
+1. **Missing latest close (critical, fixed 1b0fdb0c).** Yahoo publishes the newest daily candle with Close = NaN;
+   rows were dropped and the cache lagged a day. `lib/data.py:_fill_last_close` fills it from hourly bars. Check: no
+   current member lacks the latest trading day; the filled close equals Yahoo's hourly close.
+2. **Partial split adjustment (critical, fixed f8e85b1f).** Yahoo adjusts a recent split only from 1 Jan of the
+   split year, leaving a fake 1-Jan crash (TRENT 2026 ×1.5, CGCL 2024 ×4, MOTILALOFS 2024 ×4, GPIL 2024 ×5,
+   CONCOR 2025 ×1.25). `lib/data.py:fix_split_gaps` back-adjusts. Check: scan every cached symbol for a
+   day-over-day gap within 6% of a standard split ratio (1.25, 1.5, 2, 2.5, 3, 4, 5, 10, ...) and list any left,
+   including non-current (delisted) symbols that `live.py --refresh` does not re-download.
+3. **Refresh skipped pre-listing cleaning (critical, fixed f8e85b1f).** `live.py refresh()` saved without
+   `drop_prelisting`, re-inserting Yahoo's junk pre-listing rows; S44984096 then read 15.3% / 432 trades instead of
+   15.9% / 416. Check: every code path that calls `data.save` applies `clean` and `drop_prelisting`; no symbol has a
+   run of ≥ 20 identical closes at the start of its history.
+4. **No NSE holiday calendar in live.py (critical, fixed f8e85b1f).** `tomorrow` was the next weekday, so a holiday
+   Friday or month-end hid week-end / month-end work. Now `lib/nse_holidays.py`. Check: the next trading day after
+   the latest bar skips holidays; the year of the next trading day is listed (warn in December if next year's list is
+   missing); the list matches the weekdays NIFTY did not trade.
+5. **Supertrend exit only looked at the last two bars on week-end reports (critical, fixed f8e85b1f).** Now any
+   bullish→bearish flip on a completed week since entry is reported on every run (OVERDUE if late). Check with a
+   scratch account holding a stock that flipped in a past week, reported on a non-Friday.
+6. **Entry-day stop (major, OPEN, user decision pending).** The engine checks the stop only at the entry day's close
+   (`lib/engine.py`, `c <= stop`), but live trading places the stop order at entry: 43 of 1,587 trades (2.7%)
+   had entry-day Low ≤ stop < Close. Re-measure the count; report whether live.py's instructions and the engine
+   now agree.
+7. **Survivorship (major, OPEN).** PIT membership is complete but prices are missing for many past members
+   (2000: 77% have data; 2005: 79%; 2010: 80%; 2015: 86%; 2020: 96%). Re-measure; check reports state it.
+8. **Chartink weekly candle (major, process).** Chartink "Weekly" is the unfinished week; the engine uses the last
+   completed week. On a month-end that isn't a Friday the scan must use "1 week ago", or the live.py list is used.
+9. **Monthly RSI filter used `>` (minor, fixed f8e85b1f, now `>=`).** Check `lib/engine.py` rsi_min.
+10. **Hourly close vs NSE closing price (minor, OPEN).** The filled close is the last hourly price, not the official
+    closing auction; check that the next refresh replaces it once Yahoo publishes the daily close.
+11. **Untradeable entries (minor, fixed in live.py).** BIRET, EMBASSY (REITs), BAGMANE (no Yahoo data) and
+    DUMMY* placeholders are excluded via `live.EXCLUDE` / `tradeable()`. Check for new such entries in
+    `data/nifty500_list.csv`.
+12. **Sizing note drawdown (minor, OPEN).** `reports/notes/sizing_rule_report.py` hard-codes "near −28%"; S44984096's
+    max drawdown is −24.2%.
+13. **Win % differs (minor, OPEN).** `summary.csv` counts open trades (24.04%); site/PDF use closed trades (23%).
+14. **Demergers (note).** VEDL −65% (30 Apr 2026) and HEGAM −63% (7 Sep 2026) look like demergers in unadjusted
+    data; confirm and flag any open position or signal affected.
+
 ## Report format
 Start with a one-line verdict (e.g. "2 critical, 1 major, 4 minor; data and engine OK"). Then a table of findings
 ordered by severity (severity, area, file:line, finding, evidence, fix). Then a short list of the checks that passed
