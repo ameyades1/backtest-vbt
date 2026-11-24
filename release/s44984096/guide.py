@@ -25,7 +25,7 @@ from reportlab.platypus import (SimpleDocTemplate, Paragraph, Table, TableStyle,
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-import rules, backtest  # noqa: E402
+import rules, backtest, data  # noqa: E402
 
 PDF = HERE / "S44984096_guide.pdf"
 CAPITAL = 100_000.0
@@ -118,7 +118,21 @@ def stats(f, e):
     yr.iloc[0] = (ye.iloc[0] / CAPITAL - 1) * 100
     R = c.R.dropna()
     sqn = R.mean() / R.std() * np.sqrt(min(len(R), 100))
-    return dict(t=t, c=c, eq=eq, dd=dd, yr=yr, years=years, start=eq.index[0], end=eq.index[-1],
+    # NIFTY 50 price index (Yahoo ^NSEI, from 17 Sep 2007; no dividends), compared over the dates both exist
+    nf = data.load(["^NSEI"])["^NSEI"]["Close"].dropna()
+    nf = nf[nf.index <= eq.index[-1]]
+    n0 = nf.index[0]
+    yrs_n = (nf.index[-1] - n0).days / 365.25
+    se = eq[eq.index >= n0]
+    nye = nf.resample("YE").last()
+    nyr = nye.pct_change() * 100
+    nyr = nyr[nyr.index.year > n0.year]                          # first, part year left out
+    bench = dict(n0=n0, n_cagr=((nf.iloc[-1] / nf.iloc[0]) ** (1 / yrs_n) - 1) * 100,
+                 n_mdd=(nf / nf.cummax() - 1).min() * 100,
+                 s_cagr=((se.iloc[-1] / se.iloc[0]) ** (1 / yrs_n) - 1) * 100,
+                 s_mdd=(se / se.cummax() - 1).min() * 100, nyr=nyr,
+                 beat=int((yr.reindex(nyr.index) > nyr).sum()), nyears=len(nyr))
+    return dict(**bench, t=t, c=c, eq=eq, dd=dd, yr=yr, years=years, start=eq.index[0], end=eq.index[-1],
                 cagr=((eq.iloc[-1] / CAPITAL) ** (1 / years) - 1) * 100, mdd=dd.min() * 100,
                 mdd_at=dd.idxmin(), peak_at=eq[:dd.idxmin()].idxmax(), uw=uw,
                 n=len(t), nopen=int(t.open.sum()), win=win.mean() * 100, streak=streak,
@@ -161,7 +175,13 @@ def build(k, path=PDF):
          table([["CAGR", "Max drawdown", "Trades", "Win % (closed)", "Expectancy", "Longest without a new high"],
                 [f"{k['cagr']:.1f}%", f"{k['mdd']:.1f}%", f"{k['n']} ({k['per_year']:.0f}/yr)", f"{k['win']:.1f}%",
                  f"+{k['exp_r']:.2f}R", f"{k['uw']:.1f} years"]], [29 * mm] * 6),
-         Spacer(1, 4), Image(str(img), width=174 * mm, height=101 * mm),
+         Spacer(1, 4),
+         para(f"<b>Against the NIFTY 50</b> (price index, dividends not included; Yahoo data from {k['n0']:%d %b %Y}): "
+              f"over the same dates, {k['n0']:%b %Y} to {k['end']:%b %Y}, the NIFTY 50 returned "
+              f"<b>{k['n_cagr']:.1f}% a year</b> with a {k['n_mdd']:.1f}% max drawdown; S44984096 returned "
+              f"<b>{k['s_cagr']:.1f}% a year</b> with {k['s_mdd']:.1f}%. It beat the index in {k['beat']} of "
+              f"{k['nyears']} full calendar years."),
+         Image(str(img), width=174 * mm, height=101 * mm),
          Paragraph(f"Dashed lines: {R.DD_HALVE}% (half risk) and {R.DD_PAUSE}% (21-day pause). Worst fall "
                    f"{k['mdd']:.1f}% from {k['peak_at']:%b %Y} to {k['mdd_at']:%b %Y}. {k['half']} of {k['n']} trades "
                    f"({k['half'] / k['n']:.0%}) were entered at half risk: plan on {half:g}% as the normal risk.", SM)]
@@ -260,12 +280,15 @@ def build(k, path=PDF):
           Paragraph("Exits in the backtest", H3),
           table([["Exit", "Trades"]] + [[names.get(r, r), f"{n}"] for r, n in ex.items()], [60 * mm, 25 * mm]),
           Paragraph("Year by year", H3)]
-    cells = [[f"{d.year}", f"{v:+.1f}%"] for d, v in yr.items()]
+    nyr = k["nyr"]
+    cells = [[f"{d.year}", f"{v:+.1f}%", f"{nyr[d]:+.1f}%" if d in nyr.index else "–"] for d, v in yr.items()]
     half_n = (len(cells) + 1) // 2
-    rows = [["Year", "Return", "Year", "Return"]] + [cells[i] + (cells[i + half_n] if i + half_n < len(cells) else ["", ""])
-                                                       for i in range(half_n)]
-    s += [table(rows, [20 * mm, 22 * mm, 20 * mm, 22 * mm]),
+    rows = [["Year", "S44984096", "NIFTY 50"] * 2] + [cells[i] + (cells[i + half_n] if i + half_n < len(cells)
+                                                                  else ["", "", ""]) for i in range(half_n)]
+    s += [table(rows, [15 * mm, 26 * mm, 21 * mm] * 2),
           Paragraph(f"{k['start'].year} is a part year from {k['start']:%b}; {k['end'].year} runs to {k['end']:%d %b}. "
+                    f"NIFTY 50: price index without dividends (about 1-1.5% a year less than total return); Yahoo has it "
+                    f"from {k['n0']:%d %b %Y}, so {k['start'].year}-{k['n0'].year} show –. "
                     f"{k['nopen']} trades still open at the end are valued at the last close.", SM),
           Paragraph("Known limits", H3),
           bullets(["Survivorship: not every past NIFTY 500 member has prices (about 68% in 2006, 99% by 2025), so "
