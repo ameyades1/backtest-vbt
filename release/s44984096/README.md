@@ -10,6 +10,7 @@ The strategy you trade, and nothing else. It is a standalone copy, written only 
 | `backtest.py` | Day-by-day portfolio loop from July 2006 → `out/trades.csv`, `out/equity.csv` |
 | `live.py` | Daily to-do list after the close, using the same `rules.py` functions |
 | `tests/run_tests.py` | Golden trades plus rule tests |
+| `tests/chartink_parity.py` | Chartink screener vs `rules.py` on every month end in Chartink's history (needs internet) |
 
 ```
 python release/s44984096/backtest.py

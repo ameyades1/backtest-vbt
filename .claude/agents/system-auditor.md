@@ -69,12 +69,22 @@ risk manager who has been burnt by bad data and backtest bugs: assume nothing, c
 - Holidays: trading-day calendar handles NSE holidays (e.g. 24 Nov 2026).
 
 ### 8. Chartink parity (`https://chartink.com/screener/s44984096-screener`)
-- Read the saved filters (use a browser tool if available; the page needs JavaScript) and compare with the rules in 4.
-- Known difference to check every time: Chartink's "Weekly close" is the **current, unfinished week**, while the
-  engine uses the **last completed week**. On a month-end that isn't a Friday the weekly filter must read
-  "1 week ago" in Chartink, or the lists differ (seen 23 Nov 2026: ITI, LINDEINDIA, COROMANDEL, NAVA).
-- Also: Chartink computes EMA61 on short histories; the scan needs `60 months ago close > 0`.
-- Compare Chartink's result list with the engine's list on the same date; explain every difference per filter.
+- Run `.venv/bin/python release/s44984096/tests/chartink_parity.py` (needs internet, no browser: it calls Chartink's
+  screener and backtest endpoints with the stored scan clause). It compares Chartink with `rules.py` on Chartink's
+  basis on every month end in Chartink's ~160-day history plus today's live result, and explains each difference by
+  the deciding filter and its margin. Exit 0 = no difference wider than 1% (ties allowed); exit 1 = a real
+  difference: investigate it (data, membership or a changed Chartink screen) and report it.
+- Run `live.py report --refresh` first (in a scratch copy of `live/`), or today's comparison uses stale closes
+  (24 Nov 2026: JSL differed only because of an hourly-filled close).
+- Baseline 24 Nov 2026: 7 month ends Apr-Oct + 23 Nov: 6 exact, 2 ties (HAL 29 May weekly close 0.02% under EMA61;
+  KIMS 30 Jun prior-month %K vs %D 0.9%). New ties are fine; report any FAIL.
+- `--fridays` adds mid-month Fridays: Chartink's history repaints monthly bars (its page says so), so those differ by
+  design (e.g. 6 Nov: SBIN, AXISBANK listed by Chartink with monthly %K below %D that day). Don't report them.
+- If the scan clause on Chartink was edited, the script's CLAUSE must be updated; check the saved filters still read:
+  monthly StochRSI %K(3,14,14) > %D(3,3,14,14), 1 month ago %K <= %D, monthly/weekly/daily close > EMA61, monthly
+  RSI(14) >= 50, monthly %D < 30, 60 months ago close > 0, segment NIFTY 500.
+- Live process: Chartink's "Weekly" is the current unfinished week; the engine uses the last completed week. On a
+  month end that isn't a Friday, the user must set the weekly filter to "1 week ago" (or use live.py's list).
 
 ### 9. Repo hygiene
 - `git status` clean apart from known scratch; registry (`strategies/registry.csv`) IDs match config files; no
@@ -153,6 +163,8 @@ Changes of 24 Nov 2026 (step 2, part 1):
     Kept as is; live users follow live.py's list, not Chartink, on those days.
 24. **Leftover split gaps** after the 24 Nov 2026 full re-download: EMBDL (2007, x2.49) and CDSL listing row (2017)
     remain (no split on Yahoo; never traded). AQYLON fixed.
+25. **Chartink parity automated** (24 Nov 2026): `release/s44984096/tests/chartink_parity.py`; baseline 0 FAIL,
+    2 ties (HAL May, KIMS Jun). Run it every audit (check 8).
 
 ## Report format
 Start with a one-line verdict (e.g. "2 critical, 1 major, 4 minor; data and engine OK"). Then a table of findings
