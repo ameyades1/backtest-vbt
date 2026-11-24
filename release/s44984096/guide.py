@@ -130,7 +130,7 @@ def stats(f, e):
     bench = dict(n0=n0, n_cagr=((nf.iloc[-1] / nf.iloc[0]) ** (1 / yrs_n) - 1) * 100,
                  n_mdd=(nf / nf.cummax() - 1).min() * 100,
                  s_cagr=((se.iloc[-1] / se.iloc[0]) ** (1 / yrs_n) - 1) * 100,
-                 s_mdd=(se / se.cummax() - 1).min() * 100, nyr=nyr,
+                 s_mdd=(se / se.cummax() - 1).min() * 100, nyr=nyr, nf=nf,
                  beat=int((yr.reindex(nyr.index) > nyr).sum()), nyears=len(nyr))
     return dict(**bench, t=t, c=c, eq=eq, dd=dd, yr=yr, years=years, start=eq.index[0], end=eq.index[-1],
                 cagr=((eq.iloc[-1] / CAPITAL) ** (1 / years) - 1) * 100, mdd=dd.min() * 100,
@@ -144,14 +144,21 @@ def stats(f, e):
 
 
 def chart(k, path):
-    fig, (a, b) = plt.subplots(2, 1, figsize=(7.2, 4.2), sharex=True, gridspec_kw={"height_ratios": [2.2, 1]})
-    a.plot(k["eq"].index, k["eq"] / CAPITAL, color="#1F3864", lw=1.2)
+    """Strategy equity and, from its first Yahoo date, the NIFTY 50 rebased to the strategy's equity that day."""
+    fig, (a, b) = plt.subplots(2, 1, figsize=(7.2, 4.4), sharex=True, gridspec_kw={"height_ratios": [2.2, 1]})
+    eq, nf = k["eq"] / CAPITAL, k["nf"]
+    nb = nf / nf.iloc[0] * eq.asof(nf.index[0])
+    a.plot(eq.index, eq, color="#1F3864", lw=1.3, label=f"S44984096 ({k['cagr']:.1f}% a year)")
+    a.plot(nb.index, nb, color="#ED7D31", lw=1.0, label=f"NIFTY 50, price index from {nf.index[0]:%b %Y} "
+                                                       f"({k['n_cagr']:.1f}% a year)")
     a.set_yscale("log"); a.set_ylabel("Growth of ₹1 (log)"); a.grid(alpha=0.3)
-    a.set_title(f"S44984096 {k['start']:%b %Y} – {k['end']:%b %Y}: {k['cagr']:.1f}% a year", fontsize=10, loc="left")
-    b.fill_between(k["dd"].index, k["dd"] * 100, 0, color="#C0504D", alpha=0.6, lw=0)
+    a.legend(loc="upper left", fontsize=8, frameon=False)
+    a.set_title(f"{k['start']:%b %Y} – {k['end']:%b %Y}", fontsize=10, loc="left")
+    b.fill_between(k["dd"].index, k["dd"] * 100, 0, color="#1F3864", alpha=0.35, lw=0, label="S44984096")
+    b.plot(nf.index, (nf / nf.cummax() - 1) * 100, color="#ED7D31", lw=0.8, label="NIFTY 50")
     for y in (-rules.DD_HALVE, -rules.DD_PAUSE):
         b.axhline(y, color="#7F7F7F", lw=0.7, ls="--")
-    b.set_ylabel("Drawdown %"); b.grid(alpha=0.3)
+    b.set_ylabel("Drawdown %"); b.grid(alpha=0.3); b.legend(loc="lower left", fontsize=7, frameon=False, ncol=2)
     fig.tight_layout(); fig.savefig(path, dpi=160); plt.close(fig)
 
 
@@ -181,8 +188,8 @@ def build(k, path=PDF):
               f"<b>{k['n_cagr']:.1f}% a year</b> with a {k['n_mdd']:.1f}% max drawdown; S44984096 returned "
               f"<b>{k['s_cagr']:.1f}% a year</b> with {k['s_mdd']:.1f}%. It beat the index in {k['beat']} of "
               f"{k['nyears']} full calendar years."),
-         Image(str(img), width=174 * mm, height=101 * mm),
-         Paragraph(f"Dashed lines: {R.DD_HALVE}% (half risk) and {R.DD_PAUSE}% (21-day pause). Worst fall "
+         Image(str(img), width=174 * mm, height=106 * mm),
+         Paragraph(f"The NIFTY 50 line starts at the strategy's value on its first date, so the two can be compared from there. Dashed lines: {R.DD_HALVE}% (half risk) and {R.DD_PAUSE}% (21-day pause). Worst fall "
                    f"{k['mdd']:.1f}% from {k['peak_at']:%b %Y} to {k['mdd_at']:%b %Y}. {k['half']} of {k['n']} trades "
                    f"({k['half'] / k['n']:.0%}) were entered at half risk: plan on {half:g}% as the normal risk.", SM)]
 
