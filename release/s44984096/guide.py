@@ -310,14 +310,17 @@ def build(k, path=PDF):
           table([["Exit", "Trades"]] + [[names.get(r, r), f"{n}"] for r, n in ex.items()], [60 * mm, 25 * mm]),
           Paragraph("Year by year", H3)]
     nyr = k["nyr"]
-    cells = [[f"{d.year}", f"{v:+.1f}%", f"{nyr[d]:+.1f}%" if d in nyr.index else "–"] for d, v in yr.items()]
-    half_n = (len(cells) + 1) // 2
-    rows = [["Year", "S44984096", "NIFTY 50"] * 2] + [cells[i] + (cells[i + half_n] if i + half_n < len(cells)
-                                                                  else ["", "", ""]) for i in range(half_n)]
-    s += [table(rows, [15 * mm, 26 * mm, 21 * mm] * 2),
+    sv = (k["eq"] / k["eq"].iloc[0] * LAKH10).resample("YE").last()        # ₹10 lakh in the strategy from the start
+    nv = (k["nf"] / k["nf"].iloc[0] * LAKH10).resample("YE").last()        # ... and in the NIFTY 50 from its first date
+    rows = [["Year", "S44984096 return", "₹10 L in S44984096", "NIFTY 50 return", "₹10 L in NIFTY 50"]]
+    for d, v in yr.items():
+        rows.append([f"{d.year}", f"{v:+.1f}%", lakh(sv[d]), f"{nyr[d]:+.1f}%" if d in nyr.index else "–",
+                     lakh(nv[d]) if d in nv.index else "–"])
+    s += [table(rows, [16 * mm, 32 * mm, 36 * mm, 32 * mm, 36 * mm]),
           Paragraph(f"{k['start'].year} is a part year from {k['start']:%b}; {k['end'].year} runs to {k['end']:%d %b}. "
                     f"NIFTY 50: price index without dividends (about 1-1.5% a year less than total return); Yahoo has it "
-                    f"from {k['n0']:%d %b %Y}, so {k['start'].year}-{k['n0'].year} show –. "
+                    f"from {k['n0']:%d %b %Y}, so its ₹10 lakh starts then and its {k['n0'].year} return is left out (part year). "
+                    f"Values are at each year's last close. "
                     f"{k['nopen']} trades still open at the end are valued at the last close.", SM),
           Paragraph("Known limits", H3),
           bullets(["Survivorship: not every past NIFTY 500 member has prices (about 68% in 2006, 99% by 2025), so "
