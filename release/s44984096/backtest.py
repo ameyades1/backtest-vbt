@@ -70,7 +70,7 @@ def run(trades, closes, capital=100_000.0):
             cost = qty * rules.buy_price(t["entry"])
             cash -= cost
             p = {"symbol": t["symbol"], "entry_date": day, "qty": qty, "entry": t["entry"], "stop": t["stop"],
-                 "cost": cost, "capped": capped, "reason": t["reason"], "t": t}
+                 "cost": cost, "capped": capped, "risk_mult": mult, "reason": t["reason"], "t": t}
             if t["exit_date"] == day:                                                 # closed below the stop
                 sell(p, day, t["exit"])
             else:

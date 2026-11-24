@@ -9,6 +9,7 @@ The strategy you trade, and nothing else. It is a standalone copy, written only 
 | `data.py` | Price cache, point-in-time NIFTY 500 membership, NSE holidays, the Yahoo download and fixes |
 | `backtest.py` | Day-by-day portfolio loop from July 2006 → `out/trades.csv`, `out/equity.csv` |
 | `live.py` | Daily to-do list after the close, using the same `rules.py` functions |
+| `guide.py` | Builds `S44984096_guide.pdf`: the rules from `rules.py`, every number from this backtest |
 | `tests/run_tests.py` | Golden trades plus rule tests |
 | `tests/chartink_parity.py` | Chartink screener vs `rules.py` on every month end in Chartink's history (needs internet) |
 
@@ -16,6 +17,7 @@ The strategy you trade, and nothing else. It is a standalone copy, written only 
 python release/s44984096/backtest.py
 python release/s44984096/tests/run_tests.py
 python release/s44984096/live.py report --refresh
+python release/s44984096/guide.py --rerun      # rebuild the guide PDF
 ```
 
 ## Checked against research
@@ -32,6 +34,7 @@ The trades closed by 31 Oct 2026 are frozen in `tests/golden_trades.csv`.
 3. Rerun the tests. The golden test will fail.
 4. Check that every changed trade is explained by the rule change.
 5. Regenerate `tests/golden_trades.csv` in the same commit, with the reason in the commit message.
+6. Rebuild the guide: `python release/s44984096/guide.py --rerun`.
 
 ## Live behaviour beyond the backtest
 - **Stop armed from the next session.** On the fill day only the close counts, the same as the backtest.
