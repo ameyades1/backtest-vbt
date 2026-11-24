@@ -10,14 +10,12 @@ from . import data
 
 
 def regime(days: int = 200, index: str | None = None) -> pd.Series:
-    """index: another Yahoo index (e.g. ^CRSLDX = NIFTY 500) used wherever its N-day average exists,
-    with the NIFTY/Sensex regime before that."""
+    """index: another Yahoo index (e.g. ^CRSLDX = NIFTY 500). Only that index is used: before its N-day average
+    exists there is no value (the engine then allows no new buys), never the NIFTY/Sensex regime."""
     if index:
-        base = regime(days)
         s = data.load([index])["Close"][index].dropna()
         sma = s.rolling(days).mean()
-        r = (s > sma)[sma.notna()]
-        return pd.concat([base[base.index < r.index[0]], r]).rename(f"{index}_above_{days}dma")
+        return (s > sma)[sma.notna()].rename(f"{index}_above_{days}dma")
     c = data.load(["^NSEI", "^BSESN"])["Close"]
     out = None
     for sym in ["^BSESN", "^NSEI"]:

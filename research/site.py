@@ -11,10 +11,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from lib.costs import fee_per_side
-from lib import ids, metrics
+from lib import ids, metrics, membership
 
 ROOT = Path(__file__).resolve().parent
-REPO = "https://github.com/ameyades1/backtest-vbt/blob/main/"
+REPO = "https://github.com/ameyades1/backtest-vbt/blob/main/research/"
 
 
 IDS = ids.by_name()
@@ -186,6 +186,7 @@ if _rp.exists():
             f'<a href="{REPO}results/studies/recommendations/report.pdf">PDF</a> · updated {_r.get("date", "")}</p>' + recs)
 gloss = "".join(f"<dt>{h}</dt><dd>{html.escape(GLOSSARY[h])}</dd>" for _, h, _, _ in COLS)
 
+COV = ", ".join(f"{y} {n * 100 // m}%" for y, m, n in membership.coverage())
 page = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Strategy Scoreboard</title>
@@ -225,7 +226,7 @@ table.rec{{white-space:normal}} table.rec th{{text-align:left;cursor:default}} t
 <div class="wrap"><table id="t"><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>
 <ul class="notes">
 <li>Prices are actual traded prices (adjusted for splits and bonuses, not dividends); dividend income is not counted.</li>
-<li>Most universes are <b>today's</b> index members, so those results carry survivorship bias and are optimistic. Universe <b>NIFTY500_PIT</b> uses historical NIFTY 500 membership rebuilt from NSE's change notices and is the most realistic.</li>
+<li>Most universes are <b>today's</b> index members, so those results carry survivorship bias and are optimistic. Universe <b>NIFTY500_PIT</b> uses historical NIFTY 500 membership rebuilt from NSE's change notices and is the most realistic. Not every past member has prices (mostly delisted companies), so some bias remains: members with prices on 1 July {COV}.</li>
 <li>Costs: Sharekhan delivery fees (~0.47% per side) plus 0.1% slippage per side. Risk is a % of <i>starting</i> capital unless the strategy compounds (risk on current equity; see its PDF).</li>
 <li>Gaps fill at the open; stop is checked before target on the same day. Tax is not deducted.</li>
 <li>Red: negative return, drawdown worse than 40%, or costs over half the gross profit. Green: CAGR ≥ 8% or CAGR/DD ≥ 0.2.</li>

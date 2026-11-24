@@ -220,3 +220,20 @@ if __name__ == "__main__":
     if sys.argv[1] == "build":
         df = build(sys.argv[2], sys.argv[3])
         print(len(df), "changes,", (df.symbol == "").sum(), "unmapped names,", df.date.nunique(), "dates")
+
+
+@lru_cache(maxsize=None)
+def coverage(years=(2006, 2008, 2010, 2015, 2020, 2025)) -> list[tuple[int, int, int]]:
+    """(year, members on 1 July, members with a price in the 5 trading days before): how much of the PIT universe
+    the price cache covers. Members without prices (mostly delisted) can't be traded in the backtest: that is the
+    survivorship bias left over."""
+    from . import data
+    have = data.cached_symbols()
+    out = []
+    for y in years:
+        d = pd.Timestamp(f"{y}-07-01")
+        m = sorted(members_on(d))
+        c = data.load([s for s in m if s in have])["Close"]
+        n = int(c.loc[d - pd.Timedelta(days=8):d].notna().any().sum())
+        out.append((y, len(m), n))
+    return out

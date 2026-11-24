@@ -144,10 +144,10 @@ def cmd_cash(a):
 
 
 # ---- corporate actions on open positions -------------------------------------------------------------------------
-def corporate_actions(pos, day):
+def corporate_actions(pos, day, since=None):
     """Yahoo adjusts history after a split or bonus, so the entry day's close in the data stops matching the one
     recorded at entry. A standard ratio -> adjust entry, stop and quantity. Also flag overnight drops of more than
-    30% (demerger or bad news): those need your decision."""
+    30% since the last report (at least the last 5 days) and after entry: demerger or bad news, your decision."""
     notes = []
     for i, p in pos.iterrows():
         df = daily(p.symbol, day)
@@ -167,8 +167,10 @@ def corporate_actions(pos, day):
                 continue
             notes.append((p.symbol, "CHECK", f"history changed by x{r:.2f} (not a standard ratio): check the "
                                              f"corporate action and the stop by hand"))
-        gap = df["Open"].iloc[-5:] / df["Close"].shift().iloc[-5:] - 1
-        if (gap < -0.30).any():
+        gap = (df["Open"] / df["Close"].shift() - 1)[df.index > p.entry_date]
+        start = min(pd.Timestamp(since), df.index[-5]) if since else df.index[-5]
+        gap = gap[gap.index >= start]
+        if len(gap) and (gap < -0.30).any():
             notes.append((p.symbol, "DECIDE", f"opened {gap.min() * 100:.0f}% below the previous close on "
                           f"{gap.idxmin():%d %b}: demerger or event? The stop may not apply; decide by hand"))
     return notes
@@ -194,7 +196,7 @@ def cmd_report(a):
 
     buy_ok = rules.market_ok(idx)
     mk_tomorrow = bool((idx > sma(idx, rules.MARKET_SMA))[:day].iat[-1])           # today's close decides tomorrow
-    acts = corporate_actions(pos, day)
+    acts = corporate_actions(pos, day, st.get("last_report"))
 
     # positions and equity at today's close
     pv = []

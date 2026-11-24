@@ -35,7 +35,8 @@ The trades closed by 31 Oct 2026 are frozen in `tests/golden_trades.csv`.
 ## Live behaviour beyond the backtest
 - **Stop armed from the next session.** On the fill day only the close counts, the same as the backtest.
 - **Splits and bonuses.** Detected because Yahoo's history no longer matches the entry-day close recorded at the buy. Entry, stop and quantity are adjusted by the ratio, and the output says to re-place the stop.
-- **Demergers.** An overnight gap of more than 30% is flagged for your decision.
+- **Demergers.** An overnight gap of more than 30% since the last report (and after entry) is flagged for your decision.
 - **BE series.** A buy-stop on a BE-series stock carries a warning.
 - **Chartink.** On a month end that isn't a Friday, the output reminds you to use the "1 week ago" weekly filters in Chartink, or this list.
+- **Thursday month end before a Friday holiday.** The weekly filter uses the last full Friday week, as in the backtest (11 such month ends since 2006; using the just-finished week instead changed 1 of 403 trades). Follow this list, not Chartink, on those days.
 - **Holidays.** If next year's NSE holiday list is missing from `data.py`, you get a warning.

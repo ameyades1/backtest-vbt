@@ -142,6 +142,17 @@ Changes of 24 Nov 2026 (step 2, part 1):
     only the fill-day close. Release live.py must instruct the same.
 19. **Splits / bonuses / demergers on open positions** (planned in release live.py): stored stop, entry and quantity
     adjusted by the ratio; demergers and unexplained gaps above 30% flagged for a manual decision.
+20. **One live tool** (24 Nov 2026): `research/live.py` only forwards to `release/s44984096/live.py` and refuses
+    `--month-end`. Check it still does; nothing else writes to `live/`.
+21. **Market filter NSE only in research too**: `lib/market.regime(index=...)` has no Sensex/NIFTY fallback; days
+    before the index's 200-day average allow no buys.
+22. **Survivorship coverage quoted**: PIT report PDFs and the site print the share of members with prices
+    (`lib/membership.coverage`); 2006 about 68%.
+23. **Thursday month end before a Friday holiday** (11 cases 2006–2026): weekly filter uses the previous Friday week
+    in both engines. Measured 24 Nov 2026: using the just-finished week changes 1 of 403 trades (CAGR 15.35 → 15.33).
+    Kept as is; live users follow live.py's list, not Chartink, on those days.
+24. **Leftover split gaps** after the 24 Nov 2026 full re-download: EMBDL (2007, x2.49) and CDSL listing row (2017)
+    remain (no split on Yahoo; never traded). AQYLON fixed.
 
 ## Report format
 Start with a one-line verdict (e.g. "2 critical, 1 major, 4 minor; data and engine OK"). Then a table of findings

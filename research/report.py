@@ -9,7 +9,7 @@ summary.csv, equity.csv and fills_*.csv; nothing is written by hand.
 import json, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib import ids, portfolio, metrics, markettype
+from lib import ids, portfolio, metrics, markettype, membership
 _IDS = ids.by_name()
 import matplotlib
 matplotlib.use("Agg")
@@ -351,6 +351,8 @@ def build(run: Path):
                        f"{eq.index[-1]:%d %b %Y}", SUB),
              Paragraph("Data: actual traded prices (split/bonus adjusted, not dividend adjusted; dividends not counted). "
                        + ("Historical (point-in-time) index membership: a trade needs the stock in the index on its entry day."
+                          + " Members with prices on 1 July: " + ", ".join(f"{y} {n * 100 // m}%" for y, m, n in membership.coverage())
+                          + " (missing ones, mostly delisted, can't be traded: some survivorship bias remains)."
                           if c["universe"].endswith("_PIT") else "Today's index members only (survivorship bias)."), SM),
              Spacer(1, 6), Paragraph(c.get("description", ""), P),
              Paragraph("Result", H2),
