@@ -13,6 +13,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.ticker
 from reportlab.lib import colors
 from reportlab.lib.fonts import addMapping
 from reportlab.lib.pagesizes import A4
@@ -29,6 +30,7 @@ import rules, backtest, data  # noqa: E402
 
 PDF = HERE / "S44984096_guide.pdf"
 CAPITAL = 100_000.0
+LAKH10 = 10_00_000          # the ₹10 lakh illustration in the chart and table
 
 # DejaVu for the Helvetica names so ₹, −, ≥ print (the built-in PDF Helvetica has no such glyphs)
 _F = os.path.join(matplotlib.get_data_path(), "fonts", "ttf")
@@ -130,6 +132,8 @@ def stats(f, e):
     bench = dict(n0=n0, n_cagr=((nf.iloc[-1] / nf.iloc[0]) ** (1 / yrs_n) - 1) * 100,
                  n_mdd=(nf / nf.cummax() - 1).min() * 100,
                  s_cagr=((se.iloc[-1] / se.iloc[0]) ** (1 / yrs_n) - 1) * 100,
+                 v_s=LAKH10 * eq.iloc[-1] / eq.iloc[0], v_s07=LAKH10 * eq.iloc[-1] / se.iloc[0],
+                 v_n=LAKH10 * nf.iloc[-1] / nf.iloc[0],
                  s_mdd=(se / se.cummax() - 1).min() * 100, nyr=nyr, nf=nf,
                  beat=int((yr.reindex(nyr.index) > nyr).sum()), nyears=len(nyr))
     return dict(**bench, t=t, c=c, eq=eq, dd=dd, yr=yr, years=years, start=eq.index[0], end=eq.index[-1],
@@ -143,17 +147,28 @@ def stats(f, e):
                 final=eq.iloc[-1])
 
 
+def lakh(v):
+    return f"₹{v / 1e5:,.1f} lakh" if v < 1e7 else f"₹{v / 1e7:,.2f} crore"
+
+
 def chart(k, path):
-    """Strategy equity and, from its first Yahoo date, the NIFTY 50 rebased to the strategy's equity that day."""
-    fig, (a, b) = plt.subplots(2, 1, figsize=(7.2, 4.4), sharex=True, gridspec_kw={"height_ratios": [2.2, 1]})
-    eq, nf = k["eq"] / CAPITAL, k["nf"]
-    nb = nf / nf.iloc[0] * eq.asof(nf.index[0])
-    a.plot(eq.index, eq, color="#1F3864", lw=1.3, label=f"S44984096 ({k['cagr']:.1f}% a year)")
-    a.plot(nb.index, nb, color="#ED7D31", lw=1.0, label=f"NIFTY 50, price index from {nf.index[0]:%b %Y} "
-                                                       f"({k['n_cagr']:.1f}% a year)")
-    a.set_yscale("log"); a.set_ylabel("Growth of ₹1 (log)"); a.grid(alpha=0.3)
-    a.legend(loc="upper left", fontsize=8, frameon=False)
-    a.set_title(f"{k['start']:%b %Y} – {k['end']:%b %Y}", fontsize=10, loc="left")
+    """Value of ₹10 lakh: in the strategy from its start, and in the NIFTY 50 from its first Yahoo date."""
+    fig, (a, b) = plt.subplots(2, 1, figsize=(7.2, 4.6), sharex=True, gridspec_kw={"height_ratios": [2.3, 1]})
+    eq, nf = k["eq"] / k["eq"].iloc[0] * LAKH10 / 1e5, k["nf"]
+    nb = nf / nf.iloc[0] * LAKH10 / 1e5
+    a.plot(eq.index, eq, color="#1F3864", lw=1.3,
+           label=f"S44984096 from {eq.index[0]:%b %Y}: {lakh(k['v_s'])} ({k['cagr']:.1f}% a year)")
+    a.plot(nb.index, nb, color="#ED7D31", lw=1.0,
+           label=f"NIFTY 50 from {nf.index[0]:%b %Y}: {lakh(k['v_n'])} ({k['n_cagr']:.1f}% a year)")
+    for ser, col in ((eq, "#1F3864"), (nb, "#ED7D31")):
+        a.annotate(lakh(ser.iloc[-1] * 1e5).replace(" lakh", " L"), (ser.index[-1], ser.iloc[-1]),
+                   xytext=(4, 0), textcoords="offset points", va="center", fontsize=8, color=col, fontweight="bold")
+    a.axhline(10, color="#7F7F7F", lw=0.6, ls=":")
+    a.set_yscale("log"); a.set_ylabel("Value of ₹10 lakh (₹ lakh, log)"); a.grid(alpha=0.3)
+    a.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:,.0f}"))
+    a.legend(loc="upper left", fontsize=7.5, frameon=False)
+    a.set_title(f"₹10 lakh invested at the start, {k['start']:%b %Y} – {k['end']:%b %Y}", fontsize=10, loc="left")
+    a.set_xlim(eq.index[0], eq.index[-1] + pd.Timedelta(days=900))
     b.fill_between(k["dd"].index, k["dd"] * 100, 0, color="#1F3864", alpha=0.35, lw=0, label="S44984096")
     b.plot(nf.index, (nf / nf.cummax() - 1) * 100, color="#ED7D31", lw=0.8, label="NIFTY 50")
     for y in (-rules.DD_HALVE, -rules.DD_PAUSE):
@@ -183,13 +198,20 @@ def build(k, path=PDF):
                 [f"{k['cagr']:.1f}%", f"{k['mdd']:.1f}%", f"{k['n']} ({k['per_year']:.0f}/yr)", f"{k['win']:.1f}%",
                  f"+{k['exp_r']:.2f}R", f"{k['uw']:.1f} years"]], [29 * mm] * 6),
          Spacer(1, 4),
-         para(f"<b>Against the NIFTY 50</b> (price index, dividends not included; Yahoo data from {k['n0']:%d %b %Y}): "
-              f"over the same dates, {k['n0']:%b %Y} to {k['end']:%b %Y}, the NIFTY 50 returned "
-              f"<b>{k['n_cagr']:.1f}% a year</b> with a {k['n_mdd']:.1f}% max drawdown; S44984096 returned "
-              f"<b>{k['s_cagr']:.1f}% a year</b> with {k['s_mdd']:.1f}%. It beat the index in {k['beat']} of "
-              f"{k['nyears']} full calendar years."),
-         Image(str(img), width=174 * mm, height=106 * mm),
-         Paragraph(f"The NIFTY 50 line starts at the strategy's value on its first date, so the two can be compared from there. Dashed lines: {R.DD_HALVE}% (half risk) and {R.DD_PAUSE}% (21-day pause). Worst fall "
+         Paragraph("₹10 lakh invested at the start", H3),
+         table([["Invested in", "From", "To", "₹10 lakh became", "Return a year", "Max drawdown"],
+                ["S44984096", f"{k['start']:%d %b %Y}", f"{k['end']:%d %b %Y}", f"<b>{lakh(k['v_s'])}</b>",
+                 f"{k['cagr']:.1f}%", f"{k['mdd']:.1f}%"],
+                ["S44984096", f"{k['n0']:%d %b %Y}", f"{k['end']:%d %b %Y}", f"<b>{lakh(k['v_s07'])}</b>",
+                 f"{k['s_cagr']:.1f}%", f"{k['s_mdd']:.1f}%"],
+                ["NIFTY 50 (price index)", f"{k['n0']:%d %b %Y}", f"{k['end']:%d %b %Y}", f"<b>{lakh(k['v_n'])}</b>",
+                 f"{k['n_cagr']:.1f}%", f"{k['n_mdd']:.1f}%"]],
+               [38 * mm, 24 * mm, 24 * mm, 32 * mm, 26 * mm, 30 * mm]),
+         Paragraph(f"Rows 2 and 3 cover the same dates (Yahoo has the NIFTY 50 from {k['n0']:%d %b %Y}). The NIFTY 50 "
+                   f"is the price index: dividends, about 1-1.5% a year, are not included. The strategy figures are "
+                   f"after all costs, before tax. It beat the index in {k['beat']} of {k['nyears']} full calendar years.", SM),
+         Image(str(img), width=158 * mm, height=101 * mm),
+         Paragraph(f"Each line is ₹10 lakh invested on its first date (the NIFTY 50 from {k['n0']:%b %Y}, when Yahoo's data starts). Dashed lines: {R.DD_HALVE}% (half risk) and {R.DD_PAUSE}% (21-day pause). Worst fall "
                    f"{k['mdd']:.1f}% from {k['peak_at']:%b %Y} to {k['mdd_at']:%b %Y}. {k['half']} of {k['n']} trades "
                    f"({k['half'] / k['n']:.0%}) were entered at half risk: plan on {half:g}% as the normal risk.", SM)]
 
