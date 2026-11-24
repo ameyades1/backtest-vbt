@@ -406,3 +406,6 @@ S01a201dc-6bc1-7e50-9bb2-53d0526db558,S526db558,variants/ts25_0p5,strategies/var
 S01a201dc-6bc2-7e72-85d6-c39accf1e731,Sccf1e731,variants/ts30_0p25,strategies/variants/ts30_0p25.json,2026-11-22,active
 S01a201dc-6bc3-7fcd-bc88-8b3be5dffb39,Se5dffb39,variants/ts30_0p5,strategies/variants/ts30_0p5.json,2026-11-22,active
 S01a20408-2dc6-72c1-98e1-228eb962c14a,Sb962c14a,variants/stack_brk_mm,strategies/variants/stack_brk_mm.json,2026-11-22,active
+S01a20c33-1aed-7689-975b-da6c566516c0,S566516c0,stexit/A_flip_capentry_restore3,strategies/stexit/A_flip_capentry_restore3.json,2026-11-24,active
+S01a20c33-1aee-79fa-991f-90e92ff30fb9,S2ff30fb9,stexit/A_flip_capentry_restore5,strategies/stexit/A_flip_capentry_restore5.json,2026-11-24,active
+S01a20c33-1aef-74f6-863c-30fb5c93fb76,S5c93fb76,stexit/A_flip_capentry_restore7,strategies/stexit/A_flip_capentry_restore7.json,2026-11-24,active

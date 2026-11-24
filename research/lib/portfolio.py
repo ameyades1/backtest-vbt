@@ -47,6 +47,7 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
        dd_rule:   {"halve": 10, "pause": 15, "pause_days": 21}: after a 10% fall from the equity high, new trades
                   at half risk until a new high; on reaching a 15% fall, no new trades for 21 trading days (once per
                   drawdown; re-armed at a new high). Uses the previous day's equity.
+                  Optional "restore_within": 5 -> full risk returns once the drawdown is back within 5%.
        Trades with weight < 1 (partial-exit legs) get that share of the risk; legs of one stock share a slot.
        cash_ret:  day -> return earned that day by uninvested cash (liquid fund / index ETF); applied to the
                   previous day's cash before the day's trades
@@ -154,6 +155,8 @@ def run(trades, closes: pd.DataFrame, capital=100_000.0, risk_pct=0.02, max_posi
                 halved, pause_used = False, False
             if dd >= dd_rule.get("halve", 10):
                 halved = True
+            elif halved and dd_rule.get("restore_within") is not None and dd <= dd_rule["restore_within"]:
+                halved = False      # full risk back once within restore_within % of the high (pause stays used)
             if dd >= dd_rule.get("pause", 15) and not pause_used:
                 pause_used, paused_left = True, dd_rule.get("pause_days", 21)
             if paused_left > 0:
