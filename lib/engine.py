@@ -277,9 +277,14 @@ def simulate(daily: pd.DataFrame, symbol: str, cfg: dict, market: pd.Series | No
         ema_exit = ema_exit | {s_end[i] for i in np.flatnonzero(bear)}
 
     trades, free = [], 0
+    first = np.searchsorted(days, pd.Timestamp(cfg["first_entry"])) if cfg.get("first_entry") else 0
     for b in np.flatnonzero(sig):
         start = bar_end[b] + delay
         if start < free or start >= len(days):
+            continue
+        if bar_end[min(b + valid, len(bars) - 1)] <= first and b + valid < len(bars):
+            continue                                     # buy-stop expires before the backtest starts: a trade
+                                                         # here would only block the stock (found 24 Nov 2026)
             continue
         end = bar_end[min(b + valid, len(bars) - 1)] if b + valid < len(bars) else len(days)
         level = bars["High"].iat[b]

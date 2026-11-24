@@ -126,10 +126,10 @@ Changes of 24 Nov 2026 (step 2, part 1):
 15. **Official period July 2006 onwards, NSE only.** `strategies/stexit/A_flip_capentry.json` period.start = 2006-07-01;
     the market filter must use `^CRSLDX` only for every traded day (no Sensex / NIFTY 50 fallback days); market types
     (`lib/markettype.py`) come from `^CRSLDX` only. Check no report quotes "since 2000" figures for S44984096
-    (15.9% / −24.2% are the old 2000-based numbers; official is about 15.7% / −23.9%).
+    (15.9% / −24.2% are the old 2000-based numbers; official is about 15.3% / −23.5%, 403 trades).
 16. **Win % = closed trades only** in `lib/portfolio.trade_stats`, `summary.csv`, site and PDFs.
 17. **Guide numbers are computed** (`reports/notes/strategy_guide_report.py:stats`); sizing note drawdown and
-    half-risk share (278 of 389 trades) are computed from the run. Flag any hard-coded result number in the reports.
+    half-risk share are computed from the run. Flag any hard-coded result number in the reports.
 18. **Entry-day stop: armed from the next session** (user decision 24 Nov 2026). The guide says so; the engine checks
     only the fill-day close. Release live.py must instruct the same.
 19. **Splits / bonuses / demergers on open positions** (planned in release live.py): stored stop, entry and quantity

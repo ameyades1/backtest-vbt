@@ -189,6 +189,7 @@ def run(cfg, closes, dailies, out):
         return tab
     for tg in cfg["exits"]["targets_pct"]:
         ec = engine_cfg(cfg, tg)
+        ec["first_entry"] = start                       # no trades (and no stock blocked) before the start
         trades = list(_sim(ec, dailies, end))
         if cfg.get("universe") == "NIFTY500_PIT":       # point in time: only stocks in the index on the entry day
             trades = [t for t in trades if bool(pit.at[t.entry_date, t.symbol])]

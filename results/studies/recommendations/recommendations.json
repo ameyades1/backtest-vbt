@@ -15,8 +15,8 @@
     [
      "S44984096",
      "Sf5b94362 with the 20% position cap also applied when a position is bought",
-     "15.7%",
-     "−23.9%",
+     "15.3%",
+     "−23.5%",
      "Your strategy (adopted 22 Nov 2026); official run Jul 2006–Nov 2026 (2000-based run: 15.9% / −24.2%, random-pick median 16.4%)"
     ],
     [
@@ -79,40 +79,40 @@
     [
      "Bull quiet",
      "28",
-     "+18.2%",
+     "+17.5%",
      "+12.0%",
-     "113",
-     "22",
-     "+2.70",
-     "36%"
+     "121",
+     "21",
+     "+2.28",
+     "35%"
     ],
     [
      "Bull volatile",
      "15",
-     "+57.1%",
+     "+55.6%",
      "+49.4%",
-     "79",
+     "81",
      "30",
-     "+3.89",
-     "37%"
+     "+3.76",
+     "38%"
     ],
     [
      "Sideways quiet",
      "21",
-     "+9.5%",
+     "+9.1%",
      "+10.0%",
-     "101",
-     "18",
-     "+1.30",
-     "16%"
+     "104",
+     "16",
+     "+1.17",
+     "15%"
     ],
     [
      "Sideways volatile",
      "16",
-     "+8.1%",
+     "+8.2%",
      "-12.2%",
-     "59",
-     "12",
+     "60",
+     "13",
      "-0.45",
      "-3%"
     ],
@@ -123,13 +123,13 @@
      "-5.7%",
      "11",
      "36",
-     "+6.84",
+     "+6.82",
      "9%"
     ],
     [
      "Bear volatile",
      "15",
-     "+5.2%",
+     "+5.8%",
      "+9.6%",
      "1",
      "0",
@@ -138,8 +138,8 @@
     ]
    ],
    "notes": [
-    "SQN 1.8 on Tharp's 100-trade basis (1.6–1.9 poor but tradable, 2–2.4 average, 2.5–2.9 good, 3–5 excellent); 3.5 on all 383 trades. Expectancy +2.20R, std dev of R 12.3R. Sa1f19d11: SQN 2.0, expectancy +2.53R.",
-    "Low SQN, high expectancy: a few huge winners (best 137R) widen the R spread. Without the 10 best trades expectancy is +0.44R, still positive; missing big winners is the main risk.",
+    "SQN 1.7 on Tharp's 100-trade basis (1.6–1.9 poor but tradable, 2–2.4 average, 2.5–2.9 good, 3–5 excellent); 3.3 on all 397 trades. Expectancy +2.01R, std dev of R 12.0R. Sa1f19d11: SQN 2.0, expectancy +2.53R.",
+    "Low SQN, high expectancy: a few huge winners (best 137R) widen the R spread. Without the 10 best trades expectancy is +0.31R, still positive; missing big winners is the main risk.",
     "Market types: bull days and quiet sideways days earn almost all the R; volatile sideways markets are the bleed (negative expectancy), and the NIFTY 500 filter keeps the strategy mostly out of bear markets (few trades, near-flat returns).",
     "Each day typed from NIFTY 50 up to the previous close: 13-week change above +5% bull, below −5% bear; volatile if 20-day volatility is above its rolling 3-year median. Trades filed by their entry day."
    ]

@@ -23,8 +23,8 @@ REC = {
     "sections": [
         {"title": "Your choice", "mine": True,
          "head": ["ID", "Strategy", "CAGR", "Max DD", "Status"],
-         "rows": [["S44984096", "Sf5b94362 with the 20% position cap also applied when a position is bought", "15.7%",
-                   "−23.9%", "Your strategy (adopted 22 Nov 2026); official run Jul 2006–Nov 2026 (2000-based run: 15.9% / −24.2%, random-pick median 16.4%)"],
+         "rows": [["S44984096", "Sf5b94362 with the 20% position cap also applied when a position is bought", "15.3%",
+                   "−23.5%", "Your strategy (adopted 22 Nov 2026); official run Jul 2006–Nov 2026 (2000-based run: 15.9% / −24.2%, random-pick median 16.4%)"],
                   ["Sa1f19d11", "S44984096 with the weekly Supertrend(14, 3) exit instead of (10, 3)", "18.3%", "−22.6%",
                    "Top pick, candidate upgrade (not adopted); random-pick median 17.2%, beats S44984096 in 72% of pairings; "
                    "sensitive to the multiplier (14, 2.5 gives 14.3%)"],

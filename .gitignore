@@ -18,3 +18,4 @@ results/studies/overnight/nohup.out
 live/
 reports/notes/_concepts/
 .playwright-mcp/
+release/*/out/
