@@ -10,7 +10,7 @@ import pandas as pd
 import requests
 
 NSE_URL = "https://archives.nseindia.com/content/indices/ind_{}list.csv"
-CACHE = Path(__file__).resolve().parent.parent / "data" / "constituents"
+CACHE = Path(__file__).resolve().parents[2] / "data" / "constituents"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 # key: (group, display name, NSE csv slug, Yahoo ticker or None)

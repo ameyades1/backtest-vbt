@@ -11,7 +11,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-CHART_DIR = Path(__file__).resolve().parent.parent / "charts"
+CHART_DIR = Path(__file__).resolve().parents[2] / "charts"
 LINE_COLORS = ["#2563eb", "#f59e0b", "#9333ea", "#0891b2", "#db2777", "#65a30d"]
 UP, DOWN = "#16a34a", "#dc2626"
 

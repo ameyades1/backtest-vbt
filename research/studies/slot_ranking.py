@@ -52,7 +52,7 @@ SCORES = {
     "Liquidity": (c * d["Volume"]).rolling(20, min_periods=10).mean().shift(1),
     "Low volatility": -(tr.reindex(c.index).rolling(14).mean() / c).shift(1),
 }
-ind = pd.read_csv(ROOT / "data" / "constituents" / "NIFTY500.csv")
+ind = pd.read_csv(ROOT.parent / "data" / "constituents" / "NIFTY500.csv")
 SECTOR = {f"{r.Symbol}.NS": r.Industry for r in ind.itertuples()}
 
 RULES = ["Tightest stop (current)", "Widest stop", "6-month return", "12-month return", "Trend strength",

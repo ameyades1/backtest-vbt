@@ -254,6 +254,6 @@ fam.onchange=filt;mkt.onchange=filt;q.oninput=filt;
 count();
 </script></body></html>
 """
-(ROOT / "docs").mkdir(exist_ok=True)
-(ROOT / "docs" / "index.html").write_text(page, encoding="utf-8")
+(ROOT.parent / "docs").mkdir(exist_ok=True)
+(ROOT.parent / "docs" / "index.html").write_text(page, encoding="utf-8")
 print(f"docs/index.html: {len(rows)} rows")

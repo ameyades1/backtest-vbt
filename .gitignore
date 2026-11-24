@@ -11,11 +11,11 @@ data/trade_duration/
 data/time_exit/
 data/stochrsi_*/
 data/nifty50_stochrsi_*/
-results/**/fills_*.csv
-results/**/equity.csv
-results/**/equity_*.csv
-results/studies/overnight/nohup.out
+research/results/**/fills_*.csv
+research/results/**/equity.csv
+research/results/**/equity_*.csv
+research/results/studies/overnight/nohup.out
 live/
-reports/notes/_concepts/
+research/reports/notes/_concepts/
 .playwright-mcp/
 release/*/out/

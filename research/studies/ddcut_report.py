@@ -55,7 +55,7 @@ def stats(e):
 
 
 def gold_inr():
-    g = pd.read_csv(ROOT / "data" / "gold_close.csv", index_col=0, parse_dates=True)
+    g = pd.read_csv(ROOT.parent / "data" / "gold_close.csv", index_col=0, parse_dates=True)
     spot = (g["GC=F"] * g["INR=X"]).dropna()
     etf = g["GOLDBEES.NS"].dropna()
     r = spot.pct_change()

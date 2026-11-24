@@ -5,6 +5,7 @@
     python run.py --on-index sectoral --plot BANK      # strategy on each sector index
 """
 import argparse, subprocess, shutil
+from pathlib import Path
 import pandas as pd
 from lib import data, indices, strategies, backtest, plotting
 
@@ -48,7 +49,7 @@ else:
 
 pf = backtest.run(c, entries, exits, volume=vol)
 s = backtest.summary(pf)
-s.to_csv("data/summary.csv")
+s.to_csv(Path(__file__).resolve().parent.parent / "data" / "summary.csv")
 print(s.head(30).to_string(float_format=lambda x: f"{x:.3f}"))
 print(f"\nUniverse {len(s)} | median CAGR {s['cagr'].median():.2%} | median Sharpe "
       f"{s['sharpe'].median():.2f} | with trades {(s['trades'] > 0).sum()}")

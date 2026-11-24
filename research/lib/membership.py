@@ -16,7 +16,7 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-CONS = ROOT / "data" / "constituents"
+CONS = ROOT.parent / "data" / "constituents"
 CHANGES = CONS / "NIFTY500_changes.csv"
 REF = CONS / "nse_ref"               # EQUITY_L.csv, symbolchange.csv, namechange.csv
 

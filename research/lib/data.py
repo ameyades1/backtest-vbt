@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"          # repo root: shared with release/
 OHLCV_PATH = DATA_DIR / "ohlcv.parquet"
 FIELDS = ["Open", "High", "Low", "Close", "Volume"]
 

@@ -4,18 +4,35 @@ Backtesting NIFTY index constituents (NIFTY 500, broad, sectoral and thematic in
 
 The project combines both approaches: reusable code lives in `lib/` as plain Python, and `notebooks/` is for exploring and charting.
 
-## Layout
+## Layout: release and research
 
+```
+release/s44984096/   the strategy you trade (S44984096), standalone and simple: rules.py, indicators.py,
+                     data.py, backtest.py, live.py, tests/. Matched to the research engine fill for fill.
+                     See release/s44984096/README.md. Daily use:  python release/s44984096/live.py report --refresh
+research/            the lab: general engine (lib/), strategy configs (strategies/), studies, reports, results,
+                     site builder, the research live.py. Run research commands from inside research/.
+data/                shared price cache (ohlcv.parquet) and NIFTY 500 lists, read by both
+docs/                the results website (built by research/site.py)
+live/                your account state (git-ignored), used by either live.py
+```
+
+A strategy moves from research to release only after it is adopted: it is rewritten in a release folder, matched
+trade by trade against the research engine, and frozen with golden tests.
+
+### research/
 ```
 lib/
   indices.py     registry of 31 NIFTY indices: NSE constituent list + Yahoo index ticker
   data.py        yfinance download → clean → data/ohlcv.parquet; load() → wide frames for vectorbt
   costs.py       Indian delivery costs (STT, exchange, SEBI, GST, stamp) + slippage
+  engine.py      configurable signal/trade engine; portfolio.py: shared-capital sizing
   strategies.py  sma_cross, donchian_breakout
   backtest.py    vectorbt portfolio with liquidity filter, summary table
   plotting.py    Plotly candlesticks + volume + buy/sell markers → HTML
 download.py      fetch / refresh data
-run.py           run a backtest across the universe, print a summary, chart a symbol
+run_strategy.py  run strategy configs (strategies/**/*.json) → results/
+run.py           run a simple backtest across the universe, print a summary, chart a symbol
 notebooks/explore.ipynb   interactive exploration, inline charts, parameter heatmap
 ```
 
@@ -27,9 +44,10 @@ pip install -r requirements.txt
 python -m ipykernel install --user --name backtest --display-name "backtest (.venv)"
 ```
 
-## Usage
+## Usage (from research/)
 
 ```bash
+cd research
 python download.py --list                           # available indices and their Yahoo tickers
 python download.py                                  # all NIFTY 500 stocks + index, max history (~10 min)
 python download.py --index BANK IT AUTO             # specific indices

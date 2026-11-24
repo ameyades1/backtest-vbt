@@ -394,7 +394,7 @@ def pdf(o, d):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--dir", default=str(ROOT / "live"))
+    ap.add_argument("--dir", default=str(ROOT.parent / "live"))
     sub = ap.add_subparsers(dest="cmd", required=True)
     x = sub.add_parser("init"); x.add_argument("--capital", type=float, required=True); x.add_argument("--date")
     x.add_argument("--force", action="store_true")
