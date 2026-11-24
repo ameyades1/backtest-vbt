@@ -18,12 +18,13 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 REC = {
     "intro": "Figures are from historical (point-in-time) NIFTY 500 membership unless noted, include costs, and "
-             "start from 2000. Expect live results somewhat lower.",
+             "start from 2000, except your strategy S44984096, whose official run starts in July 2006 (NSE data only; see "
+             "README). Other rows are 2000-based research runs and are not directly comparable. Expect live results lower.",
     "sections": [
         {"title": "Your choice", "mine": True,
          "head": ["ID", "Strategy", "CAGR", "Max DD", "Status"],
-         "rows": [["S44984096", "Sf5b94362 with the 20% position cap also applied when a position is bought", "15.9%",
-                   "−24.2%", "Your strategy (adopted 22 Nov 2026); random-pick median 16.4%"],
+         "rows": [["S44984096", "Sf5b94362 with the 20% position cap also applied when a position is bought", "15.7%",
+                   "−23.9%", "Your strategy (adopted 22 Nov 2026); official run Jul 2006–Nov 2026 (2000-based run: 15.9% / −24.2%, random-pick median 16.4%)"],
                   ["Sa1f19d11", "S44984096 with the weekly Supertrend(14, 3) exit instead of (10, 3)", "18.3%", "−22.6%",
                    "Top pick, candidate upgrade (not adopted); random-pick median 17.2%, beats S44984096 in 72% of pairings; "
                    "sensitive to the multiplier (14, 2.5 gives 14.3%)"],
@@ -100,7 +101,7 @@ if __name__ == "__main__":
     def _m(n):
         d = ROOT / "results" / n / "nifty500_pit"
         sm = pd.read_csv(d / "summary.csv", index_col=0).iloc[0]
-        return metrics.compute(pd.read_csv(d / "fills_none.csv"), sm, "2000-01-01"), \
+        return metrics.compute(pd.read_csv(d / "fills_none.csv"), sm, json.load(open(d / "config.json"))["period"]["start"]), \
             pd.read_csv(d / "equity.csv", index_col=0, parse_dates=True).iloc[:, 0]
     _a, _ea = _m("stexit/A_flip_capentry"); _b, _ = _m("variants/st14_3")
     _c = _a["_closed"]; _R = (_c.pnl / _c.risk).dropna(); _x = _R.drop(_R.nlargest(10).index)

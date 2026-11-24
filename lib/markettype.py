@@ -1,6 +1,7 @@
 """Van Tharp-style market types: direction (bull / sideways / bear) x volatility (quiet / volatile), per day.
 
-Broad market = NIFTY 50 (Sensex scaled in before NIFTY's history, as lib.engine.nifty_close), same series all runs.
+Broad market = NIFTY 500 index (^CRSLDX, NSE only, no Sensex splice); history from Sept 2005, so types exist from
+about Sept 2006 (65-day change + 1-year minimum for the volatility median). Earlier days are untyped.
   Direction:  13-week (65 trading-day) change of the index: above +5% bull, below -5% bear, otherwise sideways.
   Volatility: 20-day standard deviation of daily returns, against its own rolling 3-year median
               (volatile if above). Rolling, so no future data is used.
@@ -13,11 +14,15 @@ TYPES = [f"{d} {v}" for d in ("Bull", "Sideways", "Bear") for v in ("quiet", "vo
 _T = None
 
 
+def _index() -> pd.Series:
+    from . import data
+    return data.load(["^CRSLDX"])["Close"]["^CRSLDX"].dropna()
+
+
 def types() -> pd.Series:
     global _T
     if _T is None:
-        from .engine import nifty_close
-        n = nifty_close().dropna()
+        n = _index()
         ch = n.pct_change(65)
         vol = n.pct_change().rolling(20).std()
         med = vol.rolling(756, min_periods=252).median()
@@ -34,10 +39,10 @@ def breakdown(equity: pd.Series, trades: pd.DataFrame) -> list[list[str]]:
     e = equity.dropna()
     r = e.pct_change().dropna()
     ty = t.reindex(r.index, method="ffill")
-    nf = __import__("lib.engine", fromlist=["x"]).nifty_close().reindex(e.index, method="ffill").pct_change().reindex(r.index)
+    nf = _index().reindex(e.index, method="ffill").pct_change().reindex(r.index)
     et = t.reindex(pd.to_datetime(trades.entry_date), method="ffill").to_numpy()
     R = (trades.pnl / trades.risk.replace(0, np.nan)).to_numpy()
-    rows = [["Market type", "Days %", "Strategy / yr", "NIFTY / yr", "Trades", "Win %", "Expectancy R", "Share of R"]]
+    rows = [["Market type", "Days %", "Strategy / yr", "NIFTY 500 / yr", "Trades", "Win %", "Expectancy R", "Share of R"]]
     tot = np.nansum(R)
     for k in TYPES:
         m = (ty == k).to_numpy()
@@ -52,10 +57,10 @@ def breakdown(equity: pd.Series, trades: pd.DataFrame) -> list[list[str]]:
     return rows
 
 
-NOTE = ("Each day is typed from NIFTY 50 (Sensex before 2007) up to the previous close. Bull / bear: 13-week change above "
+NOTE = ("Each day is typed from the NIFTY 500 index up to the previous close (from Sept 2006; earlier trades are untyped). Bull / bear: 13-week change above "
         "+5% / below −5%, otherwise sideways. Volatile: 20-day volatility above its rolling 3-year median. Strategy / yr and "
-        "NIFTY / yr = annualised return on the days of that type. Trades are filed by the type on their entry day; Share of "
-        "R = that type's part of all R earned. NIFTY / yr in bear-volatile is often positive: it holds the sharp rebounds "
+        "NIFTY 500 / yr = annualised return on the days of that type. Trades are filed by the type on their entry day; Share of "
+        "R = that type's part of all R earned. NIFTY 500 / yr in bear-volatile is often positive: it holds the sharp rebounds "
         "that follow falls.")
 
 
@@ -139,6 +144,6 @@ def big(run, title="Market types (Van Tharp)"):
     from . import bookstyle as bs
     from reportlab.platypus import Paragraph
     rows = for_run(run)
-    rows[0] = ["Market type", "Days %", "Strategy / yr", "NIFTY / yr", "Trades", "Win %", "Exp. R", "R share"]
+    rows[0] = ["Market type", "Days %", "Strategy / yr", "NIFTY 500 / yr", "Trades", "Win %", "Exp. R", "R share"]
     return [Paragraph(title, bs.H2), bs.table(rows, [w * 2.8346 for w in (38, 17, 25, 22, 18, 16, 16, 18)]),
             Paragraph("Exp. R = expectancy per trade; R share = that type's share of all R earned. " + NOTE, bs.SM)]

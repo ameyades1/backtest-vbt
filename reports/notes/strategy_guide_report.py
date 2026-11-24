@@ -24,11 +24,33 @@ DARK, GREY, AMBER = bs.INK, bs.GREY, bs.AMBER
 buy, sell = costs.side_costs("sharekhan", "delivery")
 
 
+RUN = ROOT / "results" / "stexit" / "A_flip_capentry" / "nifty500_pit"
+
+
+import pandas as pd
+
+
+def stats():
+    """Every number quoted in the guide, from the current official run (so the text cannot go stale)."""
+    import json
+    from lib import metrics
+    start = json.load(open(RUN / "config.json"))["period"]["start"]
+    sm = pd.read_csv(RUN / "summary.csv", index_col=0).iloc[0]
+    m = metrics.compute(pd.read_csv(RUN / "fills_none.csv"), sm, start)
+    c = m["_closed"]; R = (c.pnl / c.risk).dropna()
+    e = pd.read_csv(RUN / "equity.csv", index_col=0, parse_dates=True).iloc[:, 0]
+    ye = e.resample("YE").last(); yr = ye.pct_change().dropna() * 100
+    return dict(m, start=pd.Timestamp(start), end=e.index[-1], exp_x10=R.drop(R.nlargest(10).index).mean(),
+                top10=c.pnl.nlargest(10).sum(), net=c.pnl.sum(), yr_lo=yr.min(), yr_hi=yr.max(),
+                years=(e.index[-1] - pd.Timestamp(start)).days / 365.25)
+
+
 def build(path=OUT):
+    k = stats()
     s = [Paragraph("S44984096 trading guide", H1),
          Paragraph("Your strategy, step by step: entry, stop, exits, risk, drawdown and money management. Written from the "
-                   "code that produced the backtest (15.9% CAGR / −24.2% max drawdown, point-in-time NIFTY 500, 2000–2026; "
-                   "random-pick median 16.4%). Research and education only, not investment advice.", SUB),
+                   f"code that produced the backtest ({k['cagr']:.1f}% CAGR / {k['mdd']:.1f}% max drawdown, point-in-time NIFTY 500, "
+                   f"{k['start']:%b %Y}–{k['end']:%b %Y}, NSE prices only). Research and education only, not investment advice.", SUB),
          Paragraph("The strategy in one paragraph", H2),
          bs.box("key", "Buy NIFTY 500 stocks in a long-term uptrend when their monthly momentum turns up after a pullback, but only "
                    "while the broad market (NIFTY 500 index) is above its 200-day average. Risk 1% of the account per trade "
@@ -69,7 +91,17 @@ def build(path=OUT):
         "<b>Supertrend</b>: add Supertrend(10, 3) to each stock's weekly chart (TradingView or your broker) and look after "
         "Friday's close. Broker data can differ slightly from the backtest's Yahoo data, so a flip may occasionally come a "
         "week apart.",
-        "<b>The 25-day date</b>: set a calendar reminder for each trade on the day you buy it."])
+        "<b>The 25-day date</b>: set a calendar reminder for each trade on the day you buy it."]) + [
+        Paragraph("Splits, bonuses and demergers", H3)] + bl([
+        "Brokers usually <b>cancel GTT / GTD orders</b> on a split or bonus ex-date, so the stop does not fire on the "
+        "adjusted price, but it disappears. Ask your broker how it treats myGTD orders and watch NSE corporate "
+        "announcements for every stock you hold.",
+        "<b>Split or bonus 1:N</b>: on the ex-date, re-place the stop at old stop ÷ ratio for old quantity × ratio. "
+        "For a bonus, the new shares reach your demat a few days later: protect the shares you hold now, then add the "
+        "new ones to the stop.",
+        "<b>Demerger</b>: the price drops by the value of the spun-off company; there is no ratio for the stop. Decide by "
+        "hand (many traders exit before the ex-date).",
+        "live.py flags splits, bonuses and large unexplained gaps on open positions."])
 
     s += [PageBreak(), Paragraph("Step 1: find setups (month end)", H2),
           Paragraph("On the last trading day of the month, after the close, check each stock that is in the NIFTY 500. A stock is "
@@ -77,7 +109,9 @@ def build(path=OUT):
         "<b>Monthly Stochastic RSI (14, 14, 3, 3)</b>: %K crosses above %D this month (%K was at or below %D last month, and is "
         "above it now), <b>and %D is below 30</b>. This is the pullback turning up.",
         "<b>Monthly close above the monthly EMA 61.</b>",
-        "<b>Last completed weekly close above the weekly EMA 61.</b> If the month ends mid-week, use the previous Friday's week.",
+        "<b>Last completed weekly close above the weekly EMA 61.</b> If the month ends mid-week, use the previous Friday's week. "
+        "<b>Chartink:</b> its \"Weekly\" candle is the current, unfinished week, so on a month end that is not a Friday "
+        "set the weekly filters to <b>1 week ago</b> (or use live.py's list, which is the reference).",
         "<b>Daily close above the daily EMA 61</b> on the month's last day.",
         "<b>Monthly RSI(14) above 50.</b>"]) + [
         Paragraph("Write down for each setup: the monthly <b>high</b> (your buy-stop level) and last week's low (a first "
@@ -92,7 +126,7 @@ def build(path=OUT):
         "Skip a setup if you already hold that stock."]) + [
         Paragraph("Step 3: the stop and the position size (fill day)", H2)] + num([
         "<b>Stop = low of the last completed week</b> before the fill day. It is fixed for the life of the trade: never "
-        "moved up, never widened. Place it as a stop-loss order (GTT) right after the fill.",
+        "moved up, never widened. Place it as a stop-loss order (GTT) after the fill-day close (see 7).",
         "<b>Risk budget</b> = 1% of yesterday's closing equity (cash + open positions at their closes) × the drawdown "
         "multiplier (1, ½ or 0 — Step 6).",
         "<b>Shares</b> = risk budget ÷ (entry − stop), rounded down.",
@@ -100,7 +134,9 @@ def build(path=OUT):
         "If several orders fill on the same day, fill first the one with the <b>tightest stop in percent</b>.",
         "Maximum <b>10 positions</b>. A buy-stop that triggers while all 10 are held is skipped and not retried that month; "
         "the other buy-stops stay live and can fill later in the month if a slot frees up.",
-        "If the stock closes at or below the stop on the fill day itself, sell at that close.",
+        "<b>Arm the stop from the next session.</b> On the fill day itself the stop is not live (as in the backtest): if the "
+        "stock <b>closes</b> at or below the stop that day, sell at the close (or the next open). Place the GTT stop "
+        "after the fill-day close so it is active from the next trading day.",
         "<b>Position cap at entry</b>: no new position may cost more than <b>20% of yesterday's equity</b>. If the shares from "
         "the risk budget would cost more, buy only 20% worth (a very tight stop would otherwise put most of the account in "
         "one stock)."]) + [
@@ -170,14 +206,15 @@ def build(path=OUT):
         "(Blue Star 20 May, NCC 23 May 2016) and the same Supertrend exit (Tata Communications, week of 11 Aug 2017). "
         "Example sheet: reports/notes/live_example_2016-05-19.pdf."]) + [
         Paragraph("What to expect", H2)] + bl([
-        "About <b>23% of trades win</b>; the average loss is about −6.7%, the average win about +81%. Losing streaks of "
-        "20–30 trades happen (29 in a row in the backtest).",
-        "The top 10 trades in 26 years made more than all of the net profit; never cut a big winner early.",
-        "Van Tharp view: expectancy +2.32R per trade but SQN 1.9 (poor but tradable): a few huge winners make results "
-        "lumpy. Without the 10 best trades expectancy is +0.61R. Take every signal and keep risk at 1%.",
-        "Drawdowns of −20% to −30% happen (worst −24% in the backtest, −27% median across random picks); the account "
-        "spends long stretches at half risk.",
-        "Calendar years from about −14% to +105%; flat or slightly negative years are common.",
+        f"About <b>{k['win']:.0f}% of trades win</b>; the average loss is about {k['avg_loss']:.1f}%, the average win about "
+        f"+{k['avg_win']:.0f}%. Long losing streaks happen ({k['streak']} in a row in the backtest).",
+        f"The top 10 trades in {k['years']:.0f} years made more than all of the net profit "
+        f"(₹{k['top10'] / 1e5:.1f} lakh vs ₹{k['net'] / 1e5:.1f} lakh net); never cut a big winner early.",
+        f"Van Tharp view: expectancy +{k['exp_r']:.2f}R per trade but SQN {k['sqn']:.1f} (poor but tradable): a few huge "
+        f"winners make results lumpy. Without the 10 best trades expectancy is +{k['exp_x10']:.2f}R. Take every signal.",
+        f"Drawdowns of −20% to −30% happen (worst {k['mdd']:.0f}% in the backtest); the account spends long stretches "
+        "at half risk, and years can pass without a new equity high.",
+        f"Calendar years from about {k['yr_lo']:.0f}% to +{k['yr_hi']:.0f}%; flat or slightly negative years are common.",
         "Where it earns: bull markets and quiet sideways markets give almost all the R. <b>Choppy, volatile sideways "
         "markets are the bleed</b> (expectancy below zero); in bear markets the NIFTY 500 filter keeps you mostly in cash. "
         "Expect the dull, losing stretches in sideways years (2007–12 and 2015–20 in the backtest)."]) + \

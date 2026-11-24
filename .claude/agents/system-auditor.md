@@ -122,6 +122,19 @@ Audit of 24 Nov 2026 (fixes in commits 1b0fdb0c and f8e85b1f unless marked open)
 14. **Demergers (note).** VEDL −65% (30 Apr 2026) and HEGAM −63% (7 Sep 2026) look like demergers in unadjusted
     data; confirm and flag any open position or signal affected.
 
+Changes of 24 Nov 2026 (step 2, part 1):
+15. **Official period July 2006 onwards, NSE only.** `strategies/stexit/A_flip_capentry.json` period.start = 2006-07-01;
+    the market filter must use `^CRSLDX` only for every traded day (no Sensex / NIFTY 50 fallback days); market types
+    (`lib/markettype.py`) come from `^CRSLDX` only. Check no report quotes "since 2000" figures for S44984096
+    (15.9% / −24.2% are the old 2000-based numbers; official is about 15.7% / −23.9%).
+16. **Win % = closed trades only** in `lib/portfolio.trade_stats`, `summary.csv`, site and PDFs.
+17. **Guide numbers are computed** (`reports/notes/strategy_guide_report.py:stats`); sizing note drawdown and
+    half-risk share (278 of 389 trades) are computed from the run. Flag any hard-coded result number in the reports.
+18. **Entry-day stop: armed from the next session** (user decision 24 Nov 2026). The guide says so; the engine checks
+    only the fill-day close. Release live.py must instruct the same.
+19. **Splits / bonuses / demergers on open positions** (planned in release live.py): stored stop, entry and quantity
+    adjusted by the ratio; demergers and unexplained gaps above 30% flagged for a manual decision.
+
 ## Report format
 Start with a one-line verdict (e.g. "2 critical, 1 major, 4 minor; data and engine OK"). Then a table of findings
 ordered by severity (severity, area, file:line, finding, evidence, fix). Then a short list of the checks that passed

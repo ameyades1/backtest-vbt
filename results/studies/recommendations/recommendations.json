@@ -1,5 +1,5 @@
 {
- "intro": "Figures are from historical (point-in-time) NIFTY 500 membership unless noted, include costs, and start from 2000. Expect live results somewhat lower.",
+ "intro": "Figures are from historical (point-in-time) NIFTY 500 membership unless noted, include costs, and start from 2000, except your strategy S44984096, whose official run starts in July 2006 (NSE data only; see README). Other rows are 2000-based research runs and are not directly comparable. Expect live results lower.",
  "sections": [
   {
    "title": "Your choice",
@@ -15,9 +15,9 @@
     [
      "S44984096",
      "Sf5b94362 with the 20% position cap also applied when a position is bought",
-     "15.9%",
-     "−24.2%",
-     "Your strategy (adopted 22 Nov 2026); random-pick median 16.4%"
+     "15.7%",
+     "−23.9%",
+     "Your strategy (adopted 22 Nov 2026); official run Jul 2006–Nov 2026 (2000-based run: 15.9% / −24.2%, random-pick median 16.4%)"
     ],
     [
      "Sa1f19d11",
@@ -69,7 +69,7 @@
     "Market type",
     "Days %",
     "Strategy / yr",
-    "NIFTY / yr",
+    "NIFTY 500 / yr",
     "Trades",
     "Win %",
     "Expectancy R",
@@ -79,67 +79,67 @@
     [
      "Bull quiet",
      "28",
-     "+25.0%",
-     "+21.1%",
-     "137",
-     "26",
-     "+2.42",
-     "35%"
+     "+18.2%",
+     "+12.0%",
+     "113",
+     "22",
+     "+2.70",
+     "36%"
     ],
     [
      "Bull volatile",
      "15",
-     "+37.8%",
-     "+36.6%",
-     "90",
-     "29",
-     "+3.74",
-     "35%"
+     "+57.1%",
+     "+49.4%",
+     "79",
+     "30",
+     "+3.89",
+     "37%"
     ],
     [
      "Sideways quiet",
-     "20",
-     "+12.2%",
-     "+10.5%",
-     "98",
-     "19",
-     "+2.97",
-     "31%"
+     "21",
+     "+9.5%",
+     "+10.0%",
+     "101",
+     "18",
+     "+1.30",
+     "16%"
     ],
     [
      "Sideways volatile",
-     "14",
-     "+7.5%",
-     "-18.8%",
-     "73",
      "16",
-     "-0.29",
-     "-2%"
+     "+8.1%",
+     "-12.2%",
+     "59",
+     "12",
+     "-0.45",
+     "-3%"
     ],
     [
      "Bear quiet",
-     "7",
-     "+3.9%",
-     "-8.2%",
-     "8",
-     "38",
-     "+1.98",
-     "2%"
+     "4",
+     "-2.5%",
+     "-5.7%",
+     "11",
+     "36",
+     "+6.84",
+     "9%"
     ],
     [
      "Bear volatile",
      "15",
-     "+0.5%",
-     "+12.7%",
-     "4",
+     "+5.2%",
+     "+9.6%",
+     "1",
      "0",
-     "-0.93",
+     "-1.05",
      "-0%"
     ]
    ],
    "notes": [
-    "SQN 1.9 on Tharp's 100-trade basis (1.6–1.9 poor but tradable, 2–2.4 average, 2.5–2.9 good, 3–5 excellent); 3.8 on all 410 trades. Expectancy +2.32R, std dev of R 12.3R. Sa1f19d11: SQN 2.0, expectancy +2.53R.",
-    "Low SQN, high expectancy: a few huge winners (best 137R) widen the R spread. Without the 10 best trades expectancy is +0.61R, still positive; missing big winners is the main risk.",
+    "SQN 1.8 on Tharp's 100-trade basis (1.6–1.9 poor but tradable, 2–2.4 average, 2.5–2.9 good, 3–5 excellent); 3.5 on all 383 trades. Expectancy +2.20R, std dev of R 12.3R. Sa1f19d11: SQN 2.0, expectancy +2.53R.",
+    "Low SQN, high expectancy: a few huge winners (best 137R) widen the R spread. Without the 10 best trades expectancy is +0.44R, still positive; missing big winners is the main risk.",
     "Market types: bull days and quiet sideways days earn almost all the R; volatile sideways markets are the bleed (negative expectancy), and the NIFTY 500 filter keeps the strategy mostly out of bear markets (few trades, near-flat returns).",
     "Each day typed from NIFTY 50 up to the previous close: 13-week change above +5% bull, below −5% bear; volatile if 20-day volatility is above its rolling 3-year median. Trades filed by their entry day."
    ]
@@ -713,5 +713,5 @@
   }
  ],
  "footer": "Research and education only, not investment advice.",
- "date": "22 Nov 2026"
+ "date": "24 Nov 2026"
 }

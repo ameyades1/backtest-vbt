@@ -1,10 +1,10 @@
 {
   "id": "S01a1ff62-e8d0-7ec6-a4c5-e49e44984096",
   "name": "stexit/A_flip_capentry",
-  "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while the NIFTY 500 index is below its 200-day average (NIFTY 50 / Sensex before mid-2006, when its 200-day average starts). [Trend exit swapped: weekly Supertrend(10,3) turns bearish instead of a monthly close below EMA61.] [Stack (10 slots, liquid-fund cash, 25-day time stop) with compounding risk.] [20% position cap + drawdown rule.] [Entry filter: NIFTY 500 index above its 200-day average instead of NIFTY 50 above its 200-day.] [Time stop: sell if not 0.25R up after 25 days (instead of 0.5R / 25).] [Supertrend exit only when it turns from bullish to bearish after entry] [Position cap also applied at entry: a new position is limited to 20% of equity when bought.]",
+  "description": "Monthly StochRSI pullback; stop at the previous week's low. No new entries while the NIFTY 500 index is below its 200-day average (from July 2006, when its 200-day average starts; NSE data only, no Sensex fallback). [Trend exit swapped: weekly Supertrend(10,3) turns bearish instead of a monthly close below EMA61.] [Stack (10 slots, liquid-fund cash, 25-day time stop) with compounding risk.] [20% position cap + drawdown rule.] [Entry filter: NIFTY 500 index above its 200-day average instead of NIFTY 50 above its 200-day.] [Time stop: sell if not 0.25R up after 25 days (instead of 0.5R / 25).] [Supertrend exit only when it turns from bullish to bearish after entry] [Position cap also applied at entry: a new position is limited to 20% of equity when bought.]",
   "universe": "NIFTY500_PIT",
   "period": {
-    "start": "2000-01-01"
+    "start": "2006-07-01"
   },
   "timeframe": "M",
   "setup": {

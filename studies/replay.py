@@ -151,14 +151,14 @@ story = [Paragraph(f"Replay workbook {a.year}: S44984096 (your choice)", H1),
                    f"({(eq_y.iloc[-1] / prev[eq_y.index[0]] - 1) * 100:+.1f}%).", SM),
          Paragraph("How to use this workbook", H2)] + bl([
     "This workbook has three parts: the <b>trading guide</b> (every rule, step by step), the <b>strategy report</b> "
-    "(the full backtest of S44984096 from 2000), and the <b>month-by-month replay</b> that follows.",
+    "(the full backtest of S44984096 from July 2006), and the <b>month-by-month replay</b> that follows.",
     "Each month has two pages. Work through <b>Your turn</b> first: check the portfolio and the drawdown status, read "
     "the setups from last month's candle, and write down which buy-stops you would place, your stop and how many "
     "shares. Then turn the page to <b>What happened</b>: fills (with the sizing worked out), skipped signals and why, "
     "and every sale with its reason, P&L and R.",
     "Setups list stocks whose just-closed monthly candle met every entry rule (guide, Step 1). The stop shown is an "
     "estimate (last week's low at month end); the real stop is the low of the last completed week before the fill.",
-    "Replay numbers are a fresh run from 1 Jan of the start year, so they differ from the 2000–2026 report."])
+    "Replay numbers are a fresh run from 1 Jan of the start year, so they differ from the full (July 2006 onwards) report."])
 
 for mth in range(1, 13):
     ms = pd.Timestamp(f"{a.year}-{mth:02d}-01"); me = ms + pd.offsets.MonthEnd(0)

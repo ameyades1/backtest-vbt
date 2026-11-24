@@ -131,7 +131,8 @@ def concept(title, plain=None, why=None, formula=None, body=None, rule=None, ex=
 
 # ---------------- live numbers ----------------
 S = pd.read_csv(RUN / "summary.csv", index_col=0).loc["No target"]
-M = metrics.compute(pd.read_csv(RUN / "fills_none.csv"), S, "2000-01-01")
+START = json.load(open(RUN / "config.json"))["period"]["start"]
+M = metrics.compute(pd.read_csv(RUN / "fills_none.csv"), S, START)
 C = M["_closed"].copy()
 C["R"] = C.pnl / C.risk.replace(0, np.nan)
 R = C.R.dropna()
@@ -260,14 +261,14 @@ fig, axs = plt.subplots(2, 1, figsize=(8, 5), sharex=True, gridspec_kw={"height_
 axs[0].plot(EQ / EQ.iloc[0] * 10, color=AMBER, lw=1.5, label=f"{SID} ({S['CAGR %']:.1f}%/yr)")
 axs[0].plot(NX / NX.iloc[0] * 10, color=GREY, lw=1.1, ls="--", label=f"NIFTY 50 ({N_CAGR:.1f}%/yr)")
 logfmt(axs[0], [10, 30, 100, 300, 1000], lambda v: f"₹{v:,.0f} L"); axs[0].legend(frameon=False, fontsize=9, loc="upper left")
-axs[0].set_title("₹10 lakh from January 2000 (log scale)")
+axs[0].set_title(f"₹10 lakh from {EQ.index[0]:%B %Y} (log scale)")
 axs[1].fill_between(DD.index, DD * 100, 0, color=AMBER, alpha=.5, label=SID)
 axs[1].plot((NX / NX.cummax() - 1) * 100, color=GREY, lw=.9, label="NIFTY 50")
 axs[1].set_ylabel("Drawdown %"); axs[1].legend(frameon=False, fontsize=8.5, loc="lower left")
 save(fig, "equity")
 
 # 7. market-type timeline
-T = markettype.types()["2000-01-01":]
+T = markettype.types()[START:]
 nn = nifty_close().reindex(T.index, method="ffill")
 colmap = {"Bull quiet": "#86efac", "Bull volatile": "#16a34a", "Sideways quiet": "#cbd5e1", "Sideways volatile": "#64748b",
           "Bear quiet": "#fca5a5", "Bear volatile": "#dc2626"}
@@ -310,7 +311,7 @@ story += [Spacer(1, 50 * mm), P("Trading concepts, explained", ParagraphStyle("c
           P("R, expectancy, SQN, drawdowns, market types and every indicator in your strategy, in plain words, with the "
             "formulas, the intuition and where each idea came from.", ParagraphStyle("cv2", parent=B, fontSize=15, leading=22)),
           Spacer(1, 10 * mm),
-          P(f"Every example uses your chosen strategy <b>{SID}</b> on point-in-time NIFTY 500 data, 2000 to "
+          P(f"Every example uses your chosen strategy <b>{SID}</b> on point-in-time NIFTY 500 data, {EQ.index[0]:%B %Y} to "
             f"{EQ.index[-1]:%B %Y}, computed when this book was built. Worked example: Persistent Systems, July 2020 to May 2022.", B),
           Spacer(1, 60 * mm), P("Research and education only. Not investment advice.", SM),
           PageBreak(), P("Contents", H1), toc]
@@ -403,7 +404,7 @@ story += concept(
          "The goal was a more sensitive indicator that gives timely signals even when RSI is stuck in the middle of its range."],
     rule=["On the monthly chart: %K crosses above %D while %D is still below 30, with RSI above 50 and price above EMA 61.",
           "Settings are the platform defaults: RSI 14, Stoch 14, %K 3, %D 3. The oversold level 30 is looser than the more "
-          "common 20; tests showed 30 works better here (15.9% CAGR against 13.8% at 20)."],
+          "common 20; tests showed 30 works better here (15.9% CAGR against 13.8% at 20 in the 2000–2026 research runs)."],
     ex=f"Persistent, June 2020: StochRSI %K jumped from {K_PREV:.0f} to {K_SET:.0f} and crossed above %D, which was "
        f"{D_SET:.2f}, just below 30. RSI was {RSI_SET:.1f}, just above 50. A strong stock that had paused, turning up again: a setup.",
     extra=[img(CH["monthly"], 125, "Top: monthly price and EMA 61. Middle: RSI with the 50 line. Bottom: StochRSI with the "
@@ -631,7 +632,7 @@ story += concept(
 
 # ---- chapter 6: account level
 story += chapter("6. Account results")
-story += [img(CH["equity"], 115, "Top: ₹10 lakh invested in January 2000. Bottom: how far each was below its own peak.")]
+story += [img(CH["equity"], 115, f"Top: ₹10 lakh invested in {EQ.index[0]:%B %Y}. Bottom: how far each was below its own peak.")]
 story += concept(
     "CAGR: compound annual growth rate",
     plain="The steady yearly growth rate that would turn the starting amount into the final amount. It smooths a bumpy "
@@ -738,7 +739,7 @@ story += concept(
     ex=["Time stop: 20, 25 and 30 days with 0.25R or 0.5R all gave 15–17%. A plateau.",
         "Supertrend: at ATR 10, multipliers 2 to 4 all gave about 16%. A plateau. At ATR 14, multiplier 3 gave 18% but "
         "2.5 gave 15%. A peak, so (14, 3) was not adopted.",
-        "StochRSI oversold: 30 gave 15.9%, 25 gave 14.0% and 20 gave 13.8%. A slope: the setting matters."])
+        "StochRSI oversold (2000–2026 research runs): 30 gave 15.9%, 25 gave 14.0% and 20 gave 13.8%. A slope: the setting matters."])
 story += concept(
     "Walk-forward and rolling windows",
     plain="Split the history into periods (2000–04, 2005–09, and so on) and check the strategy in each. A real edge works "

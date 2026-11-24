@@ -315,7 +315,8 @@ def trade_stats(fdf: pd.DataFrame, equity: pd.Series) -> dict:
     i = t.pnl.idxmin()
     eq_in = equity[:t.entry_date[i]]
     eq_in = eq_in.iloc[-1] if len(eq_in) else equity.iloc[0]
-    return {"Trades taken": len(t), "Win %": (t.pnl > 0).mean() * 100, "Avg trade %": t.ret.mean(),
+    closed = t[~t.open]                       # Win % on closed trades only (as site/PDFs); open ones are not decided
+    return {"Trades taken": len(t), "Win %": (closed.pnl > 0).mean() * 100 if len(closed) else np.nan, "Avg trade %": t.ret.mean(),
             "Median trade %": float(t.ret.median()), "Avg hold days": held.mean(),
             "Median hold days": float(held.median()), "Avg position (Rs)": t.cost.mean(),
             "Worst trade (Rs)": t.pnl[i], "Worst trade % of equity": t.pnl[i] / eq_in * 100}

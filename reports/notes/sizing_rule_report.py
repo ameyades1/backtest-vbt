@@ -22,7 +22,7 @@ DARK, GREY, AMBER = bs.INK, bs.GREY, bs.AMBER
 # replay the rule on the saved equity curve (same logic as lib/portfolio.py, previous close)
 e = pd.read_csv(ROOT / "results/stexit/A_flip_capentry/nifty500_pit/equity.csv", index_col=0, parse_dates=True).iloc[:, 0].dropna()
 prev = e.shift(1).dropna()
-pk, halved, used, left, nh, npz, hs, ps = 0, False, False, 0, 0, 0, [], []
+pk, halved, used, left, nh, npz, hs, ps, state = 0, False, False, 0, 0, 0, [], [], {}
 for d, v in prev.items():
     pk = max(pk, v); x = (1 - v / pk) * 100
     if v >= pk:
@@ -35,6 +35,12 @@ for d, v in prev.items():
         left -= 1; npz += 1
     elif halved:
         nh += 1
+    state[d] = "half" if halved else "full"
+maxdd = (e / e.cummax() - 1).min() * 100
+from lib import portfolio
+_ent = pd.to_datetime(portfolio.read_fills(ROOT / "results/stexit/A_flip_capentry/nifty500_pit/fills_none.csv")["entry_date"])
+ntr = len(_ent)
+nhalf = sum(state.get(d) == "half" for d in _ent)
 
 story = [Paragraph("Position sizing and the drawdown rule", H1),
          Paragraph("S44984096 (your choice): 1% risk, 10 slots, 20% position cap (at entry and at month end), halve at −10%, pause 21 days at −15%. "
@@ -63,15 +69,16 @@ story += [Paragraph("Walk-through: ₹20 lakh peak", H2),
                  ["₹16.5 L, pause ends", "Half risk", "0.5% = ₹8,250"],
                  ["₹19.5 L (−2.5%)", "Still half risk", "0.5% = ₹9,750"],
                  ["₹20.1 L (new high)", "Back to normal", "1% = ₹20,100"]], [45 * mm, 60 * mm, 50 * mm])]
-story += [Paragraph("How often it triggered, 2000–2026", H2)] + bl([
+story += [Paragraph("How often it triggered, 2006–2026", H2)] + bl([
     f"<b>Half risk started {len(hs)} times:</b> " + ", ".join(f"{d:%b %Y}" for d in hs) + ".",
     f"<b>The 21-day pause happened {len(ps)} times:</b> " + ", ".join(f"{d:%b %Y}" for d in ps) + ".",
     f"<b>The account was at half risk on {nh / len(prev) * 100:.0f}% of trading days</b> and paused on {npz} days: "
     "recoveries to a new high often take a year or more."])
 story += [Paragraph("What it means", H2)] + bl([
-    "The rule is a large part of why the worst drawdown stayed near −28%: losses slow down as they build.",
-    "The price: about half of all trades were taken at half size, so the strategy earns less during long "
-    "recoveries. Part of the CAGR is traded for safety.",
+    f"The rule is a large part of why the worst drawdown stayed at {maxdd:.1f}%: losses slow down as they build.",
+    f"The price: {nhalf} of {ntr} trades ({nhalf / ntr * 100:.0f}%) were entered while risk was halved, so much of "
+    "the time the strategy really ran at 0.5% risk, not 1%, and earned less during long recoveries. Part of the CAGR "
+    "is traded for safety.",
     "In live trading, follow it mechanically: compute the peak from your own account statement each day, and size "
     "the next trade from the previous close."])
 from lib import markettype
