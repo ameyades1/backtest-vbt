@@ -51,3 +51,41 @@ Indian traps to handle in code start with circuits. Non-F&O stocks have fixed ba
 ## Conclusion
 
 The 16% / -30% target is realistic only as a pre-tax, whole-book target reached through risk allocation. It is not realistic as a property of a new signal. Every Indian factor family arrives with 45-75% crash depth and a live record weaker than its backtest. The repo's edge is the exposure discipline it already has. The productive sequence follows from that: confirm V1 volatility scaling in the holdout, measure the real correlation of a gated low-vol sleeve with S44984096, and only then raise base risk to use whatever drawdown headroom the combined book has earned. If the combined holdout drawdown does not come in below about -20%, there is no headroom, and 15% is about the honest ceiling for this universe and cost structure. No family here fixes the 2017-19 and late-2024 lag. Those were rotation and midcap-bear periods. The realistic goal for them is less time under water, not outperformance, and a lower CAGR in those years is the cost of staying in the game.
+
+## Backtest results: ranks 1 to 5 (added 25 Nov 2026)
+
+All five ranks were built in `research/studies/rank_candidates.py` on the release S44984096 engine, so every result shares the same rules: point-in-time NIFTY 500, release costs, 0.1% slippage per side, next-open fills, 10 slots, the 20% position cap and the drawdown rule. Settings were picked on 2006–2016 by Calmar and then read on the 2017–2026 holdout. Full output is in `reports/rank_candidates.csv`. "Corr" is the correlation of daily returns with S44984096.
+
+**Verdict:** one candidate reaches the target on paper. That is S44984096 at 1.25% risk per trade, which makes 16.2% CAGR with a −24.1% drawdown, but it falls to 15.7% when slippage is doubled. No new strategy family beats S44984096, either alone or as a second system. The target is met only at the margin, and that margin is within cost noise.
+
+| Candidate (best setting) | CAGR | Max DD | Calmar | 2017–26 CAGR / DD / Calmar | Corr | Verdict |
+|---|---|---|---|---|---|---|
+| Baseline S44984096 (1% risk) | 15.35% | −23.5% | 0.65 | 13.27% / −21.0% / 0.63 | 1.00 | Current |
+| R1: 1.25% risk, no volatility sizing | **16.21%** | −24.1% | 0.67 | 15.92% / −23.2% / 0.69 | 0.98 | Meets target; marginal |
+| R1: 1.4% risk + volatility sizing (63-day) | 15.92% | −24.6% | 0.65 | 15.81% / −21.6% / 0.73 | 0.98 | Close |
+| R1: 1% risk + volatility sizing (63-day), picked on 2006–16 | 14.91% | −21.3% | 0.70 | 12.87% / −18.4% / 0.70 | 0.99 | Best risk-adjusted |
+| R2: momentum 12-1, 4×ATR chandelier, volatility sizing | 8.26% | −14.6% | 0.57 | 8.91% / −11.3% / 0.79 | 0.47 | Reject: low return |
+| R2: 52-week high, 4×ATR, picked on 2006–16 | 6.42% | −13.4% | 0.48 | 5.00% / −13.4% / 0.37 | 0.51 | Reject |
+| R3: low-vol alone (252-day volatility, 4×ATR) | 7.30% | −13.7% | 0.53 | 7.03% / −12.2% / 0.58 | 0.40 | Reject alone |
+| R3: 50/50 S44984096 + low-vol (126-day, 4×ATR) | 12.58% | −17.0% | 0.74 | 12.09% / −17.0% / 0.71 | 0.96 | Lower drawdown, lower CAGR |
+| R3: 50/50 with S44984096 at 1.25% + volatility sizing, low-vol (252-day, 4×ATR) | 12.97% | −19.1% | 0.68 | 12.80% / −15.1% / **0.85** | 0.94 | Best 2017–26 Calmar, but about 13% CAGR |
+| R4: 150-day breakout, 100-day-low exit (picked on 2006–16) | 10.68% | −20.2% | 0.53 | 8.05% / −15.9% / 0.51 | 0.46 | Reject |
+| R5: sector RS 63-day filter | 14.05% | −21.9% | 0.64 | 16.04% / −19.9% / 0.81 | 0.85 | Fragile: 2006–16 Calmar 0.56; 126-day version 0.41 |
+| R5: stock RS 126-day filter (picked on 2006–16) | 14.87% | −27.9% | 0.53 | 12.83% / −27.9% / 0.46 | 0.74 | Reject |
+
+**Doubled slippage (0.2% per side), R1:**
+- Baseline: 15.23% / −23.2%.
+- 1.25% risk, no volatility sizing: 15.68% / −26.6%.
+- 1.25% risk + volatility sizing: 15.08% / −23.1%.
+- 1.4% risk + volatility sizing: 15.30% / −24.7%; 2017–26 holdout 15.06% / −23.4%.
+
+**What the numbers say:**
+- **R1.** Raising risk is the only lever that adds CAGR. The gain is about 0.5–0.9 points for 1–3 points more drawdown. Volatility sizing buys a better Calmar and a much shorter time under water (about 680–750 days against 1,130), not extra return. Run noise across settings is about ±0.5 points; for example, 1.25% with the 21-day/1.5 cap version made only 14.9%.
+- **R2, R3, R4 (rotation, low-vol, breakouts).** These are genuinely different from S44984096 (correlation 0.4–0.6) and have shallow drawdowns of −12% to −21%. But they make only 5–11% CAGR in this engine. Part of that is the design: after a chandelier exit they wait for the next quarter to re-enter, so they sit in cash a lot. Even as a 50/50 second system, they pull the combined CAGR down to about 12.5–13%, because each half of the money is a separate account and the low-return half drags. The 2017–26 Calmar improves to 0.71–0.85, so combining helps risk, not return.
+- **R5.** The 63-day sector filter looks good on 2017–26 data, but it was worse than the baseline on 2006–16 and the 126-day version fails. That is the overfitting pattern, so don't adopt it.
+- **None of the five fixes the lag since September 2024.** Every variant is down about 3–6% since then, except the low-turnover sleeves, which sat near flat in cash.
+
+**Recommendation:**
+- If you want the extra CAGR, move S44984096 from 1% to 1.25% risk per trade. That is inside your 0.5–2% risk band, and the worst drawdown would be about −24% to −27% (worse with doubled slippage). Expect about 15.5–16% after realistic costs, not clearly above 16%.
+- If you would rather have smoother returns, use 1% risk with 63-day volatility sizing. That gives about 15% CAGR, a −21% drawdown and roughly half the time under water.
+- Shelve R2–R5 as standalone systems. A low-vol or momentum sleeve that stays fully invested (re-entering monthly instead of quarterly) is the one follow-up worth trying, if the aim is a second system.
