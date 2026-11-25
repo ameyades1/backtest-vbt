@@ -146,10 +146,11 @@ for r in sorted(rows, key=lambda r: -r["cagr"]):
     for k, _, fmt, _ in COLS:
         td, _ = cell(r, k, fmt)
         tds.append(td)
-    body.append(f'<tr data-family="{r["family"]}" data-mkt="{html.escape(r["mkt"])}">' + "".join(tds) + "</tr>")
+    body.append(f'<tr data-family="{r["family"]}" data-mkt="{html.escape(r["mkt"])}" data-uni="{html.escape(r["universe"])}">' + "".join(tds) + "</tr>")
 families = sorted({r["family"] for r in rows})
 head = "".join(f'<th title="{html.escape(t)}" data-num="{0 if f is None else 1}">{h}</th>' for _, h, f, t in COLS)
 opts = "".join(f'<option value="{f}">{f}</option>' for f in families)
+uni_opts = "".join(f'<option value="{html.escape(u)}">{html.escape(u)}</option>' for u in sorted({r["universe"] for r in rows}))
 
 STUDY_TITLES = {"variants": "Variations of S44984096: risk x slots, idle cash, Zerodha costs, liquidity, Supertrend, ranking",
                 "yearly": "Year by year: S44984096 (your choice) vs ₹10 lakh in the NIFTY",
@@ -221,6 +222,7 @@ table.rec{{white-space:normal}} table.rec th{{text-align:left;cursor:default}} t
 <h2>All runs</h2>
 <div class="bar"><label>Search <input id="q" type="search" placeholder="e.g. Sde394 PIT supertrend" style="width:16em"></label>
 <label>Strategy <select id="fam"><option value="">All</option>{opts}</select></label>
+<label>Universe <select id="uni"><option value="">All</option>{uni_opts}</select></label>
 <label>Market filter <select id="mkt"><option value="">All</option><option>none</option><option>NIFTY &gt; 200-DMA</option></select></label>
 <span id="count" class="v"></span></div>
 <div class="wrap"><table id="t"><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>
@@ -240,12 +242,12 @@ table.rec{{white-space:normal}} table.rec th{{text-align:left;cursor:default}} t
 <script>
 const t=document.getElementById('t'),tb=t.tBodies[0],fam=document.getElementById('fam'),cnt=document.getElementById('count');
 function count(){{const n=[...tb.rows].filter(r=>r.style.display!=='none').length;cnt.textContent=n+' rows';}}
-const mkt=document.getElementById('mkt');
+const mkt=document.getElementById('mkt'),uni=document.getElementById('uni');
 const q=document.getElementById('q');
 function filt(){{const w=q.value.toLowerCase().split(/\\s+/).filter(Boolean);
 [...tb.rows].forEach(r=>{{const tx=r.textContent.toLowerCase();
-r.style.display=(!fam.value||r.dataset.family===fam.value)&&(!mkt.value||r.dataset.mkt===mkt.value)&&w.every(x=>tx.includes(x))?'':'none';}});count();}}
-fam.onchange=filt;mkt.onchange=filt;q.oninput=filt;
+r.style.display=(!fam.value||r.dataset.family===fam.value)&&(!mkt.value||r.dataset.mkt===mkt.value)&&(!uni.value||r.dataset.uni===uni.value)&&w.every(x=>tx.includes(x))?'':'none';}});count();}}
+fam.onchange=filt;mkt.onchange=filt;uni.onchange=filt;q.oninput=filt;
 [...t.tHead.rows[0].cells].forEach((th,i)=>th.onclick=()=>{{
   const num=th.dataset.num==='1',asc=th.classList.contains('s')&&!th.classList.contains('asc');
   [...t.tHead.rows[0].cells].forEach(h=>h.classList.remove('s','asc'));th.classList.add('s');if(asc)th.classList.add('asc');
